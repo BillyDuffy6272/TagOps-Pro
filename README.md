@@ -1,73 +1,102 @@
-# React + TypeScript + Vite
+# TagOps-Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A tracking organisation and operational tool for business owners — a single source of truth for the Tags, Triggers, Conversion events, and Variables that power their analytics and marketing setup (Google Tag Manager, GA4, and similar). The MVP focuses on organising the setup, inviting teammates with expiry dates, and surfacing suggestions when something is missing. The roadmap adds AI-assisted suggestions, automated firing verification, and two-way sync with Google's platforms.
 
-Currently, two official plugins are available:
+This repository is also my **Year 12 Software Engineering AT3 project** for Noetica Academy, Term 2 2026. The product is genuine; it is also subject to the AT3 brief's mandated stack, security floor, AI-use policy, and nine-week timeline.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Hosting / deployment:** Vercel (continuous deployment).
+- **Backend:** Supabase (Postgres, Auth, Row-Level Security, Storage, Edge Functions).
+- **Frontend:** React + TypeScript on Vite.
+- **AI development assistant:** Claude Code.
+- **Editor:** VS Code.
 
-## Expanding the ESLint configuration
+Frontend framework choice (React + TS + Vite) is justified in the decision log; the rest of the stack is mandated by the AT3 brief.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Project folio
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+The `/docs` folder is the running record of this project. Read these in order:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- [`docs/01-problem-statement.md`](docs/01-problem-statement.md) — the need, the users, and what "solved" looks like.
+- [`docs/02-requirements.md`](docs/02-requirements.md) — MUST-HAVE / MVP and WOULD-BE-NICE features.
+- [`docs/03-architecture.md`](docs/03-architecture.md) — high-level design, request lifecycle, diagrams. _(Weeks 3–4)_
+- [`docs/04-data-model.md`](docs/04-data-model.md) — schema, ERD, relationships. _(Weeks 5–6)_
+- [`docs/05-security-review.md`](docs/05-security-review.md) — threat model, RLS reasoning, defensive patterns. _(Weeks 6–7)_
+- [`docs/06-front-end-architecture.md`](docs/06-front-end-architecture.md) — component tree, CSS approach, accessibility. _(Weeks 6–7)_
+- [`docs/07-evaluation.md`](docs/07-evaluation.md) — the evaluation report itself. _(Week 9)_
+- [`docs/08-test-plan.md`](docs/08-test-plan.md) — test layers, coverage decisions. _(Week 8)_
+- [`docs/09-iteration-log.md`](docs/09-iteration-log.md) — UAT feedback, deployment iteration. _(Week 8)_
+
+Two running logs accumulate across the whole term:
+
+- [`docs/decision-log.md`](docs/decision-log.md) — every significant technical or product choice, with reasoning. _(The AT3 spec names this `decisions.md`; the filename here is kept as `decision-log.md` pending teacher confirmation.)_
+- [`docs/ai-use-log.md`](docs/ai-use-log.md) — every substantive Claude Code interaction: prompt, response summary, outcome, reasoning.
+
+The numbered files `03`–`09` are created when their week arrives, not pre-populated as placeholders.
+
+For agent / AI tooling guidance, see [`CLAUDE.md`](CLAUDE.md) at the repo root.
+
+---
+
+## Repository layout
+
+```
+TagOps-Pro/
+├── README.md
+├── CLAUDE.md                  guidance for AI assistants
+├── docs/                      the folio
+├── src/                       application source
+├── supabase/
+│   ├── migrations/            numbered SQL migrations
+│   └── functions/             edge functions if any
+└── tests/
+    ├── unit/                  unit tests on pure logic
+    ├── integration/           policy tests against local Supabase
+    └── smoke/                 end-to-end smoke tests on critical flows
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Dev setup
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+_To be filled in once the Vite scaffold has been confirmed at the repo root._
+
+Planned commands:
+
+- `npm install` — install dependencies.
+- `npm run dev` — start the Vite dev server.
+- `npm run build` — production build.
+- `npm run lint` — ESLint.
+- `npm run typecheck` — `tsc --noEmit`.
+- `npm run test` — Vitest unit + integration suites.
+- `supabase start` — local Supabase for integration tests.
+
+A `.env.example` will be added in Week 2; never commit a real `.env`.
+
+---
+
+## Security floor
+
+This project meets six minimum security requirements (per the AT3 brief): Supabase Auth, at least one RLS policy, no service-role keys in client code, email verification on signup, input validation client-and-database-side, and no plaintext storage of sensitive data. Stronger measures (rate limiting, CSRF, secure headers, dependency auditing, deliberate threat modelling) are documented in `docs/05-security-review.md`.
+
+---
+
+## Deliverables (Week 11)
+
+1. Working solution deployed at a Vercel URL.
+2. Short report (1,000–1,300 words, PDF) covering engineering decisions, tool/resource choices, and secure data handling.
+3. This `/docs` folio.
+4. Git invitation to the marking teacher.
+
+Plus a 15-minute walk-through in Week 10.
+
+---
+
+## Status
+
+In Week 2 (kick-off). Problem statement and requirements drafted; architecture, data model, and migrations not yet started.
