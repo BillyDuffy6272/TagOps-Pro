@@ -1,0 +1,10 @@
+[
+  {
+    "ContainerId": "CNTID_AG_0001",
+    "OrganisationId": "ORGID_AG_0001",
+    "ContainerName": "Main marketing site",
+    "Domain": "need-tracking.com",
+    "Environment": "production",
+    "GtmContainerId": "GTM-AB12CD3"
+  }
+]

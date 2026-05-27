@@ -1,0 +1,9 @@
+[
+  {
+    "VariableId": "VARID_AG_0001",
+    "ContainerId": "CNTID_AG_0001",
+    "VariableName": "purchase_value",
+    "VariableType": "datalayer",
+    "DefaultValue": "0"
+  }
+]

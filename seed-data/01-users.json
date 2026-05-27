@@ -1,0 +1,16 @@
+[
+  {
+    "UserId": "USRID_AG_0001",
+    "Email": "alex@need-tracking.com",
+    "DisplayName": "Alex G",
+    "AvatarUrl": "https://lh3.googleusercontent.com/a/example-avatar",
+    "CreatedAt": "2026-05-13T04:00:00Z"
+  },
+  {
+    "UserId": "USRID_AG_0002",
+    "Email": "jordan.t@example.com",
+    "DisplayName": "Jordan T",
+    "AvatarUrl": "https://lh3.googleusercontent.com/a/example-avatar-2",
+    "CreatedAt": "2026-05-13T05:10:00Z"
+  }
+]

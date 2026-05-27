@@ -1,0 +1,16 @@
+[
+  {
+    "TriggerId": "TRGID_AG_0001",
+    "ContainerId": "CNTID_AG_0001",
+    "TriggerName": "Purchase complete",
+    "TriggerType": "custom_event",
+    "EventName": "purchase",
+    "Conditions": [
+      {
+        "var": "page_path",
+        "op": "contains",
+        "val": "/checkout/thank-you"
+      }
+    ]
+  }
+]

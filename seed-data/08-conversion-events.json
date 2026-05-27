@@ -1,0 +1,10 @@
+[
+  {
+    "ConversionEventId": "CONID_AG_0001",
+    "ContainerId": "CNTID_AG_0001",
+    "EventName": "purchase",
+    "ValueParam": "purchase_value",
+    "Currency": "AUD",
+    "IsActive": true
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "TagId": "TAGID_AG_0001",
+    "TriggerId": "TRGID_AG_0001",
+    "Relationship": "fires_on"
+  }
+]

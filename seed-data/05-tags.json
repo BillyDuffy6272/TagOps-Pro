@@ -1,0 +1,16 @@
+[
+  {
+    "TagId": "TAGID_AG_0001",
+    "ContainerId": "CNTID_AG_0001",
+    "TagName": "GA4 Purchase Event",
+    "TagType": "ga4_event",
+    "TagStatus": "active",
+    "Parameters": {
+      "measurement_id": "G-XXXXXXX",
+      "event_name": "purchase",
+      "value": "{{purchase_value}}",
+      "currency": "AUD"
+    },
+    "Notes": "Fires after the Stripe webhook confirms the order. Value pulled from the datalayer at the thank-you page."
+  }
+]
