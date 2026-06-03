@@ -36,8 +36,16 @@ async function gtmGet<T>(url: string, token: string): Promise<T> {
     headers: { Authorization: `Bearer ${token}` },
   })
   if (!res.ok) {
-    const text = await res.text()
-    throw new Error(`GTM API ${res.status}: ${text}`)
+    let message = `GTM API error (${res.status})`
+    try {
+      const json = await res.json()
+      message = json?.error?.message ?? message
+    } catch {
+      // response wasn't JSON — fall back to the status message
+    }
+    const err = new Error(message) as Error & { status: number }
+    err.status = res.status
+    throw err
   }
   return res.json()
 }

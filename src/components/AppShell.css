@@ -1,0 +1,13 @@
+.app-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: 100vh;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.shell-content {
+  overflow-y: auto;
+  background: #0a0a0a;
+  min-width: 0;
+}
