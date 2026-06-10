@@ -282,6 +282,20 @@ Edited files:
 
 ---
 
+### Diagnosed and resolved Google OAuth setup errors
+
+**Date:** 04/06/2026
+
+**Prompt:** Multi-turn — Pasted the Supabase error `{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}`. Then shared screenshots of the Supabase Google provider settings page (Client IDs field had "TagOps Pro" typed in it instead of a real Client ID), the Google Cloud Console Credentials page with no project selected, the Credentials page after creating the "TagOps Pro" GCP project, and the OAuth client created dialog showing the Client ID and Client Secret. Then shared an `Error 400: redirect_uri_mismatch` screenshot from Google's sign-in screen.
+
+**Response summary:** Traced the first error to the Supabase Google provider having `"TagOps Pro"` in the Client IDs field instead of a real `*.apps.googleusercontent.com` string. Walked through the full GCP OAuth setup sequence step-by-step: (1) select or create a GCP project (no parent org needed for a school project); (2) configure the OAuth consent screen as External, fill in app name and contact emails; (3) create an OAuth 2.0 Client ID of type Web application with the Supabase callback URL (`https://nkdkfbejsswgllbzjhvd.supabase.co/auth/v1/callback`) in Authorized redirect URIs; (4) copy the real Client ID and Client Secret into Supabase's Google provider settings. After the user successfully created credentials, diagnosed the follow-up `redirect_uri_mismatch` error — caused by the Authorized redirect URIs list in GCP not exactly matching what Supabase sends. Advised adding the Supabase callback URL exactly (no trailing slash) and adding `http://localhost:5173` to both Authorized JavaScript origins and Authorized redirect URIs for local dev, and to wait ~5 minutes for GCP to propagate the change.
+
+**What you did with it:** Accepted.
+
+**Why:** The setup is entirely configuration-level — no code was changed. Understanding each error message and where to fix it (Supabase dashboard vs GCP console) is the key skill here. The redirect_uri_mismatch is one of the most common OAuth gotchas and worth documenting clearly for the walk-through.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
