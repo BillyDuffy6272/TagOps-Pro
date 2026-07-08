@@ -153,4 +153,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-<claude-code-hint v="1" type="plugin" value="supabase@claude-plugins-official" />
