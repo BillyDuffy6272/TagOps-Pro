@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0011 — Third-party outage risk: Supabase platform incident blocked local dev
+
+- **Date:** 2026-07-06
+- **Status:** Accepted (informational — no architectural change)
+- **Context:** `npm run dev` loaded the app but it hung indefinitely on the loading spinner. Diagnosis (see `docs/ai-use-log.md`) traced this through two stages: first a stale/misresolving DNS lookup for the project's Supabase URL, then — once DNS resolved — a Cloudflare 521 ("Web server is down") from `nkdkfbejsswgllbzjhvd.supabase.co`. The Supabase dashboard showed project status as "Healthy" but with an active platform-wide banner: "We are investigating a technical issue." status.supabase.com confirmed an ongoing incident ("Project status change failures in multiple regions", started 2026-06-30, still unresolved as of 2026-07-04) explicitly listing `ap-southeast-1` (this project's region, Singapore) among affected regions.
+- **Decision:** No code or config change — the app's `App.tsx` behaviour (block on `supabase.auth.getSession()` before rendering Login/Dashboard) is correct; the outage was entirely on Supabase's infrastructure side, outside this project's control. Treat this as confirmation that TagOps-Pro has a hard runtime dependency on Supabase's availability, with no fallback path.
+- **Consequences:** Local dev and any deployed environment are both unavailable for the duration of a Supabase incident, with no graceful degradation — `App.tsx` shows an infinite spinner rather than a timeout/error state. Worth addressing before Week 6–7 hardening: add a timeout on `getSession()` so the UI surfaces a "service unavailable, try again" message instead of spinning forever. This single-point-of-failure risk (mandated backend-as-a-service, no self-hosted fallback) is a relevant discussion point for `docs/05-security-review.md` and the Section 2 tool-justification writeup, since it's a direct trade-off of the mandated stack (see ADR-0003) rather than a choice made freely.
+
+---
+
 ## ADR-0010 — organisations INSERT policy: auth.uid() IS NOT NULL
 
 - **Date:** 2026-06-03

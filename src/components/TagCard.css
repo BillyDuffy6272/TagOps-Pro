@@ -1,16 +1,17 @@
 .tag-card {
-  background: #111;
-  border-radius: 8px;
+  background: #0d1120;
+  border-radius: 4px;
   padding: 16px;
-  border: 1px solid #1a1a1a;
+  border: 1px solid #1a2035;
   display: flex;
   flex-direction: column;
   gap: 9px;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .tag-card:hover {
-  border-color: #2a2a2a;
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 1px #1e3a5f;
 }
 
 .tag-paused {
@@ -41,35 +42,38 @@
 }
 
 .type-badge {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 400;
+  padding: 2px 7px;
+  border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
-  font-family: 'Geist Mono', 'SF Mono', ui-monospace, monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  background: #0a1628;
+  border: 1px solid #1a2035;
+  color: #2dd4bf;
 }
 
-.cat-google-ads   { background: rgba(37, 99, 235, 0.12);  color: #93c5fd; }
-.cat-analytics    { background: rgba(217, 119, 6, 0.12);   color: #fcd34d; }
-.cat-custom       { background: rgba(124, 58, 237, 0.12);  color: #c4b5fd; }
-.cat-floodlight   { background: rgba(13, 148, 136, 0.12);  color: #5eead4; }
-.cat-social       { background: rgba(219, 39, 119, 0.12);  color: #f9a8d4; }
-.cat-advertising  { background: rgba(220, 38, 38, 0.12);   color: #fca5a5; }
-.cat-other        { background: rgba(75, 85, 99, 0.12);    color: #9ca3af; }
+.cat-google-ads   { background: rgba(14, 165, 233, 0.08);  color: #7dd3fc; border-color: rgba(14, 165, 233, 0.2); }
+.cat-analytics    { background: rgba(217, 119, 6, 0.08);   color: #fcd34d; border-color: rgba(217, 119, 6, 0.2); }
+.cat-custom       { background: rgba(45, 212, 191, 0.08);  color: #2dd4bf; border-color: rgba(45, 212, 191, 0.2); }
+.cat-floodlight   { background: rgba(13, 148, 136, 0.08);  color: #5eead4; border-color: rgba(13, 148, 136, 0.2); }
+.cat-social       { background: rgba(219, 39, 119, 0.08);  color: #f9a8d4; border-color: rgba(219, 39, 119, 0.2); }
+.cat-advertising  { background: rgba(220, 38, 38, 0.08);   color: #fca5a5; border-color: rgba(220, 38, 38, 0.2); }
+.cat-other        { background: rgba(75, 85, 99, 0.08);    color: #9ca3af; border-color: rgba(75, 85, 99, 0.2); }
 
 .tag-name {
   font-size: 13.5px;
   font-weight: 600;
-  color: #e5e5e5;
+  color: #e2e8f0;
   margin: 0;
   line-height: 1.35;
 }
 
 .tag-notes {
   font-size: 12px;
-  color: #444;
+  color: #4a5568;
   margin: 0;
   line-height: 1.5;
 }
@@ -80,7 +84,7 @@
   justify-content: space-between;
   margin-top: auto;
   padding-top: 10px;
-  border-top: 1px solid #1a1a1a;
+  border-top: 1px solid #1a2035;
 }
 
 .status-text {
@@ -95,7 +99,8 @@
 
 .tag-id {
   font-size: 11px;
-  color: #2a2a2a;
+  color: #1e2d45;
   font-weight: 500;
-  font-family: 'Geist Mono', 'SF Mono', ui-monospace, monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum';
 }

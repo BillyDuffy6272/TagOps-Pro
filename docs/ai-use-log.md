@@ -296,6 +296,32 @@ Edited files:
 
 ---
 
+### CoLab-inspired UI design refresh (CSS-only)
+
+**Date:** 11/06/2026
+
+**Prompt:** Full CSS-only restyle spec: replace the pure-black indigo aesthetic with a CoLab Software-inspired precision B2B SaaS look. Spec included: exact colour tokens (`#080c14` body, `#0d1120` panels, `#1a2035` borders, `#2dd4bf` active accent, `#0ea5e9` interactive), font stack (Inter + JetBrains Mono via Google Fonts, `font-feature-settings: 'tnum'` on numeric spans), and per-component changes for every CSS file. Constraint: no `.tsx` changes unless a class needed renaming, no new npm packages, run lint and typecheck when done.
+
+**Response summary:** Updated all 12 CSS files:
+- `src/index.css` — added Google Fonts import for Inter and JetBrains Mono; body font → Inter; background → `#080c14`.
+- `src/App.css` — loading background → `#080c14`; spinner accent → `#2dd4bf`.
+- `src/components/AppShell.css` — shell/content background → `#080c14`.
+- `src/components/Sidebar.css` — background `#0d1120`, right border `#1a2035`; logo text JetBrains Mono 12px/500; nav active state `#2dd4bf` with 2px left border and `rgba(45,212,191,0.06)` tint; sign-out hover border teal at 40% opacity.
+- `src/components/TagCard.css` — card `#0d1120`, 4px border-radius; hover glow `0 0 0 1px #1e3a5f`; type badges changed from heavy coloured backgrounds to subtle JetBrains Mono teal chips; tag ID with `font-feature-settings: 'cv02','cv03','cv04','tnum'`.
+- `src/pages/Login.css` — gradient `linear-gradient(150deg, #080c14, #0d1a2e, #0a1628)`; dark card `#0d1120` with double border-shadow; Google button `#111827` with teal hover border; login note `#2d3748`.
+- `src/pages/Dashboard.css` — token-gate navy background; button → sky blue `#0ea5e9` / hover `#0284c7`.
+- `src/features/home/components/HomeView.css` — cards `#0d1120`, hover glow `#1e3a5f`; GTM badge JetBrains Mono teal chip; home card badges JetBrains Mono; icon accent `#0ea5e9`.
+- `src/features/tags/components/TagsView.css` — full palette swap; stat numerals JetBrains Mono with `tnum`; view spinner teal; sync button sky blue; search/select focus ring `#0ea5e9`.
+- `TriggersView.css`, `VariablesView.css`, `ConversionsView.css` — table dividers `#131c2e`; row hover `rgba(255,255,255,0.02)`; type/event chips → JetBrains Mono teal with `#0a1628` background.
+
+No `.tsx` files were modified. Confirmed via `git stash` that the 4 lint errors (`react-hooks/set-state-in-effect` in `TagsView.tsx`, parse error in `supabase.ts`) and the `tsc --noEmit` clean pass were both pre-existing — zero new errors introduced.
+
+**What you did with it:** Accepted.
+
+**Why:** The visual identity change is entirely in CSS — no logic, routing, or data-fetching touched. The CoLab-inspired palette (dark navy over pure black, teal over indigo, JetBrains Mono for technical values) reads as professional developer tooling rather than a generic dark theme. Keeping the change CSS-only means every line is directly defensible: the structure is unchanged, only the presentation differs.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

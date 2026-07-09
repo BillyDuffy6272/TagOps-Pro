@@ -3,14 +3,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0a0a0a;
+  background: #080c14;
 }
 
 .app-spinner {
   width: 28px;
   height: 28px;
-  border: 2px solid #1f1f1f;
-  border-top-color: #6366f1;
+  border: 2px solid #1a2035;
+  border-top-color: #2dd4bf;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
