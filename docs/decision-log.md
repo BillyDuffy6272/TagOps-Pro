@@ -16,6 +16,28 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0013 — Variables and Conversions built on the same Supabase-backed CRUD pattern as Triggers; Home unlocked
+
+- **Date:** 2026-07-09
+- **Status:** Accepted (extends ADR-0012)
+- **Context:** Following ADR-0012, the user asked to link every page properly from Home and remove all remaining "Coming soon" placeholders so the app is fully operational. Variables and Conversions were still static placeholder tables with no data source, same as Triggers had been. The `variables` and `conversion_events` tables (and their RLS policies) already existed in the schema, already covered by the RLS fix and seed-access grant from ADR-0012.
+- **Decision:** Replicate the exact Triggers pattern for both: hand-authored `Database` types for `variables`/`conversion_events` in `src/types/supabase.ts`, an `api/` layer per feature (list/create/update/soft-delete), a card + create/edit form modal, and a real `View` component replacing the placeholder table. `HomeView.tsx`'s section cards dropped the `live`/"Soon" flag entirely (removed, not just flipped to `true`) since every section is now genuinely operational — keeping a dead disabled-state code path would be unfinished-looking with nothing left for it to gate.
+- **Consequences:** All four data-driven sections (Tags, Triggers, Variables, Conversions) are now reachable and functional from both the sidebar and Home, though Tags remains architecturally different (live GTM mirror, not Supabase) per ADR-0012. The `react-hooks/set-state-in-effect` lint rule now also fires in `VariablesView.tsx` and `ConversionsView.tsx` for the same reason it already did in the pre-existing `TagsView.tsx` and the new `TriggersView.tsx` — replicating the established pattern intentionally, not new debt in kind. Fixing it properly across all four views (and Tags) is a good candidate follow-up ADR before Week 6–7 hardening.
+
+---
+
+## ADR-0012 — Triggers implemented as Supabase-backed CRUD, not a GTM API mirror
+
+- **Date:** 2026-07-09
+- **Status:** Accepted
+- **Context:** Triggers was 100% static placeholder markup with no data source. Two implementation paths existed: (a) mirror Tags' current pattern — a live, read-only view fetched directly from the Google Tag Manager API via the OAuth `provider_token`; or (b) build against the `triggers`/`tags`/`tag_triggers` schema already defined in `20260601000000_init_schema.sql` and `docs/04-data-model.md`, which had RLS policies and seed data but no application code reading or writing it.
+- **Decision:** Build Triggers as real Supabase-backed CRUD (path b). It matches the documented data model, exercises RLS-protected writes end-to-end (relevant to the security floor and defensible at the walk-through), and uses schema/RLS work that already existed but was unused. This is the first CRUD feature in the app — no `api/` layer or write path existed anywhere before this. Two blockers surfaced during implementation and were fixed as part of the same change:
+  1. **RLS bug**: the INSERT policies on `tags`, `triggers`, `variables`, and `conversion_events` all checked `where organisation_id = organisation_id` inside a subquery against `organisation_members` — a tautology (both sides resolve to that table's own column), not a check against the row being inserted. Any editor/admin/owner of *any* organisation could insert a row tagged with a *different* organisation's id. Fixed in a new migration (`20260610000000_fix_domain_insert_rls.sql`) by qualifying the right-hand side with the target table's name, matching the pattern already used correctly in the corresponding UPDATE/DELETE policies.
+  2. **No real access to seed data**: `supabase/seed.sql` seeds a fake `auth.users` row unrelated to the real Google-authenticated account, so RLS correctly returned zero rows for a real sign-in. Fixed by appending a seed block that grants the real account owner access to the seeded "Need Tracking" org, matched by email (not a hardcoded UUID, since the real Auth UUID isn't known in advance).
+- **Consequences:** Triggers and Tags are now architecturally inconsistent (Supabase CRUD vs. live GTM sync) until Tags is migrated to the same pattern — a candidate follow-up decision. `src/types/supabase.ts` was hand-authored to match the migration for `containers`/`tags`/`triggers`/`tag_triggers` rather than generated via `supabase gen types typescript` (no Supabase CLI/project link available in this environment) — should be regenerated properly once the CLI is set up, to avoid hand-written types drifting from the real schema. The same tautology bug likely also warrants a matching fix-forward check across any future policies copy-pasted from this file's original INSERT policies.
+
+---
+
 ## ADR-0011 — Third-party outage risk: Supabase platform incident blocked local dev
 
 - **Date:** 2026-07-06

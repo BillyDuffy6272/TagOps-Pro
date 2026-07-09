@@ -14,7 +14,288 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      containers: {
+        Row: {
+          id: string
+          display_id: string
+          organisation_id: string
+          name: string
+          domain: string | null
+          environment: "production" | "staging" | "sandbox"
+          gtm_container_id: string | null
+          ga4_property_id: string | null
+          notes: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          organisation_id: string
+          name: string
+          domain?: string | null
+          environment?: "production" | "staging" | "sandbox"
+          gtm_container_id?: string | null
+          ga4_property_id?: string | null
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          organisation_id?: string
+          name?: string
+          domain?: string | null
+          environment?: "production" | "staging" | "sandbox"
+          gtm_container_id?: string | null
+          ga4_property_id?: string | null
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          id: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          name: string
+          tag_type: "ga4_event" | "ga4_config" | "meta_pixel" | "floodlight" | "custom_html"
+          status: "draft" | "active" | "paused" | "archived"
+          priority: number
+          parameters: Json
+          notes: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          name: string
+          tag_type: "ga4_event" | "ga4_config" | "meta_pixel" | "floodlight" | "custom_html"
+          status?: "draft" | "active" | "paused" | "archived"
+          priority?: number
+          parameters?: Json
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          container_id?: string
+          organisation_id?: string
+          name?: string
+          tag_type?: "ga4_event" | "ga4_config" | "meta_pixel" | "floodlight" | "custom_html"
+          status?: "draft" | "active" | "paused" | "archived"
+          priority?: number
+          parameters?: Json
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
+      triggers: {
+        Row: {
+          id: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          name: string
+          trigger_type: "pageview" | "click" | "custom_event" | "form_submit" | "scroll" | "timer" | "history_change"
+          event_name: string | null
+          conditions: Json
+          notes: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          name: string
+          trigger_type: "pageview" | "click" | "custom_event" | "form_submit" | "scroll" | "timer" | "history_change"
+          event_name?: string | null
+          conditions?: Json
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          container_id?: string
+          organisation_id?: string
+          name?: string
+          trigger_type?: "pageview" | "click" | "custom_event" | "form_submit" | "scroll" | "timer" | "history_change"
+          event_name?: string | null
+          conditions?: Json
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
+      tag_triggers: {
+        Row: {
+          tag_id: string
+          trigger_id: string
+          relationship: "fires_on" | "blocks"
+          created_at: string
+        }
+        Insert: {
+          tag_id: string
+          trigger_id: string
+          relationship?: "fires_on" | "blocks"
+          created_at?: string
+        }
+        Update: {
+          tag_id?: string
+          trigger_id?: string
+          relationship?: "fires_on" | "blocks"
+          created_at?: string
+        }
+        Relationships: []
+      }
+      variables: {
+        Row: {
+          id: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          name: string
+          variable_type: "datalayer" | "constant" | "url" | "cookie" | "dom_element" | "custom_js"
+          parameters: Json
+          default_value: string | null
+          notes: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          name: string
+          variable_type: "datalayer" | "constant" | "url" | "cookie" | "dom_element" | "custom_js"
+          parameters?: Json
+          default_value?: string | null
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          container_id?: string
+          organisation_id?: string
+          name?: string
+          variable_type?: "datalayer" | "constant" | "url" | "cookie" | "dom_element" | "custom_js"
+          parameters?: Json
+          default_value?: string | null
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
+      conversion_events: {
+        Row: {
+          id: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          event_name: string
+          display_name: string | null
+          value_param: string | null
+          currency: string | null
+          is_active: boolean
+          notes: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          event_name: string
+          display_name?: string | null
+          value_param?: string | null
+          currency?: string | null
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          container_id?: string
+          organisation_id?: string
+          event_name?: string
+          display_name?: string | null
+          value_param?: string | null
+          currency?: string | null
+          is_active?: boolean
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

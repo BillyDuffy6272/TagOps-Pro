@@ -1,0 +1,128 @@
+.trigger-card {
+  background: #0d1120;
+  border-radius: 4px;
+  padding: 16px;
+  border: 1px solid #1a2035;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.trigger-card:hover {
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 1px #1e3a5f;
+}
+
+.trigger-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trigger-type-badge {
+  font-size: 11px;
+  font-weight: 400;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  color: #7dd3fc;
+}
+
+.trigger-condition-count {
+  font-size: 11px;
+  color: #4a5568;
+}
+
+.trigger-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.trigger-event-name {
+  font-size: 12px;
+  color: #4a5568;
+  margin: 0;
+}
+
+.trigger-event-name code {
+  color: #2dd4bf;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+}
+
+.trigger-notes {
+  font-size: 12px;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.trigger-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.trigger-tag-chip {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.chip-fires_on {
+  background: rgba(34, 197, 94, 0.08);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.chip-blocks {
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.trigger-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #1a2035;
+  gap: 8px;
+}
+
+.trigger-container {
+  font-size: 11px;
+  color: #1e2d45;
+  font-weight: 500;
+}
+
+.trigger-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.trigger-action-btn {
+  background: none;
+  border: none;
+  color: #4a5568;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.trigger-action-btn:hover { color: #e2e8f0; }
+.trigger-action-danger:hover { color: #f87171; }

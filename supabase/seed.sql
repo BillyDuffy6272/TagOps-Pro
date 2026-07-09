@@ -715,4 +715,36 @@ values ('e0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-0000000
 on conflict (tag_id, trigger_id, relationship) do nothing;
 
 
+-- ─────────────────────────────────────────────────────────────────────
+-- Real-account access grant (development / demo only)
+--
+-- Every row above uses fake, hard-coded auth.users ids that have no
+-- relationship to a real Supabase Auth identity. Signing in for real
+-- (e.g. via Google OAuth) creates a genuine auth.users row with an id
+-- Supabase generates at signup time — one we can't know in advance, so
+-- it can't be hard-coded like the rows above.
+--
+-- This grants the real developer account owner access to the seeded
+-- "Need Tracking" organisation (ORGID_AG_0001) by matching on email
+-- instead, so the seeded containers/tags/triggers are visible after a
+-- real sign-in. Safe to re-run; a no-op once the row exists.
+-- ─────────────────────────────────────────────────────────────────────
+insert into public.organisation_members (
+  display_id,
+  organisation_id,
+  user_id,
+  role,
+  joined_at
+)
+select
+  'MEMID_XX_' || lpad(nextval('public.member_display_id_seq')::text, 4, '0'),
+  'b0000000-0000-0000-0000-000000000001',
+  u.id,
+  'owner',
+  now()
+from auth.users u
+where u.email = 'alxgellert@gmail.com'
+on conflict (organisation_id, user_id) do nothing;
+
+
 commit;

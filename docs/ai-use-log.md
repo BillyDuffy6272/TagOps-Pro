@@ -322,6 +322,42 @@ No `.tsx` files were modified. Confirmed via `git stash` that the 4 lint errors 
 
 ---
 
+### Built Supabase-backed CRUD for Triggers; found and fixed a cross-org RLS bug
+
+**Date:** 09/07/2026
+
+**Prompt:** "I want you to now make the Triggers page operational and properly linked like the Tags sections is." Follow-up, when asked to choose between mirroring Tags' GTM-API pattern or building against the existing Supabase schema: "Do what you think is the best practise to do as I am in no capacity to make judgement."
+
+**Response summary:** Investigated first: Tags turned out not to be Supabase-backed at all — it's a live read-only mirror of the real GTM account via the OAuth `provider_token`, with no CRUD anywhere in the app. Triggers was fully static placeholder markup. A complete `triggers`/`tags`/`tag_triggers` schema with RLS already existed, unused, matching `docs/04-data-model.md`. Recommended and built the Supabase-backed path: entered plan mode, wrote a full implementation plan, got approval, then implemented:
+
+- A new migration fixing a real RLS bug found during investigation — the INSERT policies on `tags`, `triggers`, `variables`, and `conversion_events` all had `where organisation_id = organisation_id` (a tautology), letting any editor/admin/owner of any org insert rows into a *different* org.
+- A seed addition granting the real Google-authenticated account access to the seeded demo org (matched by email, since the seed's hardcoded UUIDs don't correspond to real Auth users).
+- Hand-authored `Database` types for `containers`/`tags`/`triggers`/`tag_triggers` in `src/types/supabase.ts` (previously an unregenerated stub) — no Supabase CLI available in this environment to generate them properly.
+- `src/features/triggers/{types.ts,api/triggers.ts}` — the first `api/` layer in the app: list/create/update/(soft-)delete for triggers, plus a container list for the form and a batched query to resolve linked tags through `tag_triggers`.
+- `TriggerCard`, `TriggerFormModal` (name/container/type/event-name/condition-rows/notes, with client-side validation), and a full rewrite of `TriggersView.tsx`/`.css` replacing the placeholder table with a real fetch/create/edit/delete flow, styled to match `TagsView.css`/`TagCard.css`'s conventions.
+
+Ran `npm run build` (passes) and `npm run lint`. Lint surfaced one new `react-hooks/set-state-in-effect` error in the new `TriggersView.tsx`; investigation showed this exact rule already fails on `main` in three places in the untouched `TagsView.tsx`, so it's pre-existing, repo-wide debt rather than something new. Restructured the new code's data-loading function so no state updates happen before its first `await` (also improves refetch UX — no more full-page spinner flash after create/edit/delete), but left the underlying rule unresolved since fixing it properly means a different effect pattern than the rest of the app uses.
+
+**What you did with it:** Accepted (architecture decision), Accepted (implementation), deferred on fully resolving the pre-existing lint rule.
+
+**Why:** The Supabase-backed path was the right call because the DB/RLS work already existed and unused, it matches the documented data model, and it produces real RLS-backed writes to defend at the walk-through — the alternative (mirroring Tags) would have left the schema unused and avoided writing any CRUD at all. The RLS bug was a genuine, pre-existing security hole (cross-org insert) that had to be fixed before exercising real inserts, not scope creep. The lint rule was left as flagged, pre-existing debt rather than silently fixed or silently ignored, since fixing it fully means changing the data-fetching pattern used throughout the app — bigger than this task's scope, but worth a follow-up decision.
+
+---
+
+### Built Variables and Conversions on the Triggers pattern; unlocked Home
+
+**Date:** 09/07/2026
+
+**Prompt:** "Ok can you now link all the pages properly from the Home page and remove the coming soon things on all the pages as I want to create a fully implemented and operational website now."
+
+**Response summary:** Extended the Triggers work from the prior session to the two remaining placeholder sections. Added hand-authored `Database` types for `variables` and `conversion_events` to `src/types/supabase.ts`. Built `src/features/variables/{types.ts,api/variables.ts,components/{VariableCard,VariableFormModal,VariablesView}}` and the equivalent `src/features/conversions/` set, each following the exact same shape as the Triggers feature (list/create/update/soft-delete, a card, a validated create/edit modal, real loading/error/empty states). Rewrote `HomeView.tsx` to drop the `live`/"Soon" badge mechanism entirely — every section card now navigates directly, since nothing is a placeholder anymore. Ran `npm run build` (passes) and `npm run lint`; the same pre-existing `react-hooks/set-state-in-effect` rule (see the previous entry) now also fires in the two new views, for the same reason — flagged, not silently fixed, since a proper fix changes the effect pattern used across the whole app.
+
+**What you did with it:** Accepted.
+
+**Why:** Replicating the already-approved Triggers pattern for Variables and Conversions was the direct extension of ADR-0012's reasoning — real RLS-backed CRUD wherever a documented Supabase table already existed unused. Removing the `live` flag (rather than just flipping it to `true` everywhere) is a real simplification: with no placeholder sections left, the disabled/soon code path had nothing left to gate and would read as unfinished if left in.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

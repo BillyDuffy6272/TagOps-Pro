@@ -7,7 +7,6 @@ interface SectionCard {
   view: ActiveView
   label: string
   description: string
-  live: boolean
   icon: ReactNode
 }
 
@@ -16,7 +15,6 @@ const SECTIONS: SectionCard[] = [
     view: 'tags',
     label: 'Tags',
     description: 'View and filter all tags synced from your GTM container.',
-    live: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
@@ -28,7 +26,6 @@ const SECTIONS: SectionCard[] = [
     view: 'triggers',
     label: 'Triggers',
     description: 'Manage the conditions that fire your tags.',
-    live: false,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -39,7 +36,6 @@ const SECTIONS: SectionCard[] = [
     view: 'variables',
     label: 'Variables',
     description: 'Track data layer variables and their expected values.',
-    live: false,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="16 18 22 12 16 6" />
@@ -51,7 +47,6 @@ const SECTIONS: SectionCard[] = [
     view: 'conversions',
     label: 'Conversions',
     description: 'Document and verify your GA4 conversion events.',
-    live: false,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -89,13 +84,11 @@ export default function HomeView({ session, setActiveView }: Props) {
         {SECTIONS.map(section => (
           <button
             key={section.view}
-            className={`home-card${section.live ? '' : ' home-card-soon'}`}
-            onClick={() => section.live && setActiveView(section.view)}
-            disabled={!section.live}
+            className="home-card"
+            onClick={() => setActiveView(section.view)}
           >
             <div className="home-card-top">
               <span className="home-card-icon">{section.icon}</span>
-              {!section.live && <span className="home-card-badge">Soon</span>}
             </div>
             <h2 className="home-card-label">{section.label}</h2>
             <p className="home-card-desc">{section.description}</p>
