@@ -203,6 +203,19 @@ export function tagsUsingVariable(variableName: string, tags: GtmTag[]): { tagId
     .map(tag => ({ tagId: tag.tagId, name: tag.name }))
 }
 
+// Renders any GTM Parameter (template/boolean/list/map) as a flat display string,
+// since tag configuration fields can nest arbitrarily (e.g. a "map" of "template" values).
+export function formatParameterValue(param: GtmParameter): string {
+  if (param.list) return param.list.map(formatParameterValue).join(', ')
+  if (param.map) return param.map.map(p => `${p.key}: ${formatParameterValue(p)}`).join(', ')
+  return param.value ?? ''
+}
+
+export function triggersById(triggerIds: string[] | undefined, triggers: GtmTrigger[]): GtmTrigger[] {
+  if (!triggerIds || triggerIds.length === 0) return []
+  return triggers.filter(t => triggerIds.includes(t.triggerId))
+}
+
 export const TAG_TYPE_LABELS: Record<string, string> = {
   awct: 'Google Ads Conversion',
   awrct: 'Google Ads Remarketing',

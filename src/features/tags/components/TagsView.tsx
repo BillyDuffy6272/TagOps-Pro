@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../../../lib/supabase'
 import {
-  getAccounts, getContainers, getWorkspaces, getTags,
-  type GtmAccount, type GtmContainer, type GtmTag,
+  getAccounts, getContainers, getWorkspaces, getTags, getTriggers, triggersById,
+  type GtmAccount, type GtmContainer, type GtmTag, type GtmTrigger,
 } from '../../../lib/gtm'
 import TagCard from '../../../components/TagCard'
+import TagDetailModal from '../../../components/TagDetailModal'
 import './TagsView.css'
 
 type Filter = 'all' | 'active' | 'paused'
@@ -18,6 +19,8 @@ export default function TagsView({ session }: Props) {
   const [accounts, setAccounts] = useState<GtmAccount[]>([])
   const [containers, setContainers] = useState<GtmContainer[]>([])
   const [tags, setTags] = useState<GtmTag[]>([])
+  const [triggers, setTriggers] = useState<GtmTrigger[]>([])
+  const [detailTag, setDetailTag] = useState<GtmTag | null>(null)
 
   const [selectedAccount, setSelectedAccount] = useState('')
   const [selectedContainer, setSelectedContainer] = useState('')
@@ -51,6 +54,7 @@ export default function TagsView({ session }: Props) {
     setContainers([])
     setSelectedContainer('')
     setTags([])
+    setTriggers([])
     getContainers(selectedAccount, token)
       .then(ctrs => {
         setContainers(ctrs)
@@ -66,9 +70,13 @@ export default function TagsView({ session }: Props) {
     try {
       const workspaces = await getWorkspaces(selectedAccount, selectedContainer, token)
       const ws = workspaces[0]
-      if (!ws) { setTags([]); return }
-      const fetched = await getTags(selectedAccount, selectedContainer, ws.workspaceId, token)
-      setTags(fetched)
+      if (!ws) { setTags([]); setTriggers([]); return }
+      const [fetchedTags, fetchedTriggers] = await Promise.all([
+        getTags(selectedAccount, selectedContainer, ws.workspaceId, token),
+        getTriggers(selectedAccount, selectedContainer, ws.workspaceId, token),
+      ])
+      setTags(fetchedTags)
+      setTriggers(fetchedTriggers)
     } catch (e: unknown) {
       if ((e as { status?: number }).status === 403) setGtmForbidden(true)
       else setError(e instanceof Error ? e.message : 'Failed to load tags')
@@ -238,11 +246,20 @@ export default function TagsView({ session }: Props) {
           ) : (
             <div className="tags-grid">
               {filteredTags.map(tag => (
-                <TagCard key={tag.tagId} tag={tag} />
+                <TagCard key={tag.tagId} tag={tag} onClick={() => setDetailTag(tag)} />
               ))}
             </div>
           )}
         </>
+      )}
+
+      {detailTag && (
+        <TagDetailModal
+          tag={detailTag}
+          firingTriggers={triggersById(detailTag.firingTriggerId, triggers)}
+          blockingTriggers={triggersById(detailTag.blockingTriggerId, triggers)}
+          onClose={() => setDetailTag(null)}
+        />
       )}
     </div>
   )
