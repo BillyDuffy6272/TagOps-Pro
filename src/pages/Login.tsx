@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import './Login.css'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
@@ -24,19 +23,24 @@ export default function Login() {
   }
 
   return (
-    <div className="login-page">
-      <div className="login-card">
-        <div className="login-logo">
+    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(150deg,#080c14_0%,#0d1a2e_60%,#0a1628_100%)]">
+      <div className="w-full max-w-[420px] rounded-xl border border-border bg-surface px-12 py-13 text-center shadow-[0_0_0_1px_var(--color-border),0_24px_48px_rgba(0,0,0,0.5)]">
+        <div className="mb-2.5 flex items-center justify-center gap-3.5">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
             <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="#4F46E5" />
             <polygon points="18,8 28,14 28,26 18,32 8,26 8,14" fill="#312E81" />
             <circle cx="18" cy="18" r="4" fill="#818CF8" />
           </svg>
-          <h1>TagOps Pro</h1>
+          <h1 className="m-0 font-sans text-[28px] font-bold tracking-[-0.03em] text-text-primary">TagOps Pro</h1>
         </div>
-        <p className="login-tagline">Clarity for your Google Tag Manager setup</p>
+        <p className="m-0 mb-9 text-[15px] leading-relaxed text-text-tertiary">Clarity for your Google Tag Manager setup</p>
 
-        <button className="google-btn" onClick={signInWithGoogle} disabled={loading}>
+        <button
+          type="button"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-surface-sunken px-6 py-3.5 text-[15px] font-semibold text-text-secondary transition-colors duration-150 ease-out hover:border-accent/40 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-60"
+          onClick={signInWithGoogle}
+          disabled={loading}
+        >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -46,9 +50,11 @@ export default function Login() {
           {loading ? 'Signing in…' : 'Sign in with Google'}
         </button>
 
-        {error && <p className="login-error">{error}</p>}
+        {error && (
+          <p className="m-0 mt-3.5 rounded-lg border border-danger/18 bg-danger/8 px-3.5 py-2.5 text-sm text-danger-text">{error}</p>
+        )}
 
-        <p className="login-note">
+        <p className="m-0 mt-6 text-xs leading-relaxed text-text-faint">
           We request read-only access to your Google Tag Manager to display your tags.
           No changes are made to your account.
         </p>

@@ -6,7 +6,6 @@ import TagsView from '../features/tags/components/TagsView'
 import TriggersView from '../features/triggers/components/TriggersView'
 import VariablesView from '../features/variables/components/VariablesView'
 import ConversionsView from '../features/conversions/components/ConversionsView'
-import './AppShell.css'
 
 export type ActiveView = 'home' | 'tags' | 'triggers' | 'variables' | 'conversions'
 
@@ -28,9 +27,9 @@ export default function AppShell({ session }: Props) {
   }
 
   return (
-    <div className="app-shell">
+    <div className="grid h-screen grid-cols-[220px_1fr] overflow-hidden bg-canvas">
       <Sidebar activeView={activeView} setActiveView={setActiveView} session={session} />
-      <main className="shell-content">
+      <main className="min-w-0 overflow-y-auto bg-canvas">
         {renderView()}
       </main>
     </div>

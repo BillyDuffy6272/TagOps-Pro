@@ -1,19 +1,27 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { supabase } from '../../../lib/supabase'
 import {
   getAccounts, getContainers, getWorkspaces, getTriggers, getTags,
   tagsUsingTrigger, triggerLabel,
   type GtmAccount, type GtmContainer, type GtmTrigger, type GtmTag,
 } from '../../../lib/gtm'
 import TriggerCard from './TriggerCard'
-import './TriggersView.css'
+import ViewHeader from '../../../components/ViewHeader'
+import ErrorBanner from '../../../components/ErrorBanner'
+import StatPill from '../../../components/StatPill'
+import FilterTabs from '../../../components/FilterTabs'
+import LoadingState from '../../../components/LoadingState'
+import EmptyState from '../../../components/EmptyState'
+import GtmForbiddenState from '../../../components/GtmForbiddenState'
 
 type Filter = 'all' | 'linked' | 'unlinked'
 
 interface Props {
   session: Session
 }
+
+const SELECT_CLASSES =
+  'min-w-[160px] cursor-pointer rounded-md border border-border bg-surface px-2.5 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-35'
 
 export default function TriggersView({ session }: Props) {
   const [accounts, setAccounts] = useState<GtmAccount[]>([])
@@ -97,33 +105,7 @@ export default function TriggersView({ session }: Props) {
 
   const availableTypes = useMemo(() => [...new Set(triggers.map(t => t.type))], [triggers])
 
-  if (gtmForbidden) {
-    return (
-      <div className="triggers-view">
-        <header className="view-header">
-          <h1 className="view-title">Triggers</h1>
-        </header>
-        <div className="forbidden-state">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-          </svg>
-          <p className="forbidden-title">GTM access denied (403)</p>
-          <p className="forbidden-body">
-            Either the <strong>Tag Manager API</strong> is not enabled in your Google Cloud project,
-            or the GTM read permission wasn't granted during sign-in.
-          </p>
-          <ul className="forbidden-steps">
-            <li>Enable the API at <em>console.cloud.google.com → APIs &amp; Services → Tag Manager API</em></li>
-            <li>Re-grant scope: sign out and sign in again, accepting the Tag Manager permission</li>
-          </ul>
-          <button className="forbidden-signout" onClick={() => supabase.auth.signOut()}>
-            Sign out and try again
-          </button>
-        </div>
-      </div>
-    )
-  }
+  if (gtmForbidden) return <GtmForbiddenState title="Triggers" />
 
   const filtered = triggersWithUsage.filter(({ trigger, usage }) => {
     const matchesFilter =
@@ -141,25 +123,17 @@ export default function TriggersView({ session }: Props) {
   const unlinkedCount = triggersWithUsage.length - linkedCount
 
   return (
-    <div className="triggers-view">
-      <header className="view-header">
-        <h1 className="view-title">Triggers</h1>
-        <p className="view-sub">Live from your GTM container</p>
-      </header>
+    <div className="mx-auto max-w-[1200px] px-10 pt-11 pb-15">
+      <ViewHeader title="Triggers" subtitle="Live from your GTM container" />
 
-      {error && (
-        <div className="view-error">
-          <span>{error}</span>
-          <button onClick={() => setError(null)}>✕</button>
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
 
-      <div className="triggers-selectors">
-        <div className="select-group">
-          <label htmlFor="trigger-account-select" className="select-label">Account</label>
+      <div className="mb-7 flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="trigger-account-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Account</label>
           <select
             id="trigger-account-select"
-            className="view-select"
+            className={SELECT_CLASSES}
             value={selectedAccount}
             onChange={e => setSelectedAccount(e.target.value)}
             disabled={loadingAccounts || accounts.length === 0}
@@ -171,11 +145,11 @@ export default function TriggersView({ session }: Props) {
           </select>
         </div>
 
-        <div className="select-group">
-          <label htmlFor="trigger-container-select" className="select-label">Container</label>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="trigger-container-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Container</label>
           <select
             id="trigger-container-select"
-            className="view-select"
+            className={SELECT_CLASSES}
             value={selectedContainer}
             onChange={e => setSelectedContainer(e.target.value)}
             disabled={containers.length === 0}
@@ -190,7 +164,8 @@ export default function TriggersView({ session }: Props) {
         </div>
 
         <button
-          className="sync-btn"
+          type="button"
+          className="flex items-center gap-1.5 self-end rounded-md bg-accent px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
           onClick={loadTriggers}
           disabled={syncing || !selectedContainer}
         >
@@ -203,41 +178,19 @@ export default function TriggersView({ session }: Props) {
       </div>
 
       {loadingAccounts ? (
-        <div className="view-loading">
-          <div className="view-spinner" />
-          <span>Loading accounts…</span>
-        </div>
+        <LoadingState label="Loading accounts…" />
       ) : (
         <>
-          <div className="triggers-stats">
-            <div className="stat-pill">
-              <span className="stat-num">{triggers.length}</span>
-              <span className="stat-lbl">Total</span>
-            </div>
-            <div className="stat-pill stat-linked">
-              <span className="stat-num">{linkedCount}</span>
-              <span className="stat-lbl">Linked to tags</span>
-            </div>
-            <div className="stat-pill stat-unlinked">
-              <span className="stat-num">{unlinkedCount}</span>
-              <span className="stat-lbl">Unlinked</span>
-            </div>
+          <div className="mb-6 flex flex-wrap gap-2">
+            <StatPill value={triggers.length} label="Total" />
+            <StatPill value={linkedCount} label="Linked to tags" tone="success" />
+            <StatPill value={unlinkedCount} label="Unlinked" tone="warning" />
           </div>
 
-          <div className="triggers-controls">
-            <div className="filter-tabs">
-              {(['all', 'linked', 'unlinked'] as Filter[]).map(f => (
-                <button
-                  key={f}
-                  className={`filter-tab${filter === f ? ' filter-tab-active' : ''}`}
-                  onClick={() => setFilter(f)}
-                >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
-            </div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <FilterTabs options={['all', 'linked', 'unlinked']} value={filter} onChange={setFilter} />
             <select
-              className="view-select"
+              className={SELECT_CLASSES}
               value={typeFilter}
               onChange={e => setTypeFilter(e.target.value)}
             >
@@ -247,7 +200,7 @@ export default function TriggersView({ session }: Props) {
               ))}
             </select>
             <input
-              className="search-input"
+              className="w-[210px] rounded-md border border-border bg-surface px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
               type="search"
               placeholder="Search triggers…"
               value={search}
@@ -256,16 +209,11 @@ export default function TriggersView({ session }: Props) {
           </div>
 
           {syncing ? (
-            <div className="view-loading">
-              <div className="view-spinner" />
-              <span>Syncing triggers…</span>
-            </div>
+            <LoadingState label="Syncing triggers…" />
           ) : filtered.length === 0 ? (
-            <div className="view-empty">
-              {triggers.length === 0 ? 'No triggers in this container.' : 'No triggers match your filter.'}
-            </div>
+            <EmptyState message={triggers.length === 0 ? 'No triggers in this container.' : 'No triggers match your filter.'} />
           ) : (
-            <div className="triggers-grid">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-2.5">
               {filtered.map(({ trigger, usage }) => (
                 <TriggerCard key={trigger.triggerId} trigger={trigger} usedByTags={usage} />
               ))}

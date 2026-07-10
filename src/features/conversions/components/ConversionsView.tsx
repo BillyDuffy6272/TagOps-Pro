@@ -3,7 +3,12 @@ import { deleteConversionEvent, listContainers, listConversionEvents } from '../
 import type { Container, ConversionEventWithContainer } from '../types'
 import ConversionCard from './ConversionCard'
 import ConversionFormModal from './ConversionFormModal'
-import './ConversionsView.css'
+import ViewHeader from '../../../components/ViewHeader'
+import ErrorBanner from '../../../components/ErrorBanner'
+import StatPill from '../../../components/StatPill'
+import FilterTabs from '../../../components/FilterTabs'
+import LoadingState from '../../../components/LoadingState'
+import EmptyState from '../../../components/EmptyState'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
 
@@ -73,56 +78,37 @@ export default function ConversionsView() {
   const activeCount = events.filter(e => e.is_active).length
 
   return (
-    <div className="conversions-view">
-      <header className="view-header">
-        <div>
-          <h1 className="view-title">Conversions</h1>
-          <p className="view-sub">GA4 conversion events</p>
-        </div>
-        <button className="new-conversion-btn" onClick={openCreateModal} disabled={containers.length === 0}>
-          + New conversion event
-        </button>
-      </header>
+    <div className="mx-auto max-w-[1200px] px-10 pt-11 pb-15">
+      <ViewHeader
+        title="Conversions"
+        subtitle="GA4 conversion events"
+        action={
+          <button
+            type="button"
+            className="rounded-md bg-accent px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={openCreateModal}
+            disabled={containers.length === 0}
+          >
+            + New conversion event
+          </button>
+        }
+      />
 
-      {error && (
-        <div className="view-error">
-          <span>{error}</span>
-          <button onClick={() => setError(null)}>✕</button>
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
 
       {loading ? (
-        <div className="view-loading">
-          <div className="view-spinner" />
-          <span>Loading conversion events…</span>
-        </div>
+        <LoadingState label="Loading conversion events…" />
       ) : (
         <>
-          <div className="conversions-stats">
-            <div className="stat-pill">
-              <span className="stat-num">{events.length}</span>
-              <span className="stat-lbl">Total</span>
-            </div>
-            <div className="stat-pill stat-active">
-              <span className="stat-num">{activeCount}</span>
-              <span className="stat-lbl">Active</span>
-            </div>
+          <div className="mb-6 flex flex-wrap gap-2">
+            <StatPill value={events.length} label="Total" />
+            <StatPill value={activeCount} label="Active" tone="success" />
           </div>
 
-          <div className="conversions-controls">
-            <div className="filter-tabs">
-              {(['all', 'active', 'inactive'] as StatusFilter[]).map(f => (
-                <button
-                  key={f}
-                  className={`filter-tab${statusFilter === f ? ' filter-tab-active' : ''}`}
-                  onClick={() => setStatusFilter(f)}
-                >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
-            </div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <FilterTabs options={['all', 'active', 'inactive']} value={statusFilter} onChange={setStatusFilter} />
             <input
-              className="search-input"
+              className="w-[210px] rounded-md border border-border bg-surface px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
               type="search"
               placeholder="Search conversion events…"
               value={search}
@@ -131,15 +117,11 @@ export default function ConversionsView() {
           </div>
 
           {containers.length === 0 ? (
-            <div className="view-empty">
-              No containers found for your organisation yet — create one before adding conversion events.
-            </div>
+            <EmptyState message="No containers found for your organisation yet — create one before adding conversion events." />
           ) : filteredEvents.length === 0 ? (
-            <div className="view-empty">
-              {events.length === 0 ? 'No conversion events yet.' : 'No conversion events match your filter.'}
-            </div>
+            <EmptyState message={events.length === 0 ? 'No conversion events yet.' : 'No conversion events match your filter.'} />
           ) : (
-            <div className="conversions-grid">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-2.5">
               {filteredEvents.map(event => (
                 <ConversionCard
                   key={event.id}

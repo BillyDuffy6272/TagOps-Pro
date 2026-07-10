@@ -1,19 +1,27 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { supabase } from '../../../lib/supabase'
 import {
   getAccounts, getContainers, getWorkspaces, getTags, getTriggers, triggersById,
   type GtmAccount, type GtmContainer, type GtmTag, type GtmTrigger,
 } from '../../../lib/gtm'
 import TagCard from '../../../components/TagCard'
 import TagDetailModal from '../../../components/TagDetailModal'
-import './TagsView.css'
+import ViewHeader from '../../../components/ViewHeader'
+import ErrorBanner from '../../../components/ErrorBanner'
+import StatPill from '../../../components/StatPill'
+import FilterTabs from '../../../components/FilterTabs'
+import LoadingState from '../../../components/LoadingState'
+import EmptyState from '../../../components/EmptyState'
+import GtmForbiddenState from '../../../components/GtmForbiddenState'
 
 type Filter = 'all' | 'active' | 'paused'
 
 interface Props {
   session: Session
 }
+
+const SELECT_CLASSES =
+  'min-w-[200px] cursor-pointer rounded-md border border-border bg-surface px-2.5 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-35'
 
 export default function TagsView({ session }: Props) {
   const [accounts, setAccounts] = useState<GtmAccount[]>([])
@@ -87,33 +95,7 @@ export default function TagsView({ session }: Props) {
 
   useEffect(() => { loadTags() }, [loadTags])
 
-  if (gtmForbidden) {
-    return (
-      <div className="tags-view">
-        <header className="view-header">
-          <h1 className="view-title">Tags</h1>
-        </header>
-        <div className="forbidden-state">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-          </svg>
-          <p className="forbidden-title">GTM access denied (403)</p>
-          <p className="forbidden-body">
-            Either the <strong>Tag Manager API</strong> is not enabled in your Google Cloud project,
-            or the GTM read permission wasn't granted during sign-in.
-          </p>
-          <ul className="forbidden-steps">
-            <li>Enable the API at <em>console.cloud.google.com → APIs &amp; Services → Tag Manager API</em></li>
-            <li>Re-grant scope: sign out and sign in again, accepting the Tag Manager permission</li>
-          </ul>
-          <button className="forbidden-signout" onClick={() => supabase.auth.signOut()}>
-            Sign out and try again
-          </button>
-        </div>
-      </div>
-    )
-  }
+  if (gtmForbidden) return <GtmForbiddenState title="Tags" />
 
   const filteredTags = tags.filter(tag => {
     const matchesFilter =
@@ -130,25 +112,17 @@ export default function TagsView({ session }: Props) {
   const pausedCount = tags.filter(t => t.paused).length
 
   return (
-    <div className="tags-view">
-      <header className="view-header">
-        <h1 className="view-title">Tags</h1>
-        <p className="view-sub">Live from your GTM container</p>
-      </header>
+    <div className="mx-auto max-w-[1200px] px-10 pt-11 pb-15">
+      <ViewHeader title="Tags" subtitle="Live from your GTM container" />
 
-      {error && (
-        <div className="view-error">
-          <span>{error}</span>
-          <button onClick={() => setError(null)}>✕</button>
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
 
-      <div className="tags-selectors">
-        <div className="select-group">
-          <label htmlFor="account-select" className="select-label">Account</label>
+      <div className="mb-7 flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="account-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Account</label>
           <select
             id="account-select"
-            className="view-select"
+            className={SELECT_CLASSES}
             value={selectedAccount}
             onChange={e => setSelectedAccount(e.target.value)}
             disabled={loadingAccounts || accounts.length === 0}
@@ -160,11 +134,11 @@ export default function TagsView({ session }: Props) {
           </select>
         </div>
 
-        <div className="select-group">
-          <label htmlFor="container-select" className="select-label">Container</label>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="container-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Container</label>
           <select
             id="container-select"
-            className="view-select"
+            className={SELECT_CLASSES}
             value={selectedContainer}
             onChange={e => setSelectedContainer(e.target.value)}
             disabled={containers.length === 0}
@@ -179,7 +153,8 @@ export default function TagsView({ session }: Props) {
         </div>
 
         <button
-          className="sync-btn"
+          type="button"
+          className="flex items-center gap-1.5 self-end rounded-md bg-accent px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
           onClick={loadTags}
           disabled={syncing || !selectedContainer}
         >
@@ -192,41 +167,19 @@ export default function TagsView({ session }: Props) {
       </div>
 
       {loadingAccounts ? (
-        <div className="view-loading">
-          <div className="view-spinner" />
-          <span>Loading accounts…</span>
-        </div>
+        <LoadingState label="Loading accounts…" />
       ) : (
         <>
-          <div className="tags-stats">
-            <div className="stat-pill">
-              <span className="stat-num">{tags.length}</span>
-              <span className="stat-lbl">Total</span>
-            </div>
-            <div className="stat-pill stat-active">
-              <span className="stat-num">{activeCount}</span>
-              <span className="stat-lbl">Active</span>
-            </div>
-            <div className="stat-pill stat-paused">
-              <span className="stat-num">{pausedCount}</span>
-              <span className="stat-lbl">Paused</span>
-            </div>
+          <div className="mb-6 flex flex-wrap gap-2">
+            <StatPill value={tags.length} label="Total" />
+            <StatPill value={activeCount} label="Active" tone="success" />
+            <StatPill value={pausedCount} label="Paused" tone="warning" />
           </div>
 
-          <div className="tags-controls">
-            <div className="filter-tabs">
-              {(['all', 'active', 'paused'] as Filter[]).map(f => (
-                <button
-                  key={f}
-                  className={`filter-tab${filter === f ? ' filter-tab-active' : ''}`}
-                  onClick={() => setFilter(f)}
-                >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
-            </div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <FilterTabs options={['all', 'active', 'paused']} value={filter} onChange={setFilter} />
             <input
-              className="search-input"
+              className="w-[210px] rounded-md border border-border bg-surface px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
               type="search"
               placeholder="Search tags…"
               value={search}
@@ -235,16 +188,11 @@ export default function TagsView({ session }: Props) {
           </div>
 
           {syncing ? (
-            <div className="view-loading">
-              <div className="view-spinner" />
-              <span>Syncing tags…</span>
-            </div>
+            <LoadingState label="Syncing tags…" />
           ) : filteredTags.length === 0 ? (
-            <div className="view-empty">
-              {tags.length === 0 ? 'No tags in this container.' : 'No tags match your filter.'}
-            </div>
+            <EmptyState message={tags.length === 0 ? 'No tags in this container.' : 'No tags match your filter.'} />
           ) : (
-            <div className="tags-grid">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2.5">
               {filteredTags.map(tag => (
                 <TagCard key={tag.tagId} tag={tag} onClick={() => setDetailTag(tag)} />
               ))}

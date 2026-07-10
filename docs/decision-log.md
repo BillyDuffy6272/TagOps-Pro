@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0014 — Adopt Tailwind CSS for styling (Linear-style visual redesign)
+
+- **Date:** 2026-07-10
+- **Status:** Accepted
+- **Context:** The app's UI was functional but visually ad hoc — 16 separate per-component `.css` files with hand-picked hex values repeated across files (e.g. `#0d1120`, `#1a2035`, `#2dd4bf` appear dozens of times with no shared source of truth). The user asked for a full visual redesign toward a "Linear-style" look (near-black layered surfaces, hairline borders, tight typography, fast subtle motion, visible focus rings) applied consistently across every screen. Doing this with hand-rolled CSS custom properties alone is possible, but a utility-first framework speeds up applying the same spacing/radius/color scale consistently across ~15 components in one pass, and Tailwind's own `@theme` mechanism (v4) doubles as the token system this redesign already needs.
+- **Decision:** Adopt Tailwind CSS v4, installed via `@tailwindcss/vite` (the v4-native Vite plugin), not the v3-era PostCSS + `tailwind.config.js` setup. This project runs Vite 8 with Rolldown; the v4 Vite plugin is the currently-recommended, lower-friction integration path and needs no separate PostCSS config or content-globbing config file. Design tokens (surface levels, text levels, accent, border) are declared once as CSS custom properties in `src/index.css` and exposed to Tailwind via `@theme`, then consumed as utility classes everywhere. Existing per-component `.css` files are deleted as their styles migrate to inline utility classes; anything that doesn't map cleanly to a utility (the Google Fonts `@import`, the base token declarations, keyframes) stays in `src/index.css`.
+- **Consequences:** This is a purely visual/presentational change — no Supabase queries, RLS, routing, or component props change. Adds one new dependency family (`tailwindcss`, `@tailwindcss/vite`) to the mandated-stack-adjacent tooling list; within the "front-end framework/styling is my choice" latitude granted by ADR-0003, so no teacher approval needed beyond noting it here. Future components should default to Tailwind utility classes and only reach for a dedicated `.css` file or extracted class-string constant when a utility string repeats more than twice or grows past ~6 utilities, per this repo's existing convention.
+
+---
+
 ## ADR-0013 — Variables and Conversions built on the same Supabase-backed CRUD pattern as Triggers; Home unlocked
 
 - **Date:** 2026-07-09

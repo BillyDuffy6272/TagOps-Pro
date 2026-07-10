@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { ActiveView } from './AppShell'
 import { supabase } from '../lib/supabase'
-import './Sidebar.css'
 
 interface NavItem {
   id: ActiveView
@@ -76,38 +75,54 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo">
+    <aside className="flex h-screen flex-col overflow-hidden border-r border-border bg-surface">
+      <div className="flex shrink-0 items-center gap-2.5 border-b border-border px-4 py-4.5">
         <svg width="20" height="20" viewBox="0 0 36 36" fill="none" aria-hidden="true">
           <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="#6366f1" />
           <polygon points="18,8 28,14 28,26 18,32 8,26 8,14" fill="#1e1b4b" />
           <circle cx="18" cy="18" r="4" fill="#a5b4fc" />
         </svg>
-        <span className="sidebar-logo-text">TagOps Pro</span>
+        <span className="font-mono text-xs font-medium tracking-wide text-text-primary">TagOps Pro</span>
       </div>
 
-      <nav className="sidebar-nav" aria-label="Main navigation">
-        {NAV_ITEMS.map(item => (
-          <button
-            key={item.id}
-            className={`nav-item${activeView === item.id ? ' nav-item-active' : ''}`}
-            onClick={() => setActiveView(item.id)}
-          >
-            <span className="nav-icon" aria-hidden="true">{item.icon}</span>
-            <span className="nav-label">{item.label}</span>
-          </button>
-        ))}
+      <nav className="flex flex-1 flex-col gap-px overflow-y-auto py-1.5" aria-label="Main navigation">
+        {NAV_ITEMS.map(item => {
+          const isActive = activeView === item.id
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={`box-border flex w-full items-center gap-2.5 border-l-2 px-4 py-2 text-left text-[13px] font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:-outline-offset-2 focus-visible:outline-accent ${
+                isActive
+                  ? 'border-l-accent bg-accent-muted text-accent'
+                  : 'border-l-transparent text-text-tertiary hover:bg-white/3 hover:text-text-secondary'
+              }`}
+              onClick={() => setActiveView(item.id)}
+            >
+              <span className="flex h-4 w-4 shrink-0 items-center justify-center" aria-hidden="true">{item.icon}</span>
+              <span className="leading-none whitespace-nowrap">{item.label}</span>
+            </button>
+          )
+        })}
       </nav>
 
-      <div className="sidebar-footer">
-        <div className="sidebar-user">
+      <div className="flex shrink-0 flex-col gap-2 border-t border-border px-4 pt-3 pb-3.5">
+        <div className="flex min-w-0 items-center gap-2">
           {avatarUrl
-            ? <img src={avatarUrl} alt="" className="sidebar-avatar" />
-            : <div className="sidebar-avatar-fallback" aria-hidden="true">{userName.charAt(0).toUpperCase()}</div>
+            ? <img src={avatarUrl} alt="" className="h-6 w-6 shrink-0 rounded-full border border-border" />
+            : (
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-sunken text-[10px] font-semibold text-text-tertiary" aria-hidden="true">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+            )
           }
-          <span className="sidebar-user-name" title={userName}>{userName}</span>
+          <span className="min-w-0 overflow-hidden text-[11.5px] text-ellipsis whitespace-nowrap text-text-faint" title={userName}>{userName}</span>
         </div>
-        <button className="sidebar-signout" onClick={() => supabase.auth.signOut()}>
+        <button
+          type="button"
+          className="w-full rounded-md border border-border py-1.5 text-center text-[11.5px] text-text-faint transition-colors duration-150 ease-out hover:border-accent/40 hover:bg-white/2 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          onClick={() => supabase.auth.signOut()}
+        >
           Sign out
         </button>
       </div>

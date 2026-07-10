@@ -1,5 +1,6 @@
 import { tagLabel, tagCategory, type GtmTag } from '../lib/gtm'
-import './TagCard.css'
+import StatusDot from './StatusDot'
+import { tagBadgeClass } from './badgeStyles'
 
 interface Props {
   tag: GtmTag
@@ -13,26 +14,26 @@ export default function TagCard({ tag, onClick }: Props) {
 
   return (
     <div
-      className={`tag-card ${isActive ? '' : 'tag-paused'}`}
+      className={`flex min-w-0 cursor-pointer flex-col gap-2.5 rounded-lg border border-border bg-surface p-4 transition-[border-color,box-shadow] duration-150 ease-out hover:border-white/12 hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive ? '' : 'opacity-55'}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
     >
-      <div className="tag-card-header">
-        <span className={`status-dot ${isActive ? 'dot-active' : 'dot-paused'}`} title={isActive ? 'Active' : 'Paused'} />
-        <span className={`type-badge cat-${category}`}>{label}</span>
+      <div className="flex items-center gap-2">
+        <StatusDot active={isActive} title={isActive ? 'Active' : 'Paused'} />
+        <span className={tagBadgeClass(category)}>{label}</span>
       </div>
 
-      <h3 className="tag-name">{tag.name}</h3>
+      <h3 className="m-0 wrap-anywhere text-[13.5px] leading-snug font-semibold text-text-primary">{tag.name}</h3>
 
-      {tag.notes && <p className="tag-notes">{tag.notes}</p>}
+      {tag.notes && <p className="m-0 wrap-anywhere text-xs leading-relaxed text-text-tertiary">{tag.notes}</p>}
 
-      <div className="tag-footer">
-        <span className={`status-text ${isActive ? 'text-active' : 'text-paused'}`}>
+      <div className="mt-auto flex items-center justify-between border-t border-border pt-2.5">
+        <span className={`text-[11px] font-semibold tracking-wide uppercase ${isActive ? 'text-success' : 'text-warning'}`}>
           {isActive ? 'Active' : 'Paused'}
         </span>
-        <span className="tag-id">ID {tag.tagId}</span>
+        <span className="font-mono text-[11px] font-medium tabular-nums text-text-faint">ID {tag.tagId}</span>
       </div>
     </div>
   )

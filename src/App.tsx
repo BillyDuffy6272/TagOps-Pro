@@ -3,7 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import './App.css'
+import Spinner from './components/Spinner'
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -24,8 +24,8 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="app-loading">
-        <div className="app-spinner" />
+      <div className="flex min-h-screen items-center justify-center bg-canvas">
+        <Spinner size={28} />
       </div>
     )
   }

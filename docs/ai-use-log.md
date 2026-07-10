@@ -379,6 +379,20 @@ Ran `npx tsc -b --noEmit` (clean), `npx vite build` (clean), and `npm run lint` 
 
 ---
 
+### Linear-style visual redesign on Tailwind CSS
+
+**Date:** 10/07/2026
+
+**Prompt:** A detailed brief to redesign the whole app's look toward a "Linear-style" dark theme (layered near-black surfaces, hairline borders, tight typography hierarchy, fast subtle motion, visible focus rings) while keeping the existing dark navy palette and teal accent (`#2dd4bf`) — explicitly not switching to Linear's purple. Scoped as presentational-only: no changes to Supabase queries, RLS, `lib/supabase.ts`, `lib/gtm.ts`, any `api/` file, or any `types.ts`. Instructed to log the Tailwind adoption as a decision-log ADR before installing, use Tailwind v4's `@tailwindcss/vite` plugin (not the v3 PostCSS setup), and touch every listed component/page file in one pass.
+
+**Response summary:** Read `docs/02-requirements.md` and every listed source file first. Added ADR-0014 to `docs/decision-log.md` proposing Tailwind v4, then installed `tailwindcss@4.3.2` + `@tailwindcss/vite@4.3.2` and wired the plugin into `vite.config.ts`. Rebuilt `src/index.css` as a `@theme` token file (`--color-canvas/surface/surface-sunken/surface-overlay/surface-raised`, `--color-border/border-subtle`, `--color-text-primary/secondary/tertiary/faint`, `--color-accent/accent-muted`, `--color-success/warning/danger`), replacing scattered hardcoded hex values across 16 CSS files. Migrated every listed component/page to Tailwind utility classes and deleted the corresponding `.css` file once empty (all `.css` files under `src/` are gone except `index.css`). Extracted nine small new presentational-only helper components/modules under `src/components/` to de-duplicate patterns that repeated 3–5× across the four "view" components: `Spinner`, `LoadingState`, `EmptyState`, `ErrorBanner`, `StatPill`, `FilterTabs`, `ViewHeader`, `StatusDot`, `GtmForbiddenState` (the byte-identical GTM-403 block previously copy-pasted in Tags/Triggers/Variables), `Modal` (shared overlay/panel/header shell for `TagDetailModal` and `ConversionFormModal`), and `badgeStyles.ts` (category-badge color/class maps for tag/trigger/variable badges, previously duplicated inline). Consolidated the app's two competing accent colors (teal `#2dd4bf` for status/nav, sky-blue `#0ea5e9` for buttons/focus rings) onto teal alone, matching the brief's "single accent, keyboard-first focus rings in the accent color" instructions. Ran `npm run lint` after each file group (only the 10 already-known, pre-existing `react-hooks/set-state-in-effect` errors persisted — see the two prior entries — no new lint errors introduced) and `npm run build` at the end (clean). Verified visually: started the Vite dev server, screenshotted the Login page with Playwright/Chromium, and — via a temporary, fully-reverted preview bypass in `App.tsx` — screenshotted the authenticated Home/Triggers/Conversions views to confirm the sidebar active-state, cards, buttons, and focus system render correctly before reverting the bypass.
+
+**What you did with it:** Accepted.
+
+**Why:** [fill in after review — e.g., "Accepted as-is", "asked for tweaks to X", "kept the new shared components but renamed Y"].
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
