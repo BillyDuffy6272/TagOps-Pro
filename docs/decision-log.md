@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0015 — Google Ads Conversion ID lives on containers, not conversion_events
+
+- **Date:** 2026-07-10
+- **Status:** Accepted
+- **Context:** The Conversions page only modelled GA4 conversion events. Extending it to Google Ads conversion tracking meant deciding where two new pieces of data belong: the Conversion ID (`AW-XXXXXXXXX` — Google Ads' account-level identifier, shared by every conversion action in that account) and the Conversion Label (unique per individual conversion action). Two placements were possible for the ID: on `containers` (one row per external tracking account, matching the existing `gtm_container_id`/`ga4_property_id` columns) or on `conversion_events` (denormalised onto every action). Before writing the migration, confirmed with the developer whether a single TagOps-Pro container could ever map to more than one Google Ads account — answer: no, one Ads account per container, same as GTM/GA4.
+- **Decision:** Added `google_ads_conversion_id text` to `containers` (nullable, `CHECK` on `^AW-[0-9]{6,}$`) — consistent with the existing one-external-account-per-container pattern. Added `conversion_label text` (nullable, free text — Google Ads labels have no fixed pattern) and `category text NOT NULL DEFAULT 'other'` (`CHECK` against the 15 categories Google Ads' own UI groups conversion actions into: Purchase, Add to cart, Begin checkout, Subscribe, Qualified lead, Converted lead, Submit lead form, Book appointment, Sign up, Request quote, Get directions, Outbound click, Contact, Page view, Other) to `conversion_events`. New migration `20260710000000_google_ads_conversion_tracking.sql` — the applied `20260601000000_init_schema.sql` was not edited. No new RLS policies: both tables are already scoped by `organisation_id` via `is_active_org_member()`, which covers the new columns for free.
+- **Consequences:** Setting a container's Google Ads Conversion ID has no UI yet — the Conversion form shows it read-only, but there's no container/settings screen field to write it, so it can currently only be set directly in Supabase. That screen is a follow-up. `category` defaults to `'other'` rather than being nullable, since the Conversions list groups by category and an ungrouped row would need a fallback bucket regardless — making the default explicit avoids a silent "uncategorised" state. If a future requirement needs multiple Google Ads accounts per container, the ID will need to move to `conversion_events` or a new join table — flagged here so it's not a surprise later.
+
+---
+
 ## ADR-0014 — Adopt Tailwind CSS for styling (Linear-style visual redesign)
 
 - **Date:** 2026-07-10

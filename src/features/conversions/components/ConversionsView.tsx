@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { deleteConversionEvent, listContainers, listConversionEvents } from '../api/conversions'
-import type { Container, ConversionEventWithContainer } from '../types'
+import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type ConversionEventWithContainer } from '../types'
 import ConversionCard from './ConversionCard'
 import ConversionFormModal from './ConversionFormModal'
 import ViewHeader from '../../../components/ViewHeader'
@@ -23,6 +23,17 @@ export default function ConversionsView() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<ConversionEventWithContainer | undefined>(undefined)
+
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<ConversionCategory>>(new Set())
+
+  function toggleCategory(category: ConversionCategory) {
+    setCollapsedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(category)) next.delete(category)
+      else next.add(category)
+      return next
+    })
+  }
 
   const load = useCallback(async () => {
     try {
@@ -77,11 +88,21 @@ export default function ConversionsView() {
 
   const activeCount = events.filter(e => e.is_active).length
 
+  const groupedEvents = useMemo(() => {
+    return CONVERSION_CATEGORIES
+      .map(({ value, label }) => ({
+        category: value,
+        label,
+        events: filteredEvents.filter(e => e.category === value),
+      }))
+      .filter(group => group.events.length > 0)
+  }, [filteredEvents])
+
   return (
     <div className="mx-auto max-w-[1180px] px-10 pt-10 pb-15">
       <ViewHeader
         title="Conversions"
-        subtitle="GA4 conversion events"
+        subtitle="GA4 and Google Ads conversion events"
         action={
           <button
             type="button"
@@ -125,15 +146,44 @@ export default function ConversionsView() {
           ) : filteredEvents.length === 0 ? (
             <EmptyState message={events.length === 0 ? 'No conversion events yet.' : 'No conversion events match your filter.'} />
           ) : (
-            <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
-              {filteredEvents.map(event => (
-                <ConversionCard
-                  key={event.id}
-                  event={event}
-                  onEdit={() => openEditModal(event)}
-                  onDelete={() => handleDelete(event)}
-                />
-              ))}
+            <div className="flex flex-col gap-4">
+              {groupedEvents.map(group => {
+                const collapsed = collapsedCategories.has(group.category)
+                return (
+                  <div key={group.category} className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors duration-150 ease-out hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      onClick={() => toggleCategory(group.category)}
+                      aria-expanded={!collapsed}
+                    >
+                      <span className="flex items-center gap-2">
+                        <svg
+                          width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"
+                          className={`shrink-0 text-text-faint transition-transform duration-150 ease-out ${collapsed ? '-rotate-90' : ''}`}
+                          aria-hidden="true"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                        <span className="text-[13px] font-semibold text-text-primary">{group.label}</span>
+                      </span>
+                      <span className="rounded-md bg-white/6 px-1.5 py-0.5 text-[11px] font-medium text-text-faint">{group.events.length}</span>
+                    </button>
+                    {!collapsed && (
+                      <div className="border-t border-border-subtle">
+                        {group.events.map(event => (
+                          <ConversionCard
+                            key={event.id}
+                            event={event}
+                            onEdit={() => openEditModal(event)}
+                            onDelete={() => handleDelete(event)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
         </>

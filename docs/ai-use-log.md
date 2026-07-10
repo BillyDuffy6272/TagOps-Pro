@@ -393,6 +393,30 @@ Ran `npx tsc -b --noEmit` (clean), `npx vite build` (clean), and `npm run lint` 
 
 ---
 
+### Added Google Ads conversion tracking to the Conversions page
+
+**Date:** 10/07/2026
+
+**Prompt:** "Pivot the Conversions page from GA4-only to also support Google Ads conversion tracking, categorized the way Google Ads' own UI groups conversion actions." Specified the schema change (Conversion ID on containers, Conversion Label and category on conversion_events, the 15-category list from Google Ads' support docs), which files to touch, and instructed to confirm the schema plan in one message before writing the migration, per the "ask one clarifying question rather than assume" rule in `CLAUDE.md`.
+
+**Response summary:** Read `docs/04-data-model.md`, `docs/02-requirements.md`, and the existing conversions feature files before proposing anything. Asked one clarifying question — whether a container could ever map to more than one Google Ads account — before writing the migration; confirmed one-account-per-container, matching the existing `gtm_container_id`/`ga4_property_id` pattern. Then:
+
+- Wrote `supabase/migrations/20260710000000_google_ads_conversion_tracking.sql` adding `containers.google_ads_conversion_id` (CHECK-constrained), `conversion_events.conversion_label`, and `conversion_events.category` (CHECK against the 15 Google Ads categories, `NOT NULL DEFAULT 'other'`). No new RLS policies — confirmed the existing organisation-scoped policies already cover the new columns.
+- Updated `src/types/supabase.ts` to match (hand-authored, no Supabase CLI in this environment — same caveat as ADR-0012/0013).
+- Updated `src/features/conversions/types.ts` with a `ConversionCategory` type, an ordered `CONVERSION_CATEGORIES` list matching Google Ads' own grouping, and a label helper.
+- Updated `api/conversions.ts` to join the container's `google_ads_conversion_id` into `listConversionEvents()`.
+- Updated `ConversionFormModal.tsx` — added a Category select and Conversion Label input; the container's Conversion ID shows as read-only context with a note to edit it on the container/settings screen (which doesn't exist yet).
+- Updated `ConversionCard.tsx` — added a category badge and a click-to-copy, truncated `AW-XXXXXXXXX/AbC-D_efG`-style badge for the ID/Label pair.
+- Rewrote the list in `ConversionsView.tsx` to render as collapsible sections grouped by category (in Google Ads' own order, empty categories hidden), with search and the active/inactive filter still applying before grouping.
+
+Ran `npm run lint` (no new errors — confirmed via `git stash` that the error count and profile were unchanged before/after) and `npx tsc -b` (clean; no `typecheck` script exists in `package.json` despite `CLAUDE.md` referencing one) and `npm run build` (clean).
+
+**What you did with it:** Accepted.
+
+**Why:** Asking the account-cardinality question before writing the migration avoided a plausible wrong guess that would have meant a second migration to move the column later. Defaulting `category` to `'other'` rather than leaving it nullable was a small deliberate choice — the UI groups by category, so an ungrouped row needs a fallback bucket regardless, and an explicit default is more honest than a nullable column with an implicit fallback in application code. The container/settings gap (no UI to actually set `google_ads_conversion_id`) was intentionally left as-is rather than scope-crept into this task, since the brief was explicit that it's edited elsewhere — flagged as a known gap rather than silently worked around.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

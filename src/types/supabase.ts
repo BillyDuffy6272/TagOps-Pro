@@ -24,6 +24,7 @@ export type Database = {
           environment: "production" | "staging" | "sandbox"
           gtm_container_id: string | null
           ga4_property_id: string | null
+          google_ads_conversion_id: string | null
           notes: string | null
           created_at: string
           created_by: string | null
@@ -40,6 +41,7 @@ export type Database = {
           environment?: "production" | "staging" | "sandbox"
           gtm_container_id?: string | null
           ga4_property_id?: string | null
+          google_ads_conversion_id?: string | null
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -56,6 +58,7 @@ export type Database = {
           environment?: "production" | "staging" | "sandbox"
           gtm_container_id?: string | null
           ga4_property_id?: string | null
+          google_ads_conversion_id?: string | null
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -253,6 +256,8 @@ export type Database = {
           value_param: string | null
           currency: string | null
           is_active: boolean
+          conversion_label: string | null
+          category: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
           notes: string | null
           created_at: string
           created_by: string | null
@@ -270,6 +275,8 @@ export type Database = {
           value_param?: string | null
           currency?: string | null
           is_active?: boolean
+          conversion_label?: string | null
+          category?: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -287,6 +294,8 @@ export type Database = {
           value_param?: string | null
           currency?: string | null
           is_active?: boolean
+          conversion_label?: string | null
+          category?: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
           notes?: string | null
           created_at?: string
           created_by?: string | null

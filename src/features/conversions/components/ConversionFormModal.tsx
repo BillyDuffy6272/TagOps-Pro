@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { createConversionEvent, updateConversionEvent } from '../api/conversions'
-import type { Container, ConversionEventWithContainer } from '../types'
+import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type ConversionEventWithContainer } from '../types'
 import Modal from '../../../components/Modal'
 
 interface Props {
@@ -23,9 +23,13 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
   const [valueParam, setValueParam] = useState(initial?.value_param ?? '')
   const [currency, setCurrency] = useState(initial?.currency ?? 'AUD')
   const [isActive, setIsActive] = useState(initial?.is_active ?? true)
+  const [category, setCategory] = useState<ConversionCategory>(initial?.category ?? 'other')
+  const [conversionLabel, setConversionLabel] = useState(initial?.conversion_label ?? '')
   const [notes, setNotes] = useState(initial?.notes ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const selectedContainer = useMemo(() => containers.find(c => c.id === containerId), [containers, containerId])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -57,6 +61,8 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
         value_param: valueParam.trim() || null,
         currency: trimmedCurrency,
         is_active: isActive,
+        category,
+        conversion_label: conversionLabel.trim() || null,
         notes: notes.trim() || null,
       }
 
@@ -161,6 +167,46 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
             onChange={e => setValueParam(e.target.value)}
             placeholder="purchase_value"
           />
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex flex-1 flex-col gap-1.5">
+            <label className={FIELD_LABEL} htmlFor="conversion-category">Category</label>
+            <select
+              id="conversion-category"
+              className={`${FIELD_INPUT} cursor-pointer`}
+              value={category}
+              onChange={e => setCategory(e.target.value as ConversionCategory)}
+            >
+              {CONVERSION_CATEGORIES.map(c => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-1.5">
+            <label className={FIELD_LABEL} htmlFor="conversion-label">Google Ads conversion label</label>
+            <input
+              id="conversion-label"
+              className={`${FIELD_INPUT} font-mono`}
+              value={conversionLabel}
+              onChange={e => setConversionLabel(e.target.value)}
+              placeholder="AbC-D_efG"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className={FIELD_LABEL}>Google Ads conversion ID</span>
+          {selectedContainer?.google_ads_conversion_id ? (
+            <div className="rounded-md border border-border-subtle bg-surface-sunken px-2.5 py-2 font-mono text-[13px] text-text-tertiary">
+              {selectedContainer.google_ads_conversion_id}
+            </div>
+          ) : (
+            <div className="rounded-md border border-dashed border-border-subtle px-2.5 py-2 text-[12px] text-text-faint">
+              Not set for this container — set it on the container/settings screen.
+            </div>
+          )}
         </div>
 
         <label className="flex cursor-pointer items-center gap-2 text-[13px] text-text-secondary">

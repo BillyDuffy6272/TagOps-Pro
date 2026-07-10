@@ -28,15 +28,16 @@ export async function listContainers(): Promise<Container[]> {
 export async function listConversionEvents(): Promise<ConversionEventWithContainer[]> {
   const { data, error } = await supabase
     .from('conversion_events')
-    .select('*, containers(name)')
+    .select('*, containers(name, google_ads_conversion_id)')
     .is('deleted_at', null)
     .order('created_at')
-    .overrideTypes<{ containers: { name: string } | null }[]>()
+    .overrideTypes<{ containers: { name: string; google_ads_conversion_id: string | null } | null }[]>()
   if (error) throw error
 
   return (data ?? []).map(c => ({
     ...c,
     containerName: c.containers?.name ?? 'Unknown container',
+    containerGoogleAdsConversionId: c.containers?.google_ads_conversion_id ?? null,
   }))
 }
 
