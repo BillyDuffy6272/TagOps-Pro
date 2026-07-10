@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 9px;
+  min-width: 0;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -69,6 +70,7 @@
   color: #e2e8f0;
   margin: 0;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .tag-notes {
@@ -76,6 +78,7 @@
   color: #4a5568;
   margin: 0;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .tag-footer {

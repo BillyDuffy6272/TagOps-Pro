@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 9px;
+  min-width: 0;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -51,6 +52,7 @@
   margin: 0;
   line-height: 1.35;
   font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  overflow-wrap: anywhere;
 }
 
 .variable-notes {
@@ -58,6 +60,7 @@
   color: #4a5568;
   margin: 0;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .variable-tags {
@@ -71,6 +74,9 @@
   padding: 2px 7px;
   border-radius: 4px;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   background: rgba(14, 165, 233, 0.08);
   color: #7dd3fc;
   border: 1px solid rgba(14, 165, 233, 0.18);
