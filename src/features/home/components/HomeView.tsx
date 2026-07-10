@@ -67,14 +67,14 @@ export default function HomeView({ session, setActiveView }: Props) {
   const hasToken = Boolean(session.provider_token)
 
   return (
-    <div className="mx-auto max-w-[860px] px-10 pt-11 pb-15">
-      <header className="mb-10 flex flex-wrap items-start justify-between gap-6">
+    <div className="mx-auto max-w-[980px] px-10 pt-10 pb-15">
+      <header className="mb-8 flex flex-wrap items-start justify-between gap-6 border-b border-border-subtle pb-6">
         <div>
-          <h1 className="m-0 mb-1 text-[22px] font-semibold tracking-[-0.02em] text-text-primary">Hello, {firstName}</h1>
-          <p className="m-0 text-xs text-text-tertiary">Your tag management workspace</p>
+          <h1 className="m-0 mb-1 text-[21px] font-semibold text-text-primary">Hello, {firstName}</h1>
+          <p className="m-0 text-[13px] text-text-tertiary">Your tag management workspace</p>
         </div>
         <div
-          className={`flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface-sunken px-3 py-1.5 font-mono text-[11px] ${
+          className={`flex shrink-0 items-center gap-1.5 rounded-md border border-border-subtle bg-surface-sunken px-3 py-1.5 font-mono text-[11px] ${
             hasToken ? 'text-success' : 'text-text-tertiary'
           }`}
         >
@@ -83,17 +83,20 @@ export default function HomeView({ session, setActiveView }: Props) {
         </div>
       </header>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-2.5">
+      <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
         {SECTIONS.map(section => (
           <button
             key={section.view}
             type="button"
-            className="flex flex-col gap-2.5 rounded-lg border border-border bg-surface p-5 text-left transition-[border-color,box-shadow] duration-150 ease-out hover:border-white/12 hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="grid w-full grid-cols-[22px_1fr_18px] items-center gap-3 border-b border-border-subtle px-4 py-3.5 text-left transition-colors duration-150 ease-out last:border-b-0 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:grid-cols-[22px_180px_1fr_18px]"
             onClick={() => setActiveView(section.view)}
           >
-            <span className="flex items-center text-accent">{section.icon}</span>
+            <span className="flex items-center text-text-faint">{section.icon}</span>
             <h2 className="m-0 text-[13.5px] font-semibold text-text-primary">{section.label}</h2>
-            <p className="m-0 text-xs leading-relaxed text-text-tertiary">{section.description}</p>
+            <p className="m-0 hidden min-w-0 truncate text-[13px] text-text-tertiary md:block">{section.description}</p>
+            <svg className="text-text-faint" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
           </button>
         ))}
       </div>

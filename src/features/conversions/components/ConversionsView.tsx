@@ -5,7 +5,7 @@ import ConversionCard from './ConversionCard'
 import ConversionFormModal from './ConversionFormModal'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
-import StatPill from '../../../components/StatPill'
+import StatRow from '../../../components/StatRow'
 import FilterTabs from '../../../components/FilterTabs'
 import LoadingState from '../../../components/LoadingState'
 import EmptyState from '../../../components/EmptyState'
@@ -78,14 +78,14 @@ export default function ConversionsView() {
   const activeCount = events.filter(e => e.is_active).length
 
   return (
-    <div className="mx-auto max-w-[1200px] px-10 pt-11 pb-15">
+    <div className="mx-auto max-w-[1180px] px-10 pt-10 pb-15">
       <ViewHeader
         title="Conversions"
         subtitle="GA4 conversion events"
         action={
           <button
             type="button"
-            className="rounded-md bg-accent px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-white/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
             onClick={openCreateModal}
             disabled={containers.length === 0}
           >
@@ -100,15 +100,19 @@ export default function ConversionsView() {
         <LoadingState label="Loading conversion events…" />
       ) : (
         <>
-          <div className="mb-6 flex flex-wrap gap-2">
-            <StatPill value={events.length} label="Total" />
-            <StatPill value={activeCount} label="Active" tone="success" />
+          <div className="mb-6">
+            <StatRow
+              stats={[
+                { value: events.length, label: 'Total' },
+                { value: activeCount, label: 'Active', tone: 'success' },
+              ]}
+            />
           </div>
 
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <FilterTabs options={['all', 'active', 'inactive']} value={statusFilter} onChange={setStatusFilter} />
             <input
-              className="w-[210px] rounded-md border border-border bg-surface px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
+              className="w-[230px] rounded-md border border-border-subtle bg-surface-sunken px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint hover:border-border focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
               type="search"
               placeholder="Search conversion events…"
               value={search}
@@ -121,7 +125,7 @@ export default function ConversionsView() {
           ) : filteredEvents.length === 0 ? (
             <EmptyState message={events.length === 0 ? 'No conversion events yet.' : 'No conversion events match your filter.'} />
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-2.5">
+            <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
               {filteredEvents.map(event => (
                 <ConversionCard
                   key={event.id}

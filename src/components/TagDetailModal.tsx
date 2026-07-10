@@ -1,6 +1,6 @@
 import { tagLabel, tagCategory, triggerLabel, formatParameterValue, type GtmTag, type GtmTrigger } from '../lib/gtm'
 import Modal from './Modal'
-import { tagBadgeClass } from './badgeStyles'
+import CategoryBadge from './CategoryBadge'
 
 interface Props {
   tag: GtmTag
@@ -26,7 +26,7 @@ export default function TagDetailModal({ tag, firingTriggers, blockingTriggers, 
 
         <div className="flex items-center justify-between">
           <span className={DETAIL_LABEL}>Tag Type</span>
-          <span className={tagBadgeClass(category)}>{label}</span>
+          <CategoryBadge kind="tag" category={category} label={label} />
         </div>
 
         <div className="flex items-center justify-between">

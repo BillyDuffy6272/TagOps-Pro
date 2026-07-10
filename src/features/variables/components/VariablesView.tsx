@@ -8,7 +8,7 @@ import {
 import VariableCard from './VariableCard'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
-import StatPill from '../../../components/StatPill'
+import StatRow from '../../../components/StatRow'
 import FilterTabs from '../../../components/FilterTabs'
 import LoadingState from '../../../components/LoadingState'
 import EmptyState from '../../../components/EmptyState'
@@ -21,7 +21,7 @@ interface Props {
 }
 
 const SELECT_CLASSES =
-  'min-w-[160px] cursor-pointer rounded-md border border-border bg-surface px-2.5 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-35'
+  'min-w-[160px] cursor-pointer rounded-md border border-border-subtle bg-surface-sunken px-2.5 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out hover:border-border focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-35'
 
 export default function VariablesView({ session }: Props) {
   const [accounts, setAccounts] = useState<GtmAccount[]>([])
@@ -121,12 +121,12 @@ export default function VariablesView({ session }: Props) {
   const unusedCount = variablesWithUsage.length - usedCount
 
   return (
-    <div className="mx-auto max-w-[1200px] px-10 pt-11 pb-15">
+    <div className="mx-auto max-w-[1180px] px-10 pt-10 pb-15">
       <ViewHeader title="Variables" subtitle="Live from your GTM container" />
 
       {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
 
-      <div className="mb-7 flex flex-wrap items-end gap-3">
+      <div className="mb-6 flex flex-wrap items-end gap-3 rounded-lg border border-border-subtle bg-surface-sunken/70 p-3">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="variable-account-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Account</label>
           <select
@@ -163,7 +163,7 @@ export default function VariablesView({ session }: Props) {
 
         <button
           type="button"
-          className="flex items-center gap-1.5 self-end rounded-md bg-accent px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex items-center gap-1.5 self-end rounded-md border border-white/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
           onClick={loadVariables}
           disabled={syncing || !selectedContainer}
         >
@@ -179,10 +179,14 @@ export default function VariablesView({ session }: Props) {
         <LoadingState label="Loading accounts…" />
       ) : (
         <>
-          <div className="mb-6 flex flex-wrap gap-2">
-            <StatPill value={variables.length} label="Total" />
-            <StatPill value={usedCount} label="Used in tags" tone="success" />
-            <StatPill value={unusedCount} label="Unused" tone="warning" />
+          <div className="mb-6">
+            <StatRow
+              stats={[
+                { value: variables.length, label: 'Total' },
+                { value: usedCount, label: 'Used in tags', tone: 'success' },
+                { value: unusedCount, label: 'Unused', tone: 'warning' },
+              ]}
+            />
           </div>
 
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
@@ -198,7 +202,7 @@ export default function VariablesView({ session }: Props) {
               ))}
             </select>
             <input
-              className="w-[210px] rounded-md border border-border bg-surface px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
+              className="w-[230px] rounded-md border border-border-subtle bg-surface-sunken px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint hover:border-border focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
               type="search"
               placeholder="Search variables…"
               value={search}
@@ -211,7 +215,7 @@ export default function VariablesView({ session }: Props) {
           ) : filtered.length === 0 ? (
             <EmptyState message={variables.length === 0 ? 'No variables in this container.' : 'No variables match your filter.'} />
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-2.5">
+            <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
               {filtered.map(({ variable, usage }) => (
                 <VariableCard key={variable.variableId} variable={variable} usedByTags={usage} />
               ))}
