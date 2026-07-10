@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      organisation_members: {
+        Row: {
+          id: string
+          display_id: string
+          organisation_id: string
+          user_id: string
+          role: "owner" | "admin" | "editor" | "viewer"
+          invited_by: string | null
+          joined_at: string
+          expires_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          organisation_id: string
+          user_id: string
+          role?: "owner" | "admin" | "editor" | "viewer"
+          invited_by?: string | null
+          joined_at?: string
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          organisation_id?: string
+          user_id?: string
+          role?: "owner" | "admin" | "editor" | "viewer"
+          invited_by?: string | null
+          joined_at?: string
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       containers: {
         Row: {
           id: string

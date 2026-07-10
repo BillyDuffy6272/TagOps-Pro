@@ -1,10 +1,10 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { createConversionEvent, updateConversionEvent } from '../api/conversions'
 import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type ConversionEventWithContainer } from '../types'
 import Modal from '../../../components/Modal'
 
 interface Props {
-  containers: Container[]
+  container: Container
   initial?: ConversionEventWithContainer
   onClose: () => void
   onSaved: () => void
@@ -16,9 +16,8 @@ const FIELD_LABEL = 'text-[10.5px] font-semibold tracking-[0.07em] text-text-ter
 const FIELD_INPUT =
   'rounded-md border border-border bg-surface px-2.5 py-2 font-sans text-[13px] text-text-primary transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent'
 
-export default function ConversionFormModal({ containers, initial, onClose, onSaved }: Props) {
+export default function ConversionFormModal({ container, initial, onClose, onSaved }: Props) {
   const [eventName, setEventName] = useState(initial?.event_name ?? '')
-  const [containerId, setContainerId] = useState(initial?.container_id ?? containers[0]?.id ?? '')
   const [displayName, setDisplayName] = useState(initial?.display_name ?? '')
   const [valueParam, setValueParam] = useState(initial?.value_param ?? '')
   const [currency, setCurrency] = useState(initial?.currency ?? 'AUD')
@@ -29,8 +28,6 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const selectedContainer = useMemo(() => containers.find(c => c.id === containerId), [containers, containerId])
-
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
@@ -38,11 +35,6 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
     const trimmedEventName = eventName.trim()
     if (!EVENT_NAME_PATTERN.test(trimmedEventName)) {
       setError('Event name must be lowercase, start with a letter or underscore, and contain only letters, numbers, and underscores.')
-      return
-    }
-    const container = containers.find(c => c.id === containerId)
-    if (!container) {
-      setError('Select a container.')
       return
     }
     const trimmedCurrency = currency.trim().toUpperCase()
@@ -108,6 +100,13 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
         )}
 
         <div className="flex flex-col gap-1.5">
+          <span className={FIELD_LABEL}>Container</span>
+          <div className="rounded-md border border-border-subtle bg-surface-sunken px-2.5 py-2 text-[13px] text-text-tertiary">
+            {container.name}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
           <label className={FIELD_LABEL} htmlFor="conversion-event-name">Event name</label>
           <input
             id="conversion-event-name"
@@ -121,19 +120,13 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
 
         <div className="flex gap-3">
           <div className="flex flex-1 flex-col gap-1.5">
-            <label className={FIELD_LABEL} htmlFor="conversion-container">Container</label>
-            <select
-              id="conversion-container"
-              className={`${FIELD_INPUT} cursor-pointer`}
-              value={containerId}
-              onChange={e => setContainerId(e.target.value)}
-              required
-            >
-              {containers.length === 0 && <option value="">No containers available</option>}
-              {containers.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            <label className={FIELD_LABEL} htmlFor="conversion-display-name">Display name</label>
+            <input
+              id="conversion-display-name"
+              className={FIELD_INPUT}
+              value={displayName}
+              onChange={e => setDisplayName(e.target.value)}
+            />
           </div>
 
           <div className="flex flex-1 flex-col gap-1.5">
@@ -146,16 +139,6 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
               maxLength={3}
             />
           </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className={FIELD_LABEL} htmlFor="conversion-display-name">Display name</label>
-          <input
-            id="conversion-display-name"
-            className={FIELD_INPUT}
-            value={displayName}
-            onChange={e => setDisplayName(e.target.value)}
-          />
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -198,9 +181,9 @@ export default function ConversionFormModal({ containers, initial, onClose, onSa
 
         <div className="flex flex-col gap-1.5">
           <span className={FIELD_LABEL}>Google Ads conversion ID</span>
-          {selectedContainer?.google_ads_conversion_id ? (
+          {container.google_ads_conversion_id ? (
             <div className="rounded-md border border-border-subtle bg-surface-sunken px-2.5 py-2 font-mono text-[13px] text-text-tertiary">
-              {selectedContainer.google_ads_conversion_id}
+              {container.google_ads_conversion_id}
             </div>
           ) : (
             <div className="rounded-md border border-dashed border-border-subtle px-2.5 py-2 text-[12px] text-text-faint">

@@ -417,6 +417,29 @@ Ran `npm run lint` (no new errors — confirmed via `git stash` that the error c
 
 ---
 
+### Fixed the "no containers" dead end and rebuilt Conversions as a GTM-scoped, Google-Ads-styled view
+
+**Date:** 10/07/2026
+
+**Prompt:** After confirming the prior session's migration had been run (error banner gone), the Conversions page still showed "No containers found for your organisation yet." Shared a screenshot of that state plus a screenshot of Google Ads' own "Goals" UI (category cards like "Submit lead form" / "Phone call lead" with a metadata header and a conversion-action table underneath) and asked: "I want you to do the same thing with previous pages. Be able to view the conversion events based on the container. Format it exactly like Google Ads."
+
+**Response summary:** Investigated before proposing anything — grepped the codebase and confirmed nothing writes to Supabase's `containers` table for a real organisation; it's only ever populated by the seed script for the fictional demo org, and Tags/Triggers/Variables sidestepped this entirely by reading live from the GTM API instead. Rather than assume a fix, asked two targeted questions: (1) whether Conversions should get its container from the same live GTM picker as the other pages (auto-creating the matching Supabase row behind the scenes) or from a new standalone "add container" form; (2) since Google Ads' table shows real reported metrics TagOps-Pro doesn't track, whether to swap those columns for real fields or show them as literal "—" placeholders. User picked the recommended option both times (live GTM picker with auto-provisioning; swap for real fields). Implemented:
+
+- `getCurrentOrganisationId()` and `ensureContainerForGtmContainer()` added to `src/features/conversions/api/conversions.ts` — the latter finds-or-creates a Supabase `containers` row keyed by `(organisation_id, gtm_container_id)`, with a retry loop for the rare unique-constraint race, mirroring the existing display_id-collision retry pattern already used by `createConversionEvent`.
+- Added the missing `organisation_members` table to the hand-authored `src/types/supabase.ts` (needed for the org lookup; wasn't there before).
+- Rewrote `ConversionsView.tsx` to add the same GTM Account → Container selector Tags/Triggers/Variables use; selecting a container now resolves/creates its Supabase row and scopes the event list to it. Replaced the flat list with collapsible per-category cards (header: category dot/label via a new `conversion` kind on the shared `CategoryBadge` component, event/active counts, and a "Ready"/"Needs setup" pill derived from real data — flagged only when an event has a Conversion Label but its container has no Conversion ID) each containing a real `<table>`.
+- Replaced `ConversionCard.tsx` with `ConversionTableRow.tsx` (a `<tr>`, not a card) with columns Conversion action / Ads ID·Label / Value / Status / Actions — the Ads ID/Label pair and Value/Currency stand in for Google Ads' live "All conv." / "All conv. value" metrics, per the second answer.
+- Simplified `ConversionFormModal.tsx` to take a single ambient `container` prop instead of a dropdown of all containers, since the container is now chosen at the page level.
+- Wired `session` through `AppShell.tsx` to `ConversionsView` (previously prop-less).
+
+While fixing this, caught and fixed a genuine bug introduced in the same pass: `useMemo` for the grouped-by-category list was called after a conditional early return (`if (gtmForbidden) return ...`), which `npm run lint` flagged as a rules-of-hooks violation (inconsistent hook call order across renders) — moved the early return after all hooks. Ran `npx tsc -b` (clean) and `npm run build` (clean). `npm run lint` showed 12 errors, all the same pre-existing `react-hooks/set-state-in-effect` category already present in `TagsView`/`TriggersView`/`VariablesView`, now also present in `ConversionsView` by construction (three effects, matching the existing pattern) — not a new category of debt.
+
+**What you did with it:** Accepted.
+
+**Why:** Asking before building here mattered on both axes — the container-source question is a real architecture fork (same mistake almost repeated as the Triggers/Variables Supabase-CRUD-vs-live-GTM fork from the prior week), and the metrics-column question was about whether to show fabricated numbers under real ad-platform column names, which would misrepresent the app's actual capabilities at the walk-through. The rules-of-hooks bug was caught by lint before being shipped, not by manual review — a reminder that "the build passes" isn't the same guarantee as "lint passes clean of new issues," and both need checking every time.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

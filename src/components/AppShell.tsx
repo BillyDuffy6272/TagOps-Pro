@@ -23,7 +23,7 @@ export default function AppShell({ session }: Props) {
       case 'tags':        return <TagsView session={session} />
       case 'triggers':    return <TriggersView session={session} />
       case 'variables':   return <VariablesView session={session} />
-      case 'conversions': return <ConversionsView />
+      case 'conversions': return <ConversionsView session={session} />
     }
   }
 
