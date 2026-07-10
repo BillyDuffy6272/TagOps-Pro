@@ -28,7 +28,7 @@ export default function AppShell({ session }: Props) {
   }
 
   return (
-    <div className="grid h-screen grid-cols-[248px_1fr] overflow-hidden bg-canvas text-text-primary">
+    <div className="grid h-screen grid-cols-[284px_1fr] overflow-hidden bg-canvas text-text-primary">
       <Sidebar activeView={activeView} setActiveView={setActiveView} session={session} />
       <div className="flex min-w-0 flex-col overflow-hidden border-l border-border-subtle">
         <TopBar activeView={activeView} />
