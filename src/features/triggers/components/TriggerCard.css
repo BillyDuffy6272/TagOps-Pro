@@ -30,15 +30,18 @@
   letter-spacing: 0.05em;
   white-space: nowrap;
   font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
-  background: rgba(14, 165, 233, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.2);
-  color: #7dd3fc;
+  background: #0a1628;
+  border: 1px solid #1a2035;
+  color: #2dd4bf;
 }
 
-.trigger-condition-count {
-  font-size: 11px;
-  color: #4a5568;
-}
+.trigger-type-badge.cat-page         { background: rgba(14, 165, 233, 0.08);  color: #7dd3fc; border-color: rgba(14, 165, 233, 0.2); }
+.trigger-type-badge.cat-interaction  { background: rgba(45, 212, 191, 0.08);  color: #2dd4bf; border-color: rgba(45, 212, 191, 0.2); }
+.trigger-type-badge.cat-nav          { background: rgba(139, 92, 246, 0.08); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.2); }
+.trigger-type-badge.cat-error        { background: rgba(220, 38, 38, 0.08);  color: #fca5a5; border-color: rgba(220, 38, 38, 0.2); }
+.trigger-type-badge.cat-engagement   { background: rgba(217, 119, 6, 0.08);  color: #fcd34d; border-color: rgba(217, 119, 6, 0.2); }
+.trigger-type-badge.cat-group        { background: rgba(75, 85, 99, 0.08);   color: #9ca3af; border-color: rgba(75, 85, 99, 0.2); }
+.trigger-type-badge.cat-other        { background: rgba(75, 85, 99, 0.08);   color: #9ca3af; border-color: rgba(75, 85, 99, 0.2); }
 
 .trigger-name {
   font-size: 13.5px;
@@ -102,27 +105,16 @@
   gap: 8px;
 }
 
-.trigger-container {
+.trigger-usage {
+  font-size: 11px;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.trigger-id {
   font-size: 11px;
   color: #1e2d45;
   font-weight: 500;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum';
 }
-
-.trigger-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.trigger-action-btn {
-  background: none;
-  border: none;
-  color: #4a5568;
-  font-size: 11.5px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0;
-}
-
-.trigger-action-btn:hover { color: #e2e8f0; }
-.trigger-action-danger:hover { color: #f87171; }

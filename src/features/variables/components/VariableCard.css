@@ -29,10 +29,20 @@
   letter-spacing: 0.05em;
   white-space: nowrap;
   font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
-  background: rgba(217, 119, 6, 0.08);
-  border: 1px solid rgba(217, 119, 6, 0.2);
-  color: #fcd34d;
+  background: #0a1628;
+  border: 1px solid #1a2035;
+  color: #2dd4bf;
 }
+
+.variable-type-badge.cat-storage   { background: rgba(75, 85, 99, 0.08);   color: #9ca3af; border-color: rgba(75, 85, 99, 0.2); }
+.variable-type-badge.cat-code      { background: rgba(45, 212, 191, 0.08); color: #2dd4bf; border-color: rgba(45, 212, 191, 0.2); }
+.variable-type-badge.cat-dom       { background: rgba(139, 92, 246, 0.08); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.2); }
+.variable-type-badge.cat-datalayer { background: rgba(14, 165, 233, 0.08); color: #7dd3fc; border-color: rgba(14, 165, 233, 0.2); }
+.variable-type-badge.cat-url       { background: rgba(219, 39, 119, 0.08); color: #f9a8d4; border-color: rgba(219, 39, 119, 0.2); }
+.variable-type-badge.cat-constant  { background: rgba(217, 119, 6, 0.08);  color: #fcd34d; border-color: rgba(217, 119, 6, 0.2); }
+.variable-type-badge.cat-analytics { background: rgba(217, 119, 6, 0.08);  color: #fcd34d; border-color: rgba(217, 119, 6, 0.2); }
+.variable-type-badge.cat-lookup    { background: rgba(13, 148, 136, 0.08); color: #5eead4; border-color: rgba(13, 148, 136, 0.2); }
+.variable-type-badge.cat-other     { background: rgba(75, 85, 99, 0.08);   color: #9ca3af; border-color: rgba(75, 85, 99, 0.2); }
 
 .variable-name {
   font-size: 13.5px;
@@ -43,23 +53,27 @@
   font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 }
 
-.variable-default {
-  font-size: 12px;
-  color: #4a5568;
-  margin: 0;
-}
-
-.variable-default code {
-  color: #2dd4bf;
-  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
-  font-size: 11.5px;
-}
-
 .variable-notes {
   font-size: 12px;
   color: #4a5568;
   margin: 0;
   line-height: 1.5;
+}
+
+.variable-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.variable-tag-chip {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  background: rgba(14, 165, 233, 0.08);
+  color: #7dd3fc;
+  border: 1px solid rgba(14, 165, 233, 0.18);
 }
 
 .variable-footer {
@@ -72,27 +86,16 @@
   gap: 8px;
 }
 
-.variable-container {
+.variable-usage {
+  font-size: 11px;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.variable-id {
   font-size: 11px;
   color: #1e2d45;
   font-weight: 500;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum';
 }
-
-.variable-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.variable-action-btn {
-  background: none;
-  border: none;
-  color: #4a5568;
-  font-size: 11.5px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0;
-}
-
-.variable-action-btn:hover { color: #e2e8f0; }
-.variable-action-danger:hover { color: #f87171; }

@@ -21,8 +21,8 @@ export default function AppShell({ session }: Props) {
     switch (activeView) {
       case 'home':        return <HomeView session={session} setActiveView={setActiveView} />
       case 'tags':        return <TagsView session={session} />
-      case 'triggers':    return <TriggersView />
-      case 'variables':   return <VariablesView />
+      case 'triggers':    return <TriggersView session={session} />
+      case 'variables':   return <VariablesView session={session} />
       case 'conversions': return <ConversionsView />
     }
   }

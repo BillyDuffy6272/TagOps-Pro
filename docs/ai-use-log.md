@@ -358,6 +358,27 @@ Ran `npm run build` (passes) and `npm run lint`. Lint surfaced one new `react-ho
 
 ---
 
+### Reverted Triggers/Variables from Supabase CRUD to a live GTM browser (matching Tags)
+
+**Date:** 10/07/2026
+
+**Prompt:** "Can you now like you did for the tags put all the current information for the triggers and variables. With the ability to choose the container and what Tag they are being used for. Ignore the conversions event page for now."
+
+**Response summary:** Investigated before writing anything and found the "Tags" page is not Supabase-backed at all — it's a live read-only mirror of the real GTM account via the OAuth `provider_token` (Account → Container → Workspace picker, Sync button, no database involved). Also found that Triggers and Variables already had a full Supabase-backed CRUD implementation sitting uncommitted from the two prior sessions (own `triggers`/`variables` tables, container dropdowns, create/edit modals). Flagged the fork explicitly and asked which direction was wanted; chose "live GTM browser, matching Tags exactly" over "keep the Supabase CRUD". Implemented:
+
+- Extended `src/lib/gtm.ts` with `getTriggers()`/`getVariables()` API calls, `GtmTrigger`/`GtmVariable`/`GtmParameter` types, trigger/variable type-label and category maps, and cross-referencing helpers — `tagsUsingTrigger()` reads a GTM tag's `firingTriggerId`/`blockingTriggerId` arrays; `tagsUsingVariable()` recursively scans tag parameters (including nested list/map parameter types) for GTM's `{{Variable Name}}` template syntax.
+- Deleted the prior sessions' Supabase CRUD scaffolding for these two features (`api/` folders, `TriggerFormModal`, `VariableFormModal`) since it's superseded by this direction.
+- Rewrote `TriggerCard`/`VariableCard` and `TriggersView`/`VariablesView` to mirror `TagsView`'s UI and data-loading pattern exactly (account/container/workspace selectors, Sync button, stat pills, filter tabs, search), each card showing which tag(s) fire on/block it (triggers) or reference it (variables).
+- Wired a `session` prop through `AppShell.tsx` to both views (previously prop-less, since the Supabase CRUD versions authenticated via the Supabase client directly rather than the Google OAuth token).
+
+Ran `npx tsc -b --noEmit` (clean), `npx vite build` (clean), and `npm run lint` — found only the same pre-existing `react-hooks/set-state-in-effect` rule already present in the untouched `TagsView.tsx` and `ConversionsView.tsx`, now also duplicated in the new files by construction; no new category of error introduced.
+
+**What you did with it:** Accepted.
+
+**Why:** This reverses the architecture decision from the two prior sessions (Supabase-backed CRUD for Triggers/Variables) — worth being explicit about at the walk-through, since it means the `triggers`/`variables`/`tag_triggers` tables and their RLS policies now have no feature reading from them at all; only Conversions still uses its own table. Asking before building was the right call given how large and hard-to-reverse a rewrite this was — a wrong guess would have meant redoing a full feature twice in two sessions.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
