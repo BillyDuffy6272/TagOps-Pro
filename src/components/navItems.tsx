@@ -57,11 +57,22 @@ export const NAV_ITEMS: NavItem[] = [
   {
     id: 'conversions',
     label: 'Conversions',
-    description: 'GA4 event tracking',
+    description: 'GA4 & Google Ads events',
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <polyline points="9 12 11 14 15 10" />
+      </svg>
+    ),
+  },
+  {
+    id: 'preview',
+    label: 'Preview',
+    description: 'Simulate tag firing',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polygon points="10 8 16 12 10 16 10 8" />
       </svg>
     ),
   },

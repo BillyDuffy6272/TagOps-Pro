@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+
+# Electron packaging output
+desktop/out
 *.local
 .env.local
 

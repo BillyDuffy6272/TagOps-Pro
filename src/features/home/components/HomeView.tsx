@@ -45,11 +45,22 @@ const SECTIONS: SectionCard[] = [
   {
     view: 'conversions',
     label: 'Conversions',
-    description: 'Document and verify your GA4 conversion events.',
+    description: 'Document and verify your GA4 and Google Ads conversion events.',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <polyline points="9 12 11 14 15 10" />
+      </svg>
+    ),
+  },
+  {
+    view: 'preview',
+    label: 'Preview',
+    description: 'Simulate events against your container and see which tags fire.',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polygon points="10 8 16 12 10 16 10 8" />
       </svg>
     ),
   },

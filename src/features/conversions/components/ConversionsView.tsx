@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { getAccounts, getContainers, type GtmAccount, type GtmContainer } from '../../../lib/gtm'
+import { useGtm } from '../../../lib/GtmContext'
 import {
   deleteConversionEvent,
   ensureContainerForGtmContainer,
@@ -10,6 +10,8 @@ import {
 import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type ConversionEventWithContainer } from '../types'
 import ConversionTableRow from './ConversionTableRow'
 import ConversionFormModal from './ConversionFormModal'
+import ConversionSnippetModal from './ConversionSnippetModal'
+import GoogleAdsSettingsModal from './GoogleAdsSettingsModal'
 import CategoryBadge from '../../../components/CategoryBadge'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
@@ -18,6 +20,7 @@ import FilterTabs from '../../../components/FilterTabs'
 import LoadingState from '../../../components/LoadingState'
 import EmptyState from '../../../components/EmptyState'
 import GtmForbiddenState from '../../../components/GtmForbiddenState'
+import ContainerPicker from '../../../components/ContainerPicker'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
 
@@ -25,33 +28,25 @@ interface Props {
   session: Session
 }
 
-const SELECT_CLASSES =
-  'min-w-[160px] cursor-pointer rounded-md border border-border-subtle bg-surface-sunken px-2.5 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out hover:border-border focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-35'
-
 export default function ConversionsView({ session }: Props) {
-  const [accounts, setAccounts] = useState<GtmAccount[]>([])
-  const [gtmContainers, setGtmContainers] = useState<GtmContainer[]>([])
-  const [selectedAccount, setSelectedAccount] = useState('')
-  const [selectedContainer, setSelectedContainer] = useState('')
+  const { loadingAccounts, containers, selectedGtmContainer, gtmForbidden, error: contextError, clearError, refreshKey } = useGtm()
 
   const [organisationId, setOrganisationId] = useState<string | null>(null)
   const [resolvedContainer, setResolvedContainer] = useState<Container | null>(null)
   const [events, setEvents] = useState<ConversionEventWithContainer[]>([])
 
-  const [loadingAccounts, setLoadingAccounts] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [gtmForbidden, setGtmForbidden] = useState(false)
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [search, setSearch] = useState('')
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<ConversionEventWithContainer | undefined>(undefined)
+  const [snippetEvent, setSnippetEvent] = useState<ConversionEventWithContainer | null>(null)
+  const [adsSettingsOpen, setAdsSettingsOpen] = useState(false)
 
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ConversionCategory>>(new Set())
-
-  const token = session.provider_token!  // guaranteed non-null by Dashboard gate
 
   useEffect(() => {
     getCurrentOrganisationId(session.user.id)
@@ -59,44 +54,14 @@ export default function ConversionsView({ session }: Props) {
       .catch(e => setError(e instanceof Error ? e.message : 'Failed to resolve organisation'))
   }, [session.user.id])
 
-  useEffect(() => {
-    setLoadingAccounts(true)
-    getAccounts(token)
-      .then(accs => {
-        setAccounts(accs)
-        if (accs.length > 0) setSelectedAccount(accs[0].accountId)
-      })
-      .catch(e => {
-        if ((e as { status?: number }).status === 403) setGtmForbidden(true)
-        else setError(e.message)
-      })
-      .finally(() => setLoadingAccounts(false))
-  }, [token])
-
-  useEffect(() => {
-    if (!selectedAccount) return
-    setGtmContainers([])
-    setSelectedContainer('')
-    setResolvedContainer(null)
-    setEvents([])
-    getContainers(selectedAccount, token)
-      .then(ctrs => {
-        setGtmContainers(ctrs)
-        if (ctrs.length > 0) setSelectedContainer(ctrs[0].containerId)
-      })
-      .catch(e => setError(e.message))
-  }, [token, selectedAccount])
-
   const loadConversions = useCallback(async () => {
-    if (!organisationId || !selectedContainer) return
-    const gtmContainer = gtmContainers.find(c => c.containerId === selectedContainer)
-    if (!gtmContainer) return
+    if (!organisationId || !selectedGtmContainer) return
     setSyncing(true)
     setError(null)
     try {
       const container = await ensureContainerForGtmContainer(organisationId, {
-        name: gtmContainer.name,
-        publicId: gtmContainer.publicId,
+        name: selectedGtmContainer.name,
+        publicId: selectedGtmContainer.publicId,
       })
       setResolvedContainer(container)
       const fetchedEvents = await listConversionEventsForContainer(container.id)
@@ -106,7 +71,8 @@ export default function ConversionsView({ session }: Props) {
     } finally {
       setSyncing(false)
     }
-  }, [organisationId, selectedContainer, gtmContainers])
+    // refreshKey retriggers the load after a cache-clearing sync
+  }, [organisationId, selectedGtmContainer, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { loadConversions() }, [loadConversions])
 
@@ -144,6 +110,13 @@ export default function ConversionsView({ session }: Props) {
     loadConversions()
   }
 
+  function handleAdsSettingsSaved(updated: Container) {
+    setAdsSettingsOpen(false)
+    setResolvedContainer(updated)
+    // Events carry the container's Ads ID via the join, so re-fetch to refresh badges.
+    loadConversions()
+  }
+
   const filteredEvents = events.filter(e => {
     const matchesStatus =
       statusFilter === 'all' ||
@@ -156,6 +129,7 @@ export default function ConversionsView({ session }: Props) {
   })
 
   const activeCount = events.filter(e => e.is_active).length
+  const linkedCount = events.filter(e => e.conversion_label && resolvedContainer?.google_ads_conversion_id).length
 
   const groupedEvents = useMemo(() => {
     return CONVERSION_CATEGORIES
@@ -168,6 +142,9 @@ export default function ConversionsView({ session }: Props) {
   }, [filteredEvents])
 
   if (gtmForbidden) return <GtmForbiddenState title="Conversions" />
+
+  const shownError = error ?? contextError
+  const adsId = resolvedContainer?.google_ads_conversion_id ?? null
 
   return (
     <div className="mx-auto max-w-[1180px] px-10 pt-10 pb-15">
@@ -186,56 +163,27 @@ export default function ConversionsView({ session }: Props) {
         }
       />
 
-      {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
+      {shownError && <ErrorBanner message={shownError} onDismiss={() => { setError(null); clearError() }} />}
 
-      <div className="mb-6 flex flex-wrap items-end gap-3 rounded-lg border border-border-subtle bg-surface-sunken/70 p-3">
+      <ContainerPicker idPrefix="conversion" syncing={syncing} syncLabel="Refresh" syncingLabel="Refreshing…">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="conversion-account-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Account</label>
-          <select
-            id="conversion-account-select"
-            className={SELECT_CLASSES}
-            value={selectedAccount}
-            onChange={e => setSelectedAccount(e.target.value)}
-            disabled={loadingAccounts || accounts.length === 0}
+          <span className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Google Ads</span>
+          <button
+            type="button"
+            className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 font-mono text-[12px] transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-35 ${
+              adsId
+                ? 'border-success/25 bg-success/10 text-success hover:border-success/40'
+                : 'border-warning/25 bg-warning/10 text-warning hover:border-warning/40'
+            }`}
+            onClick={() => setAdsSettingsOpen(true)}
+            disabled={!resolvedContainer}
+            title={adsId ? 'Edit the Google Ads conversion ID for this container' : 'Set the Google Ads conversion ID for this container'}
           >
-            {accounts.length === 0 && <option>No accounts found</option>}
-            {accounts.map(acc => (
-              <option key={acc.accountId} value={acc.accountId}>{acc.name}</option>
-            ))}
-          </select>
+            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${adsId ? 'bg-success' : 'bg-warning'}`} aria-hidden="true" />
+            {adsId ?? 'Link Google Ads'}
+          </button>
         </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="conversion-container-select" className="text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase">Container</label>
-          <select
-            id="conversion-container-select"
-            className={SELECT_CLASSES}
-            value={selectedContainer}
-            onChange={e => setSelectedContainer(e.target.value)}
-            disabled={gtmContainers.length === 0}
-          >
-            {gtmContainers.length === 0 && <option>No containers</option>}
-            {gtmContainers.map(c => (
-              <option key={c.containerId} value={c.containerId}>
-                {c.name} ({c.publicId})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button
-          type="button"
-          className="flex items-center gap-1.5 self-end rounded-md border border-white/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
-          onClick={loadConversions}
-          disabled={syncing || !selectedContainer}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-            <path d="M23 4v6h-6M1 20v-6h6" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-          </svg>
-          {syncing ? 'Refreshing…' : 'Refresh'}
-        </button>
-      </div>
+      </ContainerPicker>
 
       {loadingAccounts ? (
         <LoadingState label="Loading accounts…" />
@@ -246,6 +194,7 @@ export default function ConversionsView({ session }: Props) {
               stats={[
                 { value: events.length, label: 'Total' },
                 { value: activeCount, label: 'Active', tone: 'success' },
+                { value: linkedCount, label: 'Linked to Google Ads', tone: linkedCount === events.length && events.length > 0 ? 'success' : 'warning' },
               ]}
             />
           </div>
@@ -261,7 +210,7 @@ export default function ConversionsView({ session }: Props) {
             />
           </div>
 
-          {gtmContainers.length === 0 ? (
+          {containers.length === 0 ? (
             <EmptyState message="No containers in this GTM account." />
           ) : syncing ? (
             <LoadingState label="Loading conversion events…" />
@@ -318,6 +267,7 @@ export default function ConversionsView({ session }: Props) {
                                 event={event}
                                 onEdit={() => openEditModal(event)}
                                 onDelete={() => handleDelete(event)}
+                                onSnippet={() => setSnippetEvent(event)}
                               />
                             ))}
                           </tbody>
@@ -338,6 +288,18 @@ export default function ConversionsView({ session }: Props) {
           initial={editingEvent}
           onClose={() => setModalOpen(false)}
           onSaved={handleSaved}
+        />
+      )}
+
+      {snippetEvent && (
+        <ConversionSnippetModal event={snippetEvent} onClose={() => setSnippetEvent(null)} />
+      )}
+
+      {adsSettingsOpen && resolvedContainer && (
+        <GoogleAdsSettingsModal
+          container={resolvedContainer}
+          onClose={() => setAdsSettingsOpen(false)}
+          onSaved={handleAdsSettingsSaved}
         />
       )}
     </div>

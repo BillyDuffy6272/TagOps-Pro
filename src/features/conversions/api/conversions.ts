@@ -80,6 +80,28 @@ export async function ensureContainerForGtmContainer(
   throw new Error('Could not create a container for this GTM container. Please try again.')
 }
 
+// Mirrors the CHECK constraint in supabase/migrations/20260710000000 — validating
+// client-side too gives the user an actionable message instead of a raw 23514.
+export const GOOGLE_ADS_CONVERSION_ID_PATTERN = /^AW-[0-9]{6,}$/
+
+// Conversion labels are the short base64-style code Google Ads generates per
+// conversion action (the part after the slash in AW-XXXX/AbC-D_efG).
+export const CONVERSION_LABEL_PATTERN = /^[A-Za-z0-9_-]{4,}$/
+
+export async function updateContainerGoogleAdsId(
+  containerId: string,
+  googleAdsConversionId: string | null
+): Promise<Container> {
+  const { data, error } = await supabase
+    .from('containers')
+    .update({ google_ads_conversion_id: googleAdsConversionId })
+    .eq('id', containerId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 export async function listConversionEventsForContainer(containerId: string): Promise<ConversionEventWithContainer[]> {
   const { data, error } = await supabase
     .from('conversion_events')

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { createConversionEvent, updateConversionEvent } from '../api/conversions'
+import { CONVERSION_LABEL_PATTERN, createConversionEvent, updateConversionEvent } from '../api/conversions'
 import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type ConversionEventWithContainer } from '../types'
 import Modal from '../../../components/Modal'
 
@@ -42,6 +42,11 @@ export default function ConversionFormModal({ container, initial, onClose, onSav
       setError('Currency must be a 3-letter code, e.g. AUD.')
       return
     }
+    const trimmedLabel = conversionLabel.trim()
+    if (trimmedLabel && !CONVERSION_LABEL_PATTERN.test(trimmedLabel)) {
+      setError('Conversion label should be the short code from Google Ads (letters, numbers, - and _ only), e.g. AbC-D_efG.')
+      return
+    }
 
     setSaving(true)
     try {
@@ -54,7 +59,7 @@ export default function ConversionFormModal({ container, initial, onClose, onSav
         currency: trimmedCurrency,
         is_active: isActive,
         category,
-        conversion_label: conversionLabel.trim() || null,
+        conversion_label: trimmedLabel || null,
         notes: notes.trim() || null,
       }
 
@@ -187,7 +192,7 @@ export default function ConversionFormModal({ container, initial, onClose, onSav
             </div>
           ) : (
             <div className="rounded-md border border-dashed border-border-subtle px-2.5 py-2 text-[12px] text-text-faint">
-              Not set for this container — set it on the container/settings screen.
+              Not set for this container — use the "Link Google Ads" button on the Conversions screen.
             </div>
           )}
         </div>

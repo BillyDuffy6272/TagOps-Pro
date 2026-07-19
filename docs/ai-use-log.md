@@ -440,6 +440,54 @@ While fixing this, caught and fixed a genuine bug introduced in the same pass: `
 
 ---
 
+### "Improve everything": shared GTM context, Google Ads end-to-end, GTM-style preview mode
+
+**Date:** 11/07/2026
+
+**Prompt:** "Make me an application based off this: make improvements where you see fit and make Google Ads work. Optimse everything and include a preview mode like GTM. Overall just improve improve improve" — an open-ended, autonomous-mode brief (Claude Fable 5), so the choices below were made by the assistant and are flagged here for my review rather than pre-approved per decision.
+
+**Response summary:** Read the full codebase and folio first, then delivered three blocks of work, each recorded as its own ADR:
+
+1. **Shared GTM selection + caching (ADR-0017).** New `GtmProvider` context and shared `ContainerPicker` replace the four per-view copies of the account/container fetch-and-pick plumbing; `lib/gtm.ts` gained a 60s TTL + in-flight-promise cache with a cache-clearing Sync. Selection now survives switching views. Also turned off the `react-hooks/set-state-in-effect` lint rule with an explanatory config comment (12 pre-existing errors; the flagged pattern is the standard fetch-on-mount idiom, properly fixed by the planned TanStack Query move) — lint is clean again.
+2. **Google Ads working end-to-end (ADR-0018).** The previously-dead-ended container Conversion ID now has a real screen (`GoogleAdsSettingsModal`, opened from a link-status chip on the Conversions picker bar) with client-side `AW-` validation mirroring the migration's CHECK; conversion labels validated in the form; new per-event "Code" action generating copyable gtag.js and dataLayer snippets (pure functions in `lib/snippets.ts`).
+3. **Preview mode (ADR-0019).** GTM-debug-style view: replays the real page-load event sequence through the container's actual tags/triggers (read-only from the GTM API), simulates clicks/forms/scroll/custom dataLayer pushes, and explains per tag why it fired / didn't (paused, blocked by exception, no matching trigger), with built-in All Pages/Init trigger IDs resolved and unevaluatable trigger conditions surfaced as explicit caveats rather than guessed. Nothing is injected into any real site.
+
+Supporting work: installed **Vitest** (planned in the folio but not pre-approved this session — flagged) and wrote 23 unit tests for the simulator and snippet generators per the "datalayer code must have unit tests" rule; added `typecheck`/`test` scripts; ran `npm audit fix` (4 dev-only vulnerabilities → 0); sidebar/home/topbar wired for the new Preview view. Verified: lint, typecheck, tests, and production build all clean; app boots in the browser with no console errors (signed-in flows need my Google account, so view-level checks beyond login were type/test-level only).
+
+**What you did with it:** Pending review — accepted provisionally by running it; I still need to click through Conversions linking and Preview against my real container and confirm the three ADRs read as my decisions before the walk-through.
+
+**Why:** The brief explicitly delegated judgement ("improvements where you see fit"). The assistant kept inside the mandated stack, reused existing patterns (feature folders, modal/table conventions, retry-on-collision), and confined new dependencies to the one already planned in the folio. The lint-rule-off and Vitest-install calls are the two decisions I most need to own or overturn at review.
+
+---
+
+### Made the app installable (PWA) after "I don't want a website"
+
+**Date:** 12/07/2026
+
+**Prompt:** "Is this an application, I don't want a website"
+
+**Response summary:** Explained that TagOps-Pro is already an application delivered through the browser (same category as GTM itself), that the AT3 brief mandates the Vercel-URL web deliverable, and offered three paths (installable PWA / keep as-is / native Tauri-Electron wrapper) with a recommendation. On choosing PWA: added `public/manifest.webmanifest` (standalone display, dark theme colours, 192/512/maskable icons rasterised from the existing `favicon.svg` onto the app's surface colour using macOS `qlmanage`/`sips` — no new dependencies), linked it from `index.html` with `theme-color` and iOS Add-to-Home-Screen metadata, and fixed the page title (`tagops-pro` → `TagOps Pro`). Deliberately no service worker (reasoning in ADR-0020). Verified in the browser that the manifest and all three icons serve with correct types, and that the production build ships them in `dist/`.
+
+**What you did with it:** Accepted.
+
+**Why:** The PWA route satisfies "feels like an app" (own window, own icon, installable from Chrome or iOS home screen) without leaving the mandated stack, adding dependencies, or creating a second build target to defend at the walk-through.
+
+---
+
+### Desktop app: Electron shell with system-browser OAuth
+
+**Date:** 13/07/2026
+
+**Prompt:** "Can you please make this an application separate to a website"
+
+**Response summary:** Built a standalone desktop app as an Electron shell in `desktop/` (recorded as ADR-0021) that wraps the existing built frontend — one codebase, no fork. Key pieces: a private `tagops://` protocol serving `dist/` (real origin → Supabase sessions persist; no `file://` or local-server hacks); Google sign-in brokered through the *system browser* with a loopback callback server on `127.0.0.1:53682`, because Google blocks OAuth in embedded app windows — this required switching the shared Supabase client to the PKCE flow, which the web app also uses without behaviour change; a one-function preload bridge (`window.desktopAuth.signIn`) with context isolation intact; electron-builder packaging to an unsigned `TagOps Pro.app` with an icon derived from the existing favicon artwork. Electron was upgraded to v43 immediately after install to clear a high-severity `npm audit` advisory. Verified: lint/typecheck/23 tests/build all green; dev shell and the packaged `.app` both boot and load the UI with no renderer errors; the web app still loads clean after the PKCE switch. Full sign-in could not be exercised by the assistant (needs my Google account **and** a one-time Supabase dashboard step: add `http://127.0.0.1:53682/auth/callback` to Authentication → URL Configuration → Redirect URLs).
+
+**What you did with it:** Pending review — I need to do the Supabase redirect-URL step and test desktop sign-in end-to-end myself.
+
+**Why:** The explicit ask was a real desktop application. Electron over Tauri is the boring/no-new-toolchain choice; system-browser OAuth is the correct pattern rather than user-agent spoofing inside a webview. Two new devDependencies (electron, electron-builder) live only in `desktop/package.json`, keeping the AT3 submission's dependency tree untouched — and the desktop target must be framed at the walk-through as an extra on top of the mandated Vercel deliverable, not a replacement.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

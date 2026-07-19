@@ -56,6 +56,10 @@ export interface GtmTrigger {
   interval?: GtmParameter
   limit?: GtmParameter
   customEventFilter?: GtmCondition[]
+  // Page/variable conditions ("Page URL contains /checkout") and auto-event
+  // conditions ("Click Classes equals .buy") — used by the preview simulator.
+  filter?: GtmCondition[]
+  autoEventFilter?: GtmCondition[]
 }
 
 export interface GtmVariable {
@@ -76,7 +80,18 @@ export interface TagUsage {
 
 const BASE = 'https://tagmanager.googleapis.com/tagmanager/v2'
 
-async function gtmGet<T>(url: string, token: string): Promise<T> {
+// Every view refetches the same accounts/containers/workspaces on mount, so
+// without a cache each sidebar switch re-pays a full round of GTM API calls
+// (and eats the API's per-minute quota). Caching the in-flight promise also
+// dedupes concurrent requests for the same resource.
+const CACHE_TTL_MS = 60_000
+const gtmCache = new Map<string, { at: number; promise: Promise<unknown> }>()
+
+export function clearGtmCache() {
+  gtmCache.clear()
+}
+
+async function fetchGtm<T>(url: string, token: string): Promise<T> {
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -93,6 +108,18 @@ async function gtmGet<T>(url: string, token: string): Promise<T> {
     throw err
   }
   return res.json()
+}
+
+function gtmGet<T>(url: string, token: string): Promise<T> {
+  // Key includes a token suffix so a re-login never serves another session's data.
+  const key = `${token.slice(-16)}:${url}`
+  const hit = gtmCache.get(key)
+  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.promise as Promise<T>
+  const promise = fetchGtm<T>(url, token)
+  gtmCache.set(key, { at: Date.now(), promise })
+  // Failures must not be served from cache, or a transient error would stick for the TTL.
+  promise.catch(() => gtmCache.delete(key))
+  return promise
 }
 
 export async function getAccounts(token: string): Promise<GtmAccount[]> {
@@ -114,6 +141,17 @@ export async function getWorkspaces(accountId: string, containerId: string, toke
     token
   )
   return data.workspace ?? []
+}
+
+// Every view works against the first (default) workspace, mirroring how the
+// GTM UI opens the "Default Workspace" unless told otherwise.
+export async function getDefaultWorkspace(
+  accountId: string,
+  containerId: string,
+  token: string
+): Promise<GtmWorkspace | null> {
+  const workspaces = await getWorkspaces(accountId, containerId, token)
+  return workspaces[0] ?? null
 }
 
 export async function getTags(

@@ -64,19 +64,25 @@ TagOps-Pro/
 
 ## Dev setup
 
-_To be filled in once the Vite scaffold has been confirmed at the repo root._
-
-Planned commands:
-
 - `npm install` — install dependencies.
 - `npm run dev` — start the Vite dev server.
-- `npm run build` — production build.
+- `npm run build` — typecheck + production build.
 - `npm run lint` — ESLint.
-- `npm run typecheck` — `tsc --noEmit`.
-- `npm run test` — Vitest unit + integration suites.
+- `npm run typecheck` — TypeScript project build (`tsc -b`).
+- `npm run test` — Vitest unit suite (`tests/unit/`).
+- `npm run test:watch` — Vitest in watch mode.
 - `supabase start` — local Supabase for integration tests.
 
-A `.env.example` will be added in Week 2; never commit a real `.env`.
+Environment variables live in `.env.local` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`); never commit a real env file.
+
+### Desktop app (extra, not part of the AT3 deliverable)
+
+An Electron shell in `desktop/` wraps the same built frontend as a standalone macOS app (see ADR-0021):
+
+- `npm run desktop` — build the web app and launch the desktop shell.
+- `npm run desktop:package` — build and package `desktop/out/mac-arm64/TagOps Pro.app`.
+
+One-time setup: add `http://127.0.0.1:53682/auth/callback` to **Supabase → Authentication → URL Configuration → Redirect URLs**. Desktop sign-in opens Google in your normal browser and returns the session to the app (Google blocks OAuth inside embedded app windows).
 
 ---
 

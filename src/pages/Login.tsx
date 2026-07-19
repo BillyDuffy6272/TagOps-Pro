@@ -8,16 +8,39 @@ export default function Login() {
   async function signInWithGoogle() {
     setLoading(true)
     setError(null)
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin,
-        scopes: 'https://www.googleapis.com/auth/tagmanager.readonly',
-        queryParams: { access_type: 'offline', prompt: 'consent' },
-      },
-    })
-    if (error) {
-      setError(error.message)
+    try {
+      if (window.desktopAuth) {
+        // Desktop shell: Google blocks OAuth inside embedded app windows, so
+        // sign-in happens in the system browser. Supabase redirects the auth
+        // code to a loopback server in the Electron main process, which hands
+        // it back here to complete the session (PKCE).
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: 'http://127.0.0.1:53682/auth/callback',
+            scopes: 'https://www.googleapis.com/auth/tagmanager.readonly',
+            queryParams: { access_type: 'offline', prompt: 'consent' },
+            skipBrowserRedirect: true,
+          },
+        })
+        if (error) throw error
+        const code = await window.desktopAuth.signIn(data.url)
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        if (exchangeError) throw exchangeError
+        // Leave `loading` on — App's onAuthStateChange swaps to the Dashboard.
+      } else {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin,
+            scopes: 'https://www.googleapis.com/auth/tagmanager.readonly',
+            queryParams: { access_type: 'offline', prompt: 'consent' },
+          },
+        })
+        if (error) throw error
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Sign-in failed. Please try again.')
       setLoading(false)
     }
   }
