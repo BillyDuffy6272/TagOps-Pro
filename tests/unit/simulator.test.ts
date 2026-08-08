@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import type { GtmTag, GtmTrigger } from '../../src/lib/gtm'
+import type { GtmTag, GtmTrigger, GtmVariable } from '../../src/lib/gtm'
 import {
   PAGE_LOAD_EVENTS,
   evaluateTag,
   eventLabel,
   resolveTriggers,
+  resolveVariable,
   runSimulation,
+  tagFiredSteps,
   triggerMatchesEvent,
   type SimEvent,
 } from '../../src/features/preview/lib/simulator'
@@ -16,6 +18,10 @@ function makeTag(overrides: Partial<GtmTag>): GtmTag {
 
 function makeTrigger(overrides: Partial<GtmTrigger>): GtmTrigger {
   return { triggerId: 'tr1', name: 'Test trigger', type: 'pageview', path: '', ...overrides }
+}
+
+function makeVariable(overrides: Partial<GtmVariable>): GtmVariable {
+  return { variableId: 'v1', name: 'Test variable', type: 'c', path: '', ...overrides }
 }
 
 function makeEvent(name: string, data: Record<string, unknown> = {}, id = 1): SimEvent {
@@ -185,5 +191,53 @@ describe('eventLabel', () => {
   it('gives friendly names to lifecycle events and passes through custom names', () => {
     expect(eventLabel('gtm.js')).toBe('Container Loaded')
     expect(eventLabel('purchase')).toBe('purchase')
+  })
+})
+
+describe('tagFiredSteps', () => {
+  it('returns only the steps where the given tag actually fired', () => {
+    const tag = makeTag({ firingTriggerId: ['2147479553'] })
+    const steps = runSimulation(
+      [makeEvent('gtm.js', {}, 1), makeEvent('gtm.dom', {}, 2), makeEvent('gtm.load', {}, 3)],
+      [tag], []
+    )
+    // gtm.js matches the All Pages trigger; gtm.dom/gtm.load don't.
+    const fired = tagFiredSteps(steps, tag.tagId)
+    expect(fired).toHaveLength(1)
+    expect(fired[0].event.name).toBe('gtm.js')
+  })
+
+  it('returns an empty array for a tag that never fired', () => {
+    const tag = makeTag({})
+    const steps = runSimulation([makeEvent('gtm.js', {}, 1)], [tag], [])
+    expect(tagFiredSteps(steps, tag.tagId)).toEqual([])
+  })
+})
+
+describe('resolveVariable', () => {
+  it('resolves a Constant variable from its own parameter', () => {
+    const variable = makeVariable({ type: 'c', parameter: [{ type: 'template', key: 'value', value: 'AW-123456' }] })
+    const result = resolveVariable(variable, {})
+    expect(result).toMatchObject({ value: 'AW-123456', resolved: true })
+  })
+
+  it('resolves a Data Layer Variable by reading the named key out of the data layer', () => {
+    const variable = makeVariable({ type: 'v', parameter: [{ type: 'template', key: 'name', value: 'orderValue' }] })
+    expect(resolveVariable(variable, { orderValue: 49.99 })).toMatchObject({ value: 49.99, resolved: true })
+    expect(resolveVariable(variable, {})).toMatchObject({ value: undefined, resolved: true })
+  })
+
+  it('resolves an Auto-Event Variable via the gtm.* key the simulator populates', () => {
+    const variable = makeVariable({ type: 'aev', parameter: [{ type: 'template', key: 'varType', value: 'ELEMENT_CLASSES' }] })
+    const result = resolveVariable(variable, { 'gtm.elementClasses': 'btn btn-primary' })
+    expect(result).toMatchObject({ value: 'btn btn-primary', resolved: true })
+  })
+
+  it('leaves variable types that require a real page unresolved rather than guessing', () => {
+    const domVariable = makeVariable({ type: 'd' })
+    expect(resolveVariable(domVariable, {})).toMatchObject({ value: undefined, resolved: false })
+
+    const jsVariable = makeVariable({ type: 'jsm' })
+    expect(resolveVariable(jsVariable, {})).toMatchObject({ value: undefined, resolved: false })
   })
 })

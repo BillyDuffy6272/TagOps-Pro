@@ -1,4 +1,4 @@
-import { triggerEventName, triggersById, type GtmTag, type GtmTrigger } from '../../../lib/gtm'
+import { triggerEventName, triggersById, type GtmTag, type GtmTrigger, type GtmVariable } from '../../../lib/gtm'
 
 // A local, read-only re-implementation of GTM's preview/debug semantics:
 // events are replayed against the container's real tags and triggers to show
@@ -136,6 +136,60 @@ export function summarizeSteps(steps: SimStep[]): TagSummary[] {
     fireCount: steps.filter(step => step.results.find(r => r.tag.tagId === lastResult.tag.tagId)?.status === 'fired').length,
     lastResult,
   }))
+}
+
+// All the steps (in order) where this tag actually fired — the equivalent of
+// GTM's "Messages Where This Tag Fired" list in its own tag-detail drilldown.
+export function tagFiredSteps(steps: SimStep[], tagId: string): SimStep[] {
+  return steps.filter(step => step.results.find(r => r.tag.tagId === tagId)?.status === 'fired')
+}
+
+export interface VariableResult {
+  variable: GtmVariable
+  value: unknown
+  // Only variable types the simulator can actually compute without a real
+  // page (constants, data layer reads, and the auto-event fields the click/
+  // form/etc. simulator produces) get a value; everything else (DOM/JS/URL/
+  // cookie variables) is surfaced as unresolved rather than guessed.
+  resolved: boolean
+}
+
+// GTM's built-in Auto-Event Variable types, mapped to the gtm.* dataLayer
+// keys the SIMULATED_ACTIONS payloads below actually populate.
+const AEV_KEY_MAP: Record<string, string> = {
+  ELEMENT: 'gtm.element',
+  ELEMENT_URL: 'gtm.elementUrl',
+  ELEMENT_ID: 'gtm.elementId',
+  ELEMENT_CLASSES: 'gtm.elementClasses',
+  ELEMENT_TEXT: 'gtm.elementText',
+  HISTORY_NEW_URL_FRAGMENT: 'gtm.newUrl',
+  HISTORY_OLD_URL_FRAGMENT: 'gtm.oldUrl',
+  SCROLL_DEPTH_THRESHOLD: 'gtm.scrollThreshold',
+  SCROLL_DEPTH_UNITS: 'gtm.scrollUnits',
+  SCROLL_DEPTH_DIRECTION: 'gtm.scrollDirection',
+  ERROR_MESSAGE: 'gtm.errorMessage',
+  ERROR_LINE: 'gtm.errorLineNumber',
+  VIDEO_STATUS: 'gtm.videoStatus',
+  VIDEO_PERCENT: 'gtm.videoPercent',
+  ELEMENT_VISIBILITY_RATIO: 'gtm.visibleRatio',
+  ELEMENT_VISIBILITY_TIME: 'gtm.visibleTime',
+}
+
+export function resolveVariable(variable: GtmVariable, dataLayer: Record<string, unknown>): VariableResult {
+  if (variable.type === 'c') {
+    const value = variable.parameter?.find(p => p.key === 'value')?.value
+    return { variable, value, resolved: value !== undefined }
+  }
+  if (variable.type === 'v') {
+    const name = variable.parameter?.find(p => p.key === 'name')?.value
+    return { variable, value: name ? dataLayer[name] : undefined, resolved: name !== undefined }
+  }
+  if (variable.type === 'aev') {
+    const varType = variable.parameter?.find(p => p.key === 'varType')?.value
+    const key = varType ? AEV_KEY_MAP[varType] : undefined
+    return { variable, value: key ? dataLayer[key] : undefined, resolved: key !== undefined }
+  }
+  return { variable, value: undefined, resolved: false }
 }
 
 export function runSimulation(events: SimEvent[], tags: GtmTag[], triggers: GtmTrigger[]): SimStep[] {

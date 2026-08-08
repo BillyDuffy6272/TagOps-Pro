@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getDefaultWorkspace, getTags, getTriggers, type GtmTag, type GtmTrigger } from '../../../lib/gtm'
+import { getDefaultWorkspace, getTags, getTriggers, getVariables, type GtmTag, type GtmTrigger, type GtmVariable } from '../../../lib/gtm'
 import { useGtm } from '../../../lib/GtmContext'
 import { PAGE_LOAD_EVENTS, runSimulation, summarizeSteps, type SimEvent } from '../lib/simulator'
 import EventTimeline from './EventTimeline'
 import TagResultsPanel from './TagResultsPanel'
 import SummaryPanel from './SummaryPanel'
+import PreviewTagDetailModal from './PreviewTagDetailModal'
 import SimulateBar from './SimulateBar'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
@@ -18,9 +19,11 @@ export default function PreviewView() {
 
   const [tags, setTags] = useState<GtmTag[]>([])
   const [triggers, setTriggers] = useState<GtmTrigger[]>([])
+  const [variables, setVariables] = useState<GtmVariable[]>([])
   const [events, setEvents] = useState<SimEvent[]>([])
   const [selectedEventId, setSelectedEventId] = useState<number | 'summary' | null>(null)
   const [started, setStarted] = useState(false)
+  const [detailTag, setDetailTag] = useState<GtmTag | null>(null)
 
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,13 +40,15 @@ export default function PreviewView() {
     setError(null)
     try {
       const ws = await getDefaultWorkspace(selectedAccount, selectedContainer, token)
-      if (!ws) { setTags([]); setTriggers([]); return }
-      const [fetchedTags, fetchedTriggers] = await Promise.all([
+      if (!ws) { setTags([]); setTriggers([]); setVariables([]); return }
+      const [fetchedTags, fetchedTriggers, fetchedVariables] = await Promise.all([
         getTags(selectedAccount, selectedContainer, ws.workspaceId, token),
         getTriggers(selectedAccount, selectedContainer, ws.workspaceId, token),
+        getVariables(selectedAccount, selectedContainer, ws.workspaceId, token),
       ])
       setTags(fetchedTags)
       setTriggers(fetchedTriggers)
+      setVariables(fetchedVariables)
     } catch (e: unknown) {
       if ((e as { status?: number }).status === 403) setGtmForbidden(true)
       else setError(e instanceof Error ? e.message : 'Failed to load container')
@@ -162,14 +167,24 @@ export default function PreviewView() {
               totalFired={summary.filter(s => s.fireCount > 0).length}
             />
             {selectedEventId === 'summary' ? (
-              <SummaryPanel summary={summary} eventCount={steps.length} />
+              <SummaryPanel
+                summary={summary}
+                eventCount={steps.length}
+                variables={variables}
+                dataLayer={steps[steps.length - 1]?.dataLayer ?? {}}
+                onSelectTag={setDetailTag}
+              />
             ) : selectedStep ? (
-              <TagResultsPanel step={selectedStep} />
+              <TagResultsPanel step={selectedStep} variables={variables} onSelectTag={setDetailTag} />
             ) : (
               <EmptyState message="Select an event to inspect it." />
             )}
           </div>
         </div>
+      )}
+
+      {detailTag && (
+        <PreviewTagDetailModal tag={detailTag} steps={steps} triggers={triggers} onClose={() => setDetailTag(null)} />
       )}
     </div>
   )

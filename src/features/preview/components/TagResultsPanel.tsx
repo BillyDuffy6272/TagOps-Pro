@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import { tagLabel } from '../../../lib/gtm'
+import { tagLabel, type GtmTag, type GtmVariable } from '../../../lib/gtm'
 import { eventLabel, type SimStep, type TagResult, type TagStatus } from '../lib/simulator'
+import VariablesTab from './VariablesTab'
+import DataLayerTab from './DataLayerTab'
 
 interface Props {
   step: SimStep
+  variables: GtmVariable[]
+  onSelectTag: (tag: GtmTag) => void
 }
 
-type Tab = 'tags' | 'datalayer'
+type Tab = 'tags' | 'variables' | 'datalayer'
 
 const STATUS_BADGE: Record<TagStatus, { label: string; classes: string }> = {
   fired: { label: 'Fired', classes: 'bg-success/10 text-success' },
@@ -15,10 +19,14 @@ const STATUS_BADGE: Record<TagStatus, { label: string; classes: string }> = {
   blocked: { label: 'Blocked', classes: 'bg-danger/10 text-danger-text' },
 }
 
-function TagResultRow({ result }: { result: TagResult }) {
+function TagResultRow({ result, onSelect }: { result: TagResult; onSelect: () => void }) {
   const badge = STATUS_BADGE[result.status]
   return (
-    <div className="flex items-start justify-between gap-3 border-t border-border-subtle px-4 py-3 first:border-t-0">
+    <button
+      type="button"
+      className="flex w-full items-start justify-between gap-3 border-t border-border-subtle px-4 py-3 text-left transition-colors duration-150 ease-out first:border-t-0 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+      onClick={onSelect}
+    >
       <div className="min-w-0">
         <div className="truncate text-[13px] font-semibold text-text-primary">{result.tag.name}</div>
         <div className="text-[11.5px] text-text-tertiary">{tagLabel(result.tag.type)}</div>
@@ -32,12 +40,12 @@ function TagResultRow({ result }: { result: TagResult }) {
       <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10.5px] font-semibold tracking-wide uppercase ${badge.classes}`}>
         {badge.label}
       </span>
-    </div>
+    </button>
   )
 }
 
 // Right-hand panel of the preview screen: what happened on the selected event.
-export default function TagResultsPanel({ step }: Props) {
+export default function TagResultsPanel({ step, variables, onSelectTag }: Props) {
   const [tab, setTab] = useState<Tab>('tags')
 
   const fired = step.results.filter(r => r.status === 'fired')
@@ -51,7 +59,7 @@ export default function TagResultsPanel({ step }: Props) {
           <div className="font-mono text-[11.5px] text-text-faint">{step.event.name}</div>
         </div>
         <div className="flex gap-1.5">
-          {(['tags', 'datalayer'] as const).map(t => (
+          {(['tags', 'variables', 'datalayer'] as const).map(t => (
             <button
               key={t}
               type="button"
@@ -60,13 +68,13 @@ export default function TagResultsPanel({ step }: Props) {
               }`}
               onClick={() => setTab(t)}
             >
-              {t === 'tags' ? `Tags (${fired.length}/${step.results.length})` : 'Data Layer'}
+              {t === 'tags' ? `Tags (${fired.length}/${step.results.length})` : t === 'variables' ? 'Variables' : 'Data Layer'}
             </button>
           ))}
         </div>
       </div>
 
-      {tab === 'tags' ? (
+      {tab === 'tags' && (
         <>
           <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
             <div className="border-b border-border-subtle px-4 py-2.5 text-[10.5px] font-semibold tracking-[0.07em] text-success uppercase">
@@ -75,7 +83,7 @@ export default function TagResultsPanel({ step }: Props) {
             {fired.length === 0 ? (
               <div className="px-4 py-3 text-[12.5px] text-text-faint">No tags fired on this event.</div>
             ) : (
-              fired.map(r => <TagResultRow key={r.tag.tagId} result={r} />)
+              fired.map(r => <TagResultRow key={r.tag.tagId} result={r} onSelect={() => onSelectTag(r.tag)} />)
             )}
           </div>
 
@@ -86,20 +94,15 @@ export default function TagResultsPanel({ step }: Props) {
             {notFired.length === 0 ? (
               <div className="px-4 py-3 text-[12.5px] text-text-faint">Every tag fired on this event.</div>
             ) : (
-              notFired.map(r => <TagResultRow key={r.tag.tagId} result={r} />)
+              notFired.map(r => <TagResultRow key={r.tag.tagId} result={r} onSelect={() => onSelectTag(r.tag)} />)
             )}
           </div>
         </>
-      ) : (
-        <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
-          <div className="border-b border-border-subtle px-4 py-2.5 text-[10.5px] font-semibold tracking-[0.07em] text-text-faint uppercase">
-            Data layer after this event
-          </div>
-          <pre className="m-0 overflow-x-auto p-4 font-mono text-[12px] leading-relaxed text-text-secondary">
-            {JSON.stringify(step.dataLayer, null, 2)}
-          </pre>
-        </div>
       )}
+
+      {tab === 'variables' && <VariablesTab variables={variables} dataLayer={step.dataLayer} />}
+
+      {tab === 'datalayer' && <DataLayerTab dataLayer={step.dataLayer} label="Data layer after this event" />}
     </div>
   )
 }

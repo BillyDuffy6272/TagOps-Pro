@@ -516,6 +516,22 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 ---
 
+### Added a tag drilldown, plus Variables/Data Layer tabs, to Preview's Summary and per-event panels
+
+**Date:** 08/08/2026
+
+**Prompt:** After confirming the Summary row from the previous session now renders correctly, shared four more screenshots of real GTM's Tag Assistant — its "Tag Details" flyout (Properties table, "Messages Where This Tag Fired", Firing Triggers with a Filters sub-table, Blocking Triggers), its "Output of container" tab row (Tags / Variables / Data Layer / Consent / Console), its Variables tab (Variable / Variable Type / Return Type / Value table), and its Data Layer tab (JSON dump per message). Said: "Can you also please allow me to expand on the tags that fired as I want to see specifically what fired. Like this:. Can you also make it so there are tje different tabs, just variables and datalayer as they are the really important ones. Make this seeable in the sumary and each indivusl one as well" — explicitly scoping the tab set down to Variables and Data Layer only (not Consent/Console, which don't apply to a local simulator with no real page or consent state).
+
+**Response summary:** Read `TagResultsPanel.tsx`, `SummaryPanel.tsx`, `simulator.ts`, and the existing `TagDetailModal`/`TriggerDetailModal` before writing anything, to reuse established conventions rather than clone GTM pixel-for-pixel. Added to `simulator.ts`: `tagFiredSteps()` (which session events a given tag actually fired on — the data behind "Messages Where This Tag Fired"), and `resolveVariable()` with an `AEV_KEY_MAP`, which resolves Constant, Data Layer, and Auto-Event variables from data the simulator already has, and explicitly marks DOM/JS/URL/cookie variable types as "Not resolved in simulation" rather than fabricating a value — consistent with how unevaluated trigger conditions are already surfaced elsewhere in Preview. Built `PreviewTagDetailModal.tsx` (Tag Details, fired-messages list, firing/blocking triggers with their filter conditions) opened by clicking any tag row in either panel; `VariablesTab.tsx` and `DataLayerTab.tsx` as shared components used by both `TagResultsPanel` and `SummaryPanel`, replacing the Data Layer JSON block that used to be duplicated inline; `PreviewView.tsx` now also fetches `getVariables()` and holds the `detailTag` modal state. Added 6 unit tests (`tagFiredSteps`, `resolveVariable` across all four resolvable/unresolvable type branches) per the datalayer-code testing rule — 29/29 tests pass, plus clean lint, typecheck, and build.
+
+One deliberate simplification flagged rather than silently decided: trigger filter conditions render as one readable line (`{{Page URL}} contains /checkout`) via the existing `formatCondition()` helper, not GTM's three-part badge layout — matches `TriggerDetailModal`'s established pattern instead of adding a one-off richer format just for this modal.
+
+**What you did with it:** Accepted.
+
+**Why:** This was my initiative in the same way as the Summary work — I supplied the exact reference screenshots and named precisely which tabs I wanted (Variables and Data Layer, explicitly not Consent/Console) rather than asking for an open-ended "make it more like GTM." Claude's job was translating that reference into the app's existing component/testing conventions and flagging the one place it chose a simpler format than the screenshot showed, not deciding what the feature should be. I reviewed the result and confirmed it's what I intended before this was logged.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
