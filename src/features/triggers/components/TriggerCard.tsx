@@ -5,9 +5,10 @@ import EntityRow from '../../../components/EntityRow'
 interface Props {
   trigger: GtmTrigger
   usedByTags: TagUsage[]
+  onClick: () => void
 }
 
-export default function TriggerCard({ trigger, usedByTags }: Props) {
+export default function TriggerCard({ trigger, usedByTags, onClick }: Props) {
   const category = triggerCategory(trigger.type)
   const label = triggerLabel(trigger.type)
   const eventName = triggerEventName(trigger)
@@ -16,6 +17,9 @@ export default function TriggerCard({ trigger, usedByTags }: Props) {
     <EntityRow
       title={trigger.name}
       badge={<CategoryBadge kind="trigger" category={category} label={label} />}
+      interactive
+      onClick={onClick}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
       meta={
         <>
           <span className={`rounded-md px-1.5 py-0.5 text-[11px] font-medium ${usedByTags.length === 0 ? 'bg-warning/10 text-warning' : 'bg-success/10 text-success'}`}>

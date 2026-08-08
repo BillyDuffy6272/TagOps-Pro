@@ -6,6 +6,7 @@ import {
 } from '../../../lib/gtm'
 import { useGtm } from '../../../lib/GtmContext'
 import TriggerCard from './TriggerCard'
+import TriggerDetailModal from '../../../components/TriggerDetailModal'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
 import StatRow from '../../../components/StatRow'
@@ -25,6 +26,7 @@ export default function TriggersView() {
 
   const [triggers, setTriggers] = useState<GtmTrigger[]>([])
   const [tags, setTags] = useState<GtmTag[]>([])
+  const [detailTrigger, setDetailTrigger] = useState<GtmTrigger | null>(null)
 
   const [filter, setFilter] = useState<Filter>('all')
   const [typeFilter, setTypeFilter] = useState('all')
@@ -135,11 +137,19 @@ export default function TriggersView() {
           ) : (
             <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
               {filtered.map(({ trigger, usage }) => (
-                <TriggerCard key={trigger.triggerId} trigger={trigger} usedByTags={usage} />
+                <TriggerCard key={trigger.triggerId} trigger={trigger} usedByTags={usage} onClick={() => setDetailTrigger(trigger)} />
               ))}
             </div>
           )}
         </>
+      )}
+
+      {detailTrigger && (
+        <TriggerDetailModal
+          trigger={detailTrigger}
+          usedByTags={tagsUsingTrigger(detailTrigger.triggerId, tags)}
+          onClose={() => setDetailTrigger(null)}
+        />
       )}
     </div>
   )

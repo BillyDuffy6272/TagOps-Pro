@@ -5,9 +5,10 @@ import EntityRow from '../../../components/EntityRow'
 interface Props {
   variable: GtmVariable
   usedByTags: { tagId: string; name: string }[]
+  onClick: () => void
 }
 
-export default function VariableCard({ variable, usedByTags }: Props) {
+export default function VariableCard({ variable, usedByTags, onClick }: Props) {
   const category = variableCategory(variable.type)
   const label = variableLabel(variable.type)
 
@@ -16,6 +17,9 @@ export default function VariableCard({ variable, usedByTags }: Props) {
       title={`{{${variable.name}}}`}
       titleMono
       badge={<CategoryBadge kind="variable" category={category} label={label} />}
+      interactive
+      onClick={onClick}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
       meta={
         <>
           <span className={`rounded-md px-1.5 py-0.5 text-[11px] font-medium ${usedByTags.length === 0 ? 'bg-warning/10 text-warning' : 'bg-success/10 text-success'}`}>

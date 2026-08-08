@@ -254,6 +254,31 @@ export function triggersById(triggerIds: string[] | undefined, triggers: GtmTrig
   return triggers.filter(t => triggerIds.includes(t.triggerId))
 }
 
+const CONDITION_TYPE_LABELS: Record<string, string> = {
+  equals: 'equals',
+  contains: 'contains',
+  startsWith: 'starts with',
+  endsWith: 'ends with',
+  matchRegex: 'matches regex',
+  greater: 'is greater than',
+  greaterOrEquals: 'is greater than or equal to',
+  less: 'is less than',
+  lessOrEquals: 'is less than or equal to',
+  cssSelector: 'matches CSS selector',
+  urlMatches: 'matches URL pattern',
+}
+
+// GTM stores each firing/blocking condition as {type, parameter: [arg0, arg1]},
+// where arg0 is the left-hand variable reference and arg1 the comparison value.
+export function formatCondition(condition: GtmCondition): string {
+  const arg0 = condition.parameter?.find(p => p.key === 'arg0')
+  const arg1 = condition.parameter?.find(p => p.key === 'arg1')
+  const operator = CONDITION_TYPE_LABELS[condition.type] ?? condition.type
+  const left = arg0?.value ?? '—'
+  const right = arg1 ? formatParameterValue(arg1) : ''
+  return right ? `${left} ${operator} ${right}` : `${left} ${operator}`
+}
+
 export const TAG_TYPE_LABELS: Record<string, string> = {
   awct: 'Google Ads Conversion',
   awrct: 'Google Ads Remarketing',

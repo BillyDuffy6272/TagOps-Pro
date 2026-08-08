@@ -6,6 +6,7 @@ import {
 } from '../../../lib/gtm'
 import { useGtm } from '../../../lib/GtmContext'
 import VariableCard from './VariableCard'
+import VariableDetailModal from '../../../components/VariableDetailModal'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
 import StatRow from '../../../components/StatRow'
@@ -25,6 +26,7 @@ export default function VariablesView() {
 
   const [variables, setVariables] = useState<GtmVariable[]>([])
   const [tags, setTags] = useState<GtmTag[]>([])
+  const [detailVariable, setDetailVariable] = useState<GtmVariable | null>(null)
 
   const [filter, setFilter] = useState<Filter>('all')
   const [typeFilter, setTypeFilter] = useState('all')
@@ -133,11 +135,19 @@ export default function VariablesView() {
           ) : (
             <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
               {filtered.map(({ variable, usage }) => (
-                <VariableCard key={variable.variableId} variable={variable} usedByTags={usage} />
+                <VariableCard key={variable.variableId} variable={variable} usedByTags={usage} onClick={() => setDetailVariable(variable)} />
               ))}
             </div>
           )}
         </>
+      )}
+
+      {detailVariable && (
+        <VariableDetailModal
+          variable={detailVariable}
+          usedByTags={tagsUsingVariable(detailVariable.name, tags)}
+          onClose={() => setDetailVariable(null)}
+        />
       )}
     </div>
   )
