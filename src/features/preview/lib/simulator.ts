@@ -120,6 +120,24 @@ export function evaluateTag(tag: GtmTag, event: SimEvent, triggers: GtmTrigger[]
   }
 }
 
+export interface TagSummary {
+  tag: GtmTag
+  fireCount: number
+  lastResult: TagResult
+}
+
+// Session-wide rollup across every simulated event so far, mirroring the
+// pinned "Summary" entry above the per-event stages in GTM's own debug pane.
+export function summarizeSteps(steps: SimStep[]): TagSummary[] {
+  if (steps.length === 0) return []
+  const latestResults = steps[steps.length - 1].results
+  return latestResults.map(lastResult => ({
+    tag: lastResult.tag,
+    fireCount: steps.filter(step => step.results.find(r => r.tag.tagId === lastResult.tag.tagId)?.status === 'fired').length,
+    lastResult,
+  }))
+}
+
 export function runSimulation(events: SimEvent[], tags: GtmTag[], triggers: GtmTrigger[]): SimStep[] {
   const steps: SimStep[] = []
   let dataLayer: Record<string, unknown> = {}

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getDefaultWorkspace, getTags, getTriggers, type GtmTag, type GtmTrigger } from '../../../lib/gtm'
 import { useGtm } from '../../../lib/GtmContext'
-import { PAGE_LOAD_EVENTS, runSimulation, type SimEvent } from '../lib/simulator'
+import { PAGE_LOAD_EVENTS, runSimulation, summarizeSteps, type SimEvent } from '../lib/simulator'
 import EventTimeline from './EventTimeline'
 import TagResultsPanel from './TagResultsPanel'
+import SummaryPanel from './SummaryPanel'
 import SimulateBar from './SimulateBar'
 import ViewHeader from '../../../components/ViewHeader'
 import ErrorBanner from '../../../components/ErrorBanner'
@@ -18,7 +19,7 @@ export default function PreviewView() {
   const [tags, setTags] = useState<GtmTag[]>([])
   const [triggers, setTriggers] = useState<GtmTrigger[]>([])
   const [events, setEvents] = useState<SimEvent[]>([])
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null)
+  const [selectedEventId, setSelectedEventId] = useState<number | 'summary' | null>(null)
   const [started, setStarted] = useState(false)
 
   const [syncing, setSyncing] = useState(false)
@@ -64,7 +65,7 @@ export default function PreviewView() {
   function startPreview() {
     const pageLoad = PAGE_LOAD_EVENTS.map(e => makeEvent(e.name, e.data))
     setEvents(pageLoad)
-    setSelectedEventId(pageLoad[pageLoad.length - 1]?.id ?? null)
+    setSelectedEventId('summary')
     setStarted(true)
   }
 
@@ -81,7 +82,10 @@ export default function PreviewView() {
   }
 
   const steps = useMemo(() => runSimulation(events, tags, triggers), [events, tags, triggers])
-  const selectedStep = steps.find(s => s.event.id === selectedEventId) ?? steps[steps.length - 1] ?? null
+  const summary = useMemo(() => summarizeSteps(steps), [steps])
+  const selectedStep = typeof selectedEventId === 'number'
+    ? steps.find(s => s.event.id === selectedEventId) ?? steps[steps.length - 1] ?? null
+    : null
 
   if (gtmForbidden) return <GtmForbiddenState title="Preview" />
 
@@ -151,8 +155,15 @@ export default function PreviewView() {
         <div className="flex flex-col gap-4">
           <SimulateBar onSimulate={simulate} />
           <div className="grid grid-cols-[280px_1fr] items-start gap-4 max-lg:grid-cols-1">
-            <EventTimeline steps={steps} selectedEventId={selectedStep?.event.id ?? null} onSelect={setSelectedEventId} />
-            {selectedStep ? (
+            <EventTimeline
+              steps={steps}
+              selectedEventId={selectedEventId}
+              onSelect={setSelectedEventId}
+              totalFired={summary.filter(s => s.fireCount > 0).length}
+            />
+            {selectedEventId === 'summary' ? (
+              <SummaryPanel summary={summary} eventCount={steps.length} />
+            ) : selectedStep ? (
               <TagResultsPanel step={selectedStep} />
             ) : (
               <EmptyState message="Select an event to inspect it." />

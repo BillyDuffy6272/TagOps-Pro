@@ -488,6 +488,34 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 ---
 
+### Extended the Tags detail pop-up to Triggers and Variables
+
+**Date:** 08/08/2026
+
+**Prompt:** "Please like you have made for the Tags page enbable me to open a small preview of the item (or different Tags in that case) but for every page except Conversion Events. I just want the same pop-up with infor but for the rest of the pages. That being triggers + variaables"
+
+**Response summary:** Read `TagsView.tsx`, `TagDetailModal.tsx`, `Modal.tsx`, and the Triggers/Variables cards and views before writing anything, to copy the exact existing pattern rather than invent a new one. Added `formatCondition()` to `lib/gtm.ts` (no existing helper rendered a trigger's `arg0`/`arg1` filter conditions as readable text). Created `TriggerDetailModal.tsx` (trigger type, event name, filter/auto-event conditions, notes, and which tags fire on/are blocked by it) and `VariableDetailModal.tsx` (variable type, parameters, notes, and which tags use it), both built on the shared `Modal` component Tags already uses. Made `TriggerCard`/`VariableCard` clickable (`onClick`, `interactive`, Enter/Space keyboard support — same as `TagCard`) and wired `detailTrigger`/`detailVariable` state into `TriggersView.tsx`/`VariablesView.tsx`, reusing the already-loaded `tagsUsingTrigger`/`tagsUsingVariable` helpers for the "usage" section. Conversion Events was left untouched, as instructed. Ran `npm run lint` and `npm run typecheck` — both clean.
+
+**What you did with it:** Accepted.
+
+**Why:** This was my initiative — I asked Claude to replicate a pattern I'd already approved on the Tags page rather than design something new, so the request was really "extend this, don't reinvent it." I inspected the resulting modals and card behaviour on Triggers and Variables afterward and confirmed they match what I intended: same look, same interaction, same restraint on which page to leave alone.
+
+---
+
+### Added a session-wide "Summary" view to Preview mode, matching GTM's Tag Assistant
+
+**Date:** 08/08/2026
+
+**Prompt:** Shared a screenshot of Google Tag Manager's own Preview/Debug pane (Tag Assistant) showing its pinned "Summary" entry above the numbered lifecycle stages (Message, Consent Initialization, Initialization, Container Loaded, DOM Ready, Window Loaded), with a Tags Fired / Tags Not Fired breakdown on the right. Said: "For the preview tab in the actual GTM preview there is a summary of what tags have fired and what have not. I like how you can press on each indivusal stages but please make a summary"
+
+**Response summary:** Read `PreviewView.tsx`, `EventTimeline.tsx`, `TagResultsPanel.tsx`, and `lib/simulator.ts` first — confirmed the existing per-event timeline (clickable numbered stages) already matched the GTM pattern the user liked, and the only gap was the aggregate rollup. Added `summarizeSteps()` and a `TagSummary` type to `simulator.ts`, rolling up each tag's fire count and latest status across every simulated event in the session so far (not just the selected one). Built `SummaryPanel.tsx` (Tags fired / Tags not fired, styled to match the existing `TagResultsPanel`). Added a pinned "Summary" row above the per-event list in `EventTimeline.tsx`, with a badge showing how many distinct tags have fired session-wide — mirroring the screenshot's left-rail layout. Wired it into `PreviewView.tsx`: a new session now opens on Summary by default, and the existing per-event stage clicks are unchanged. Ran `npm run lint` and `npm run typecheck` — both clean.
+
+**What you did with it:** Accepted.
+
+**Why:** I pointed Claude at a specific reference (my own screenshot of real GTM) and asked for that exact concept, not a general "improve the preview page" — the initiative and the design target were both mine. Claude's job was translating that concept into the app's existing simulator/component conventions rather than deciding what the feature should be. I reviewed the diff and confirmed it does what I asked: the individual-stage navigation I already liked still works exactly as before, with the Summary rollup added on top.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
