@@ -89,7 +89,7 @@ export default function HomeView({ session, setActiveView }: Props) {
             hasToken ? 'text-success' : 'text-text-tertiary'
           }`}
         >
-          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${hasToken ? 'bg-success shadow-[0_0_0_2px_rgba(34,197,94,0.15)]' : 'bg-text-faint'}`} />
+          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${hasToken ? 'animate-pulse bg-success shadow-[0_0_0_2px_rgba(34,197,94,0.15)]' : 'bg-text-faint'}`} />
           {hasToken ? 'GTM connected' : 'GTM disconnected'}
         </div>
       </header>
