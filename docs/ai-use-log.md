@@ -532,6 +532,20 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 ---
 
+### Built a Settings page with real team management (add/remove/expiry), closing an open MVP requirement
+
+**Date:** 09/08/2026
+
+**Prompt:** "Also can you make a settings / profile page. I feel as if this is something that would be needed" — an open-ended ask with no spec attached, unlike the two prior sessions which pointed at a specific screenshot or pattern to copy.
+
+**Response summary:** Before writing anything, checked `docs/02-requirements.md` and found "Add/remove people from the Account" and "expiry dates for people" already listed as MVP must-haves, and that the `organisation_members` table (role + expiry, full RLS) had existed unused since Week 5–6 — no page in the app read or wrote it. Rather than guess how big "a settings page" should be, asked one scoping question: a lightweight profile-only page, or the full version wired to that existing schema. Chose the full version. Investigating further surfaced two real RLS gaps: `public.users` only allows selecting your own row (so a team list joining to it would show every teammate as null), and "add by email" needs to look up someone who isn't a teammate yet, which a same-org-only fix wouldn't cover. Wrote migration `20260809000000_settings_team_management.sql` — an additive `users` SELECT policy scoped to "shares an organisation with you" (not a global directory), plus a narrow `find_user_by_email()` SECURITY DEFINER RPC that returns only the fields needed to add someone, for an exact match only. Built the new `src/features/settings/` feature (types, `api/settings.ts`, `SettingsView`/`MemberRow`/`AddMemberModal`): a read-only profile card sourced from the Google session (not `public.users`, which has no UPDATE policy by design); an organisation-name field editable only by the owner; a team list with per-row role/expiry/remove controls gated by the caller's role in the UI (RLS is the real enforcement). Owner is not an assignable role or a removable row from this UI. Noticed `getCurrentOrganisationId`/`generateDisplayId` were about to be duplicated a second time (Conversions already had them) and promoted them to a shared `src/lib/organisation.ts` instead. Reached via the existing sidebar profile row rather than a new primary nav item, since account settings is a different category from the GTM-entity views. Added hand-authored `users`/`organisations` table types and a `find_user_by_email` `Functions` entry to `src/types/supabase.ts` (same no-CLI caveat as every prior hand-authored addition). Ran lint, typecheck, the full test suite, and a production build — all clean; also started the dev server and confirmed the new module graph compiles and serves without error (full authenticated click-through wasn't possible without a real session).
+
+**What you did with it:** Accepted the full-scope answer to the scoping question; implementation not yet exercised against real data.
+
+**Why:** The request itself was mine, but the shape of the answer — team management wired to real, previously-unused schema, rather than a cosmetic profile page — was Claude's proposal after reading the requirements doc, which I approved when asked directly rather than assumed. The RLS-widening decision is the one piece of this I most need to sit with before the walk-through: it's a deliberate, scoped trade-off (teammates can see each other's name/email/avatar) rather than an oversight, but it's new attack surface on `public.users` and deserves its own line in `docs/05-security-review.md` once that file exists, not just this log entry. **Outstanding: the migration has not been run in the Supabase SQL editor yet** — the Settings page will fail on the team list and "Add member" until that step happens, same as every schema change before it.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

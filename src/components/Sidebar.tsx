@@ -70,7 +70,13 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
       </nav>
 
       <div className="flex shrink-0 flex-col gap-2 border-t border-border-subtle px-3 pt-3 pb-3">
-        <div className="flex min-w-0 items-center gap-2 rounded-lg px-2 py-2">
+        <button
+          type="button"
+          className={`flex min-w-0 items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+            activeView === 'settings' ? 'bg-white/9 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.035)]' : 'hover:bg-white/5'
+          }`}
+          onClick={() => setActiveView('settings')}
+        >
           {avatarUrl
             ? <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full ring-1 ring-white/15" />
             : (
@@ -81,9 +87,9 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
           }
           <div className="min-w-0">
             <div className="truncate text-[13px] font-semibold text-text-secondary" title={userName}>{userName}</div>
-            <div className="truncate text-[11.5px] font-medium text-text-faint">Signed in</div>
+            <div className="truncate text-[11.5px] font-medium text-text-faint">Settings & team</div>
           </div>
-        </div>
+        </button>
         <button
           type="button"
           className="w-full rounded-md px-2 py-2 text-left text-[12.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-white/5 hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"

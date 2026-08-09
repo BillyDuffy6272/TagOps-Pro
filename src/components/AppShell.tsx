@@ -9,8 +9,9 @@ import TriggersView from '../features/triggers/components/TriggersView'
 import VariablesView from '../features/variables/components/VariablesView'
 import ConversionsView from '../features/conversions/components/ConversionsView'
 import PreviewView from '../features/preview/components/PreviewView'
+import SettingsView from '../features/settings/components/SettingsView'
 
-export type ActiveView = 'home' | 'tags' | 'triggers' | 'variables' | 'conversions' | 'preview'
+export type ActiveView = 'home' | 'tags' | 'triggers' | 'variables' | 'conversions' | 'preview' | 'settings'
 
 interface Props {
   session: Session
@@ -27,6 +28,7 @@ export default function AppShell({ session }: Props) {
       case 'variables':   return <VariablesView />
       case 'conversions': return <ConversionsView session={session} />
       case 'preview':     return <PreviewView />
+      case 'settings':    return <SettingsView session={session} />
     }
   }
 

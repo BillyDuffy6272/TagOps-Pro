@@ -1,12 +1,12 @@
 import type { ActiveView } from './AppShell'
-import { NAV_ITEMS } from './navItems'
+import { NAV_ITEMS, SETTINGS_NAV_ITEM } from './navItems'
 
 interface Props {
   activeView: ActiveView
 }
 
 export default function TopBar({ activeView }: Props) {
-  const item = NAV_ITEMS.find(n => n.id === activeView)
+  const item = NAV_ITEMS.find(n => n.id === activeView) ?? (activeView === 'settings' ? SETTINGS_NAV_ITEM : undefined)
   if (!item) return null
 
   return (
@@ -14,7 +14,7 @@ export default function TopBar({ activeView }: Props) {
       <span className="flex h-4 w-4 items-center justify-center text-text-faint" aria-hidden="true">{item.icon}</span>
       <span className="text-[13.5px] font-semibold text-text-secondary">{item.label}</span>
       <span className="ml-auto hidden rounded-md border border-border-subtle bg-surface px-2 py-1 font-mono text-[11px] text-text-faint md:inline-flex">
-        Workspace
+        {activeView === 'settings' ? 'Account' : 'Workspace'}
       </span>
     </header>
   )

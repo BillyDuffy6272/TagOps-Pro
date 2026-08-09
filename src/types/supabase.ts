@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      users: {
+        Row: {
+          id: string
+          display_id: string
+          email: string
+          display_name: string | null
+          avatar_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          display_id: string
+          email: string
+          display_name?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          email?: string
+          display_name?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      organisations: {
+        Row: {
+          id: string
+          display_id: string
+          name: string
+          slug: string
+          owner_id: string
+          created_at: string
+          updated_at: string
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          name: string
+          slug: string
+          owner_id: string
+          created_at?: string
+          updated_at?: string
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          name?: string
+          slug?: string
+          owner_id?: string
+          created_at?: string
+          updated_at?: string
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
       organisation_members: {
         Row: {
           id: string
@@ -349,7 +412,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      find_user_by_email: {
+        Args: { lookup_email: string }
+        Returns: {
+          id: string
+          display_name: string | null
+          avatar_url: string | null
+          email: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

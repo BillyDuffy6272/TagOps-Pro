@@ -1,4 +1,5 @@
 import { supabase } from '../../../lib/supabase'
+import { generateDisplayId, getMyMembership } from '../../../lib/organisation'
 import type {
   Container,
   ConversionEvent,
@@ -6,14 +7,6 @@ import type {
   ConversionEventUpdate,
   ConversionEventWithContainer,
 } from '../types'
-
-// display_id must match ^CONID_[A-Z]{2}_[0-9]{4}$ / ^CNTID_[A-Z]{2}_[0-9]{4}$ (see
-// supabase/migrations). No server-side sequence exists for either, so a placeholder is
-// generated and retried on the rare unique-constraint collision.
-function generateDisplayId(prefix: string): string {
-  const suffix = Math.floor(1000 + Math.random() * 9000)
-  return `${prefix}_XX_${suffix}`
-}
 
 function mapConversionEventRow(
   row: ConversionEvent & { containers: { name: string; google_ads_conversion_id: string | null } | null }
@@ -31,15 +24,7 @@ function mapConversionEventRow(
 // the Supabase row backing whichever GTM container the user has picked, creating it on
 // first use rather than requiring a separate "add container" step.
 export async function getCurrentOrganisationId(userId: string): Promise<string> {
-  const { data, error } = await supabase
-    .from('organisation_members')
-    .select('organisation_id')
-    .eq('user_id', userId)
-    .limit(1)
-    .maybeSingle()
-  if (error) throw error
-  if (!data) throw new Error('No organisation membership found for this account.')
-  return data.organisation_id
+  return (await getMyMembership(userId)).organisationId
 }
 
 export async function ensureContainerForGtmContainer(
