@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0024 — Fixed a codebase-wide bug that silently swallowed every Supabase error message
+
+- **Date:** 2026-08-19
+- **Status:** Accepted
+- **Context:** Testing ADR-0023's "Create organisation" flow failed with a generic "Failed to create your organisation." message — a hardcoded fallback string, not the real reason. Investigation traced this to a genuine, pre-existing bug present since the very first Supabase-backed feature (`Login.tsx`'s OAuth error handling was fine; `conversions.ts` was not): PostgREST's `{ data, error }` result shape returns `error` as a **plain object** (`{message, code, details, hint}`), not a real `Error` instance — `postgrest-js` only constructs an actual `PostgrestError` (which does extend `Error`) when `.throwOnError()` is called on the builder, which nothing in this codebase does. Every api function did `if (error) throw error`, throwing that plain object; every consuming component then did `catch (err) { err instanceof Error ? err.message : 'generic fallback' }` — and since the thrown object was never `instanceof Error`, every single Supabase-originated error in the app (Conversions, Settings, Organisation, `lib/organisation.ts`) has been silently replaced with its component's hardcoded fallback string since the feature was built. This is why the real cause of the "cannot create an organisation" failure was invisible.
+- **Decision:** Added `toError()` to `src/lib/supabase.ts` — a one-line helper that wraps a plain `{message}` error into a real `Error`, or passes an already-real `Error` through unchanged. Replaced every `throw error` (and `throw error.code !== '23505' ? ...`-guarded variants) across `lib/organisation.ts`, `features/organisation/api/organisation.ts`, `features/settings/api/settings.ts`, and `features/conversions/api/conversions.ts` with `throw toError(error)`. Confirmed via the `@supabase/auth-js` source that `AuthError` genuinely does extend `Error`, so `Login.tsx`'s two `throw error` sites (OAuth-related, not PostgREST) were correctly left untouched.
+- **Consequences:** Every existing `err instanceof Error ? err.message : …` check throughout the app now works as originally intended — the next time any Supabase call fails, the real Postgres/PostgREST message will surface instead of a generic fallback. This doesn't fix whatever is actually stopping organisation creation from succeeding — it fixes the app's ability to *report* what that is. Needs a retry against the live project to see the real error and diagnose the underlying cause. Any future Supabase api function must route its `throw` through `toError()` — worth calling out in `CLAUDE.md`'s coding conventions if this pattern isn't obvious enough from the helper's own comment.
+
+---
+
 ## ADR-0023 — Organisation onboarding gate + shareable invite codes for self-service "join"
 
 - **Date:** 2026-08-18

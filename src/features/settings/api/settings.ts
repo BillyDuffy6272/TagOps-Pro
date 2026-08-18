@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabase'
+import { supabase, toError } from '../../../lib/supabase'
 import { generateDisplayId } from '../../../lib/organisation'
 import type {
   MemberRole,
@@ -18,7 +18,7 @@ export async function getOrganisation(organisationId: string): Promise<Organisat
     .select(ORGANISATION_SUMMARY_COLUMNS)
     .eq('id', organisationId)
     .single()
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
@@ -29,7 +29,7 @@ export async function updateOrganisationName(organisationId: string, name: strin
     .eq('id', organisationId)
     .select(ORGANISATION_SUMMARY_COLUMNS)
     .single()
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
@@ -51,7 +51,7 @@ export async function listOrganisationMembers(organisationId: string): Promise<O
     .eq('organisation_id', organisationId)
     .order('joined_at')
     .overrideTypes<{ users: { display_name: string | null; avatar_url: string | null; email: string } | null }[]>()
-  if (error) throw error
+  if (error) throw toError(error)
   return (data ?? []).map(mapMemberRow)
 }
 
@@ -60,7 +60,7 @@ export async function listOrganisationMembers(organisationId: string): Promise<O
 // deliberately doesn't expose a broader user directory.
 export async function findUserByEmail(email: string): Promise<UserLookupResult | null> {
   const { data, error } = await supabase.rpc('find_user_by_email', { lookup_email: email })
-  if (error) throw error
+  if (error) throw toError(error)
   const row = data?.[0]
   if (!row) return null
   return { id: row.id, displayName: row.display_name, avatarUrl: row.avatar_url, email: row.email }
@@ -79,7 +79,7 @@ export async function addOrganisationMember(input: {
     .eq('organisation_id', input.organisationId)
     .eq('user_id', input.userId)
     .maybeSingle()
-  if (existingError) throw existingError
+  if (existingError) throw toError(existingError)
   if (existing) throw new Error('This person is already on your team.')
 
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -96,7 +96,7 @@ export async function addOrganisationMember(input: {
       .select()
       .single()
     if (!error) return data
-    if (error.code !== '23505') throw error
+    if (error.code !== '23505') throw toError(error)
   }
   throw new Error('Could not generate a unique member ID. Please try again.')
 }
@@ -111,11 +111,11 @@ export async function updateOrganisationMember(
     .eq('id', memberId)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
 export async function removeOrganisationMember(memberId: string): Promise<void> {
   const { error } = await supabase.from('organisation_members').delete().eq('id', memberId)
-  if (error) throw error
+  if (error) throw toError(error)
 }

@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase, toError } from './supabase'
 
 export interface MyMembership {
   organisationId: string
@@ -17,7 +17,7 @@ export async function checkMyMembership(userId: string): Promise<MyMembership | 
     .eq('user_id', userId)
     .limit(1)
     .maybeSingle()
-  if (error) throw error
+  if (error) throw toError(error)
   if (!data) return null
   return { organisationId: data.organisation_id, role: data.role }
 }

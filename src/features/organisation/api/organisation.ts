@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabase'
+import { supabase, toError } from '../../../lib/supabase'
 import { generateDisplayId } from '../../../lib/organisation'
 import type { OrganisationSummary } from '../../settings/types'
 
@@ -21,7 +21,7 @@ export async function createOrganisation(name: string, ownerId: string): Promise
       .select(ORGANISATION_SUMMARY_COLUMNS)
       .single()
     if (!error) return data
-    if (error.code !== '23505') throw error
+    if (error.code !== '23505') throw toError(error)
   }
   throw new Error('Could not create your organisation. Please try again.')
 }
@@ -31,13 +31,13 @@ export async function createOrganisation(name: string, ownerId: string): Promise
 // supabase/migrations/20260818000000).
 export async function getInviteCode(organisationId: string): Promise<string> {
   const { data, error } = await supabase.rpc('get_invite_code', { org_id: organisationId })
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
 export async function regenerateInviteCode(organisationId: string): Promise<string> {
   const { data, error } = await supabase.rpc('regenerate_invite_code', { org_id: organisationId })
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
@@ -51,7 +51,7 @@ export interface RedeemResult {
 // expected user-input outcome (typo'd code), not an application error.
 export async function redeemInviteCode(code: string): Promise<RedeemResult | null> {
   const { data, error } = await supabase.rpc('redeem_invite_code', { code })
-  if (error) throw error
+  if (error) throw toError(error)
   const row = data?.[0]
   if (!row) return null
   return { organisationId: row.organisation_id, organisationName: row.organisation_name, alreadyMember: row.already_member }

@@ -560,6 +560,20 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 ---
 
+### Diagnosed and fixed a codebase-wide error-swallowing bug found while debugging "cannot create an organisation"
+
+**Date:** 19/08/2026
+
+**Prompt:** "I cannot create an organisaiton but the inital loading page is good"
+
+**Response summary:** Asked what the exact error text was rather than guessing; the answer — "Failed to create your organisation." — matched a hardcoded fallback string in `OrganisationOnboarding.tsx`'s catch block word-for-word, which meant the real error was being discarded, not that this particular string was the real cause. Read the installed `@supabase/postgrest-js` source directly to confirm: PostgREST's `{ data, error }` returns `error` as a plain object, not an `Error` instance, unless `.throwOnError()` is called on the builder — which nothing in this codebase does. Every api function's `if (error) throw error` was therefore throwing a plain object, and every component's `catch (err) { err instanceof Error ? err.message : 'fallback' }` was silently discarding the real message as a result — a bug present since the very first Supabase write (`conversions.ts`), not something introduced this session. Verified `@supabase/auth-js`'s `AuthError` genuinely does extend `Error` (so `Login.tsx` was already correct and left alone). Added a `toError()` helper to `lib/supabase.ts` and applied it at all ~18 affected throw sites across `lib/organisation.ts`, `features/organisation/api/organisation.ts`, `features/settings/api/settings.ts`, and `features/conversions/api/conversions.ts`. Ran lint, typecheck, the full test suite, and a production build — all clean.
+
+**What you did with it:** Accepted.
+
+**Why:** This doesn't fix the actual "cannot create an organisation" problem — it fixes the app's ability to tell us what that problem is. I need to retry creating an organisation and report back whatever error now actually appears, since that's the real next diagnostic step. Worth flagging for the walk-through: this bug would have masked the true cause of *any* Supabase failure anywhere in the app, not just this one — a good example of why "the error message is generic" is itself a bug worth chasing down rather than accepting.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

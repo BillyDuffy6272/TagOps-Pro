@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabase'
+import { supabase, toError } from '../../../lib/supabase'
 import { generateDisplayId, getMyMembership } from '../../../lib/organisation'
 import type {
   Container,
@@ -39,7 +39,7 @@ export async function ensureContainerForGtmContainer(
       .eq('gtm_container_id', gtmContainer.publicId)
       .is('deleted_at', null)
       .maybeSingle()
-    if (error) throw error
+    if (error) throw toError(error)
     return data
   }
 
@@ -58,7 +58,7 @@ export async function ensureContainerForGtmContainer(
       .select()
       .single()
     if (!error) return data
-    if (error.code !== '23505') throw error
+    if (error.code !== '23505') throw toError(error)
     const raceWinner = await findExisting()
     if (raceWinner) return raceWinner
   }
@@ -83,7 +83,7 @@ export async function updateContainerGoogleAdsId(
     .eq('id', containerId)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
@@ -95,7 +95,7 @@ export async function listConversionEventsForContainer(containerId: string): Pro
     .is('deleted_at', null)
     .order('created_at')
     .overrideTypes<{ containers: { name: string; google_ads_conversion_id: string | null } | null }[]>()
-  if (error) throw error
+  if (error) throw toError(error)
   return (data ?? []).map(mapConversionEventRow)
 }
 
@@ -110,7 +110,7 @@ export async function createConversionEvent(
       .single()
 
     if (!error) return data
-    if (error.code !== '23505') throw error
+    if (error.code !== '23505') throw toError(error)
   }
   throw new Error('Could not generate a unique conversion event ID. Please try again.')
 }
@@ -125,7 +125,7 @@ export async function updateConversionEvent(
     .eq('id', id)
     .select()
     .single()
-  if (error) throw error
+  if (error) throw toError(error)
   return data
 }
 
@@ -134,5 +134,5 @@ export async function deleteConversionEvent(id: string): Promise<void> {
     .from('conversion_events')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
-  if (error) throw error
+  if (error) throw toError(error)
 }
