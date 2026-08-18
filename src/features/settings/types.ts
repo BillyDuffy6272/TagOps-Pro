@@ -2,6 +2,13 @@ import type { Tables, TablesUpdate } from '../../types/supabase'
 
 export type Organisation = Tables<'organisations'>
 export type OrganisationUpdate = TablesUpdate<'organisations'>
+
+// invite_code has column-level SELECT/UPDATE revoked for `authenticated`
+// (see supabase/migrations/20260818000000) — any direct table query must
+// omit it explicitly, so every read/write in this feature is typed against
+// this narrower shape rather than the full Organisation row.
+export type OrganisationSummary = Omit<Organisation, 'invite_code'>
+
 export type OrganisationMember = Tables<'organisation_members'>
 export type MemberRole = OrganisationMember['role']
 

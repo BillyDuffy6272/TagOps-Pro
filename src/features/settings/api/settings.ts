@@ -2,28 +2,32 @@ import { supabase } from '../../../lib/supabase'
 import { generateDisplayId } from '../../../lib/organisation'
 import type {
   MemberRole,
-  Organisation,
   OrganisationMember,
   OrganisationMemberWithUser,
+  OrganisationSummary,
   UserLookupResult,
 } from '../types'
 
-export async function getOrganisation(organisationId: string): Promise<Organisation> {
+// invite_code has column-level SELECT revoked (see migrations), so every
+// select here must name columns explicitly — a bare '*' would fail outright.
+const ORGANISATION_SUMMARY_COLUMNS = 'id, display_id, name, slug, owner_id, created_at, updated_at, deleted_at'
+
+export async function getOrganisation(organisationId: string): Promise<OrganisationSummary> {
   const { data, error } = await supabase
     .from('organisations')
-    .select('*')
+    .select(ORGANISATION_SUMMARY_COLUMNS)
     .eq('id', organisationId)
     .single()
   if (error) throw error
   return data
 }
 
-export async function updateOrganisationName(organisationId: string, name: string): Promise<Organisation> {
+export async function updateOrganisationName(organisationId: string, name: string): Promise<OrganisationSummary> {
   const { data, error } = await supabase
     .from('organisations')
     .update({ name })
     .eq('id', organisationId)
-    .select()
+    .select(ORGANISATION_SUMMARY_COLUMNS)
     .single()
   if (error) throw error
   return data

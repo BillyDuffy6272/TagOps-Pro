@@ -546,6 +546,20 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 ---
 
+### Added organisation create/join onboarding with shareable invite codes
+
+**Date:** 18/08/2026
+
+**Prompt:** "next I want you to allow for me to join or create an organisation/team. Or add another page decidicstr for this, I just want this to ink to the profile settigns page" — again open-ended on the mechanism, leaving the choice of a dedicated page vs. inline between me and Claude, but explicit that it had to be reachable from Settings.
+
+**Response summary:** Investigated before proposing anything: `Dashboard.tsx` never checked organisation membership at all, so a brand-new sign-in (not the one manually-seeded test account) would hit "No organisation membership found" the moment they opened Conversions or Settings — a genuine, previously-invisible onboarding dead end. "Create" already worked at the schema level (an existing insert policy + trigger); "join" didn't exist in any form. Asked one scoping question — self-service invite code vs. no self-serve join at all (rely on the "add by email" already built last session) — and picked the invite-code option. Wrote migration `20260818000000_organisation_invite_codes.sql`: `organisations.invite_code` with column-level `SELECT`/`UPDATE` revoked from `authenticated` entirely (a plain column would otherwise leak through the existing "members can select organisations" policy to every viewer, since RLS is row- not column-scoped), and three `SECURITY DEFINER` functions as the only access path — `get_invite_code`/`regenerate_invite_code` (owner/admin only, checked inside the function) and `redeem_invite_code` (any authenticated user; joins as Editor, or no-ops if already a member). Revoking column SELECT meant `getOrganisation()`/`updateOrganisationName()` from last session's Settings feature would now fail outright on their `select('*')` — fixed both to an explicit column list. Built `src/features/organisation/`: `OrganisationOnboarding` (full-screen Create/Join gate, styled like `Login.tsx`, rendered by `Dashboard.tsx` in place of `AppShell` when membership is confirmed absent) and `OrganisationView` (an in-app page showing the org and, for owner/admin, the invite code with copy/regenerate — reached via a new "Invite teammates" button in Settings). `Dashboard.tsx` now distinguishes "confirmed no membership" from "the membership check itself failed" (network/permissions) via a new non-throwing `checkMyMembership()`, so a transient error can't be mistaken for a real user needing onboarding. Ran lint, typecheck, the full test suite, and a production build — all clean; started the dev server and confirmed the new modules compile and serve (full click-through needs a real second Google account with no prior org, which wasn't available in this session).
+
+**What you did with it:** Accepted.
+
+**Why:** The request was mine and squarely aimed at a real gap I'd have hit the moment I tested with any account other than the seeded one. The invite-code-vs-admin-only-add fork was Claude's to surface, not decide — I picked the self-service option. The column-level revoke (rather than an RLS row policy, which can't express "this one column, not the rest of the row") is the one piece of this session I most need to be able to explain cleanly at the walk-through: it's a different enforcement mechanism from every other policy in the schema so far, and it exists specifically because RLS alone couldn't express "any member can see this row, but only owners/admins can see this one column of it." **Outstanding: the migration has not been run in the Supabase SQL editor yet** — both "Join with code" and Settings' "Invite teammates" will fail until it is.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

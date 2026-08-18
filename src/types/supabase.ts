@@ -51,6 +51,11 @@ export type Database = {
           name: string
           slug: string
           owner_id: string
+          // Column-level SELECT is revoked for `authenticated` (see
+          // supabase/migrations/20260818000000) — never fetchable via a
+          // direct table query, only through the get_invite_code() RPC.
+          // Present in the Row type purely because the column exists.
+          invite_code: string | null
           created_at: string
           updated_at: string
           deleted_at: string | null
@@ -419,6 +424,22 @@ export type Database = {
           display_name: string | null
           avatar_url: string | null
           email: string
+        }[]
+      }
+      get_invite_code: {
+        Args: { org_id: string }
+        Returns: string
+      }
+      regenerate_invite_code: {
+        Args: { org_id: string }
+        Returns: string
+      }
+      redeem_invite_code: {
+        Args: { code: string }
+        Returns: {
+          organisation_id: string
+          organisation_name: string
+          already_member: boolean
         }[]
       }
     }

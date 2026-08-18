@@ -92,3 +92,19 @@ export const SETTINGS_NAV_ITEM: NavItem = {
     </svg>
   ),
 }
+
+// Also not part of NAV_ITEMS — reached from a link inside Settings, not the
+// primary list. Exported for the same TopBar-header reason as above.
+export const ORGANISATION_NAV_ITEM: NavItem = {
+  id: 'organisation',
+  label: 'Organisation',
+  description: 'Invite teammates',
+  icon: (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  ),
+}

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
+import type { ActiveView } from '../../../components/AppShell'
 import { getMyMembership, type MyMembership } from '../../../lib/organisation'
 import { getOrganisation, listOrganisationMembers, updateOrganisationName } from '../api/settings'
-import type { Organisation, OrganisationMemberWithUser } from '../types'
+import type { OrganisationMemberWithUser, OrganisationSummary } from '../types'
 import MemberRow from './MemberRow'
 import AddMemberModal from './AddMemberModal'
 import ViewHeader from '../../../components/ViewHeader'
@@ -12,17 +13,18 @@ import EmptyState from '../../../components/EmptyState'
 
 interface Props {
   session: Session
+  setActiveView: (view: ActiveView) => void
 }
 
 const SECTION_TITLE = 'm-0 text-[13.5px] font-semibold text-text-primary'
 
-export default function SettingsView({ session }: Props) {
+export default function SettingsView({ session, setActiveView }: Props) {
   const user = session.user
   const fullName = user.user_metadata?.full_name as string | undefined
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined
 
   const [membership, setMembership] = useState<MyMembership | null>(null)
-  const [organisation, setOrganisation] = useState<Organisation | null>(null)
+  const [organisation, setOrganisation] = useState<OrganisationSummary | null>(null)
   const [members, setMembers] = useState<OrganisationMemberWithUser[]>([])
 
   const [orgNameDraft, setOrgNameDraft] = useState('')
@@ -107,8 +109,15 @@ export default function SettingsView({ session }: Props) {
           </section>
 
           <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
-            <div className="border-b border-border-subtle px-4 py-3">
+            <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3">
               <h2 className={SECTION_TITLE}>Organisation</h2>
+              <button
+                type="button"
+                className="rounded-md border border-border bg-transparent px-3 py-1.5 text-[12.5px] font-semibold text-text-secondary transition-colors duration-150 ease-out hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                onClick={() => setActiveView('organisation')}
+              >
+                Invite teammates
+              </button>
             </div>
             <form onSubmit={handleSaveName} className="flex flex-col gap-2 px-4 py-4">
               {nameError && <p className="m-0 text-[12px] text-danger-text">{nameError}</p>}
