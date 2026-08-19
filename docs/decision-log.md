@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0025 — Fixed the actual "cannot create an organisation" bug: INSERT ... RETURNING vs. a same-statement trigger
+
+- **Date:** 2026-08-19
+- **Status:** Accepted
+- **Context:** With ADR-0024's fix, "Create organisation" surfaced its real error: `new row violates row-level security policy for table "organisations"`. Live-debugged this directly against the production database with the user (SQL Editor, `pg_policies`, and `set_config('request.jwt.claims', …)` to impersonate their exact user). Ruled out, in order: a broken policy text (confirmed byte-for-byte correct via `pg_policies`), an invalid/expired client JWT (decoded it — valid, correct `sub`/`role`/`aud`), and `auth.uid()` failing to resolve (proved it resolves correctly, immediately before the same insert, via a direct `select auth.uid()`). The one variable left was the `RETURNING` clause: `createOrganisation()` chained `.select().single()` onto the insert, which asks PostgREST for `INSERT ... RETURNING`. Postgres re-checks a `RETURNING` row against the table's own SELECT policy ("members can select organisations", `is_active_org_member(id)`) — and for a brand-new organisation, the only thing that would make that check pass is the `auto_owner_membership()` trigger's own insert into `organisation_members`, which is a side effect of the very same statement. Confirmed directly: the identical insert **succeeded** with no `RETURNING`, and the row was there afterward. This is specific to organisation creation — every other insert-then-select in the app (containers, conversion events, organisation members) is performed by someone who is *already* a member of the relevant org, so their own pre-existing membership satisfies the SELECT policy immediately; only the creator of a brand-new org has zero qualifying rows anywhere until the trigger runs.
+- **Decision:** Rewrote `createOrganisation()` in `src/features/organisation/api/organisation.ts` to insert without `.select()` (PostgREST then uses `Prefer: return=minimal`, skipping the RETURNING/SELECT-policy check entirely), then issue a **separate** follow-up `SELECT ... WHERE slug = …` request. By the time that second request runs, the first has fully committed, the trigger's membership row exists, and the SELECT policy passes normally. No migration or policy change was needed — the schema and RLS were correct all along.
+- **Consequences:** "Create organisation" should now work end-to-end. This narrow RETURNING-vs-trigger race is worth remembering as a general pattern: any future insert whose SELECT-policy eligibility depends on a trigger fired by that same insert (not on some pre-existing row) needs the same two-step treatment — chaining `.select()` onto the insert is only safe when the inserting user already independently satisfies the SELECT policy through something that exists *before* the statement runs. Test rows (`test-org-9995` etc.) created directly in the database while debugging were cleaned up manually via SQL Editor, not through the app.
+
+---
+
 ## ADR-0024 — Fixed a codebase-wide bug that silently swallowed every Supabase error message
 
 - **Date:** 2026-08-19

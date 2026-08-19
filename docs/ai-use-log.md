@@ -574,6 +574,20 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 ---
 
+### Live-debugged the real "cannot create an organisation" bug directly against the production database
+
+**Date:** 19/08/2026
+
+**Prompt:** Multi-turn, following straight on from the error-swallowing fix. Provided screenshots at each step: the real error ("new row violates row-level security policy for table \"organisations\""), the RLS policy list and its expanded `WITH CHECK` text from the Supabase dashboard, a decoded JWT from the browser console, and the output of several SQL Editor queries I asked to be run in sequence — explicitly asking each time to be walked through the exact clicks rather than given a command to run blind.
+
+**Response summary:** Ruled out causes one at a time, live, against the real database rather than guessing: (1) confirmed the RLS policy text stored in `pg_policies` matches the migration byte-for-byte — no drift; (2) decoded the browser's actual JWT — valid `sub`, `role: authenticated`, correct issuer, not expired, ruling out a stale/broken session; (3) used `set_config('request.jwt.claims', …)` plus `set local role authenticated` in the SQL Editor to impersonate the user's exact ID directly in Postgres and proved `auth.uid()` resolves correctly immediately before the same insert. That left one variable: `createOrganisation()` chained `.select().single()` onto the insert, which makes PostgREST issue `INSERT ... RETURNING`. Postgres checks a `RETURNING` row against the table's SELECT policy, which for a brand-new org can only pass once the `auto_owner_membership()` trigger's own insert (a side effect of the *same* statement) has run — a chicken-and-egg race unique to organisation creation, since every other insert-then-select in the app is performed by someone already independently qualifying for that SELECT policy via a pre-existing row. Confirmed by running the identical insert without `RETURNING` in the SQL Editor — it succeeded, and the row was there afterward. Fixed `createOrganisation()` to insert without `.select()` and issue a separate follow-up `SELECT ... WHERE slug = …` once the first request has committed. No migration or RLS change needed. Ran lint, typecheck, tests, and build — all clean. Gave cleanup SQL for the test organisations (`test-org-9995` etc.) created directly in the database during debugging.
+
+**What you did with it:** Accepted.
+
+**Why:** This was collaborative live debugging against real production data, not something I could reproduce or verify locally (no Supabase CLI in this environment, per the standing caveat on every prior migration). Each step was a targeted test designed to eliminate exactly one variable — policy text, token validity, `auth.uid()` resolution — before landing on the actual cause, rather than guessing at fixes and hoping. The bug itself is a genuinely subtle Postgres RLS+trigger+RETURNING interaction that's worth being able to explain clearly at the walk-through: it's not a security hole (the policy was always correct) and not a client bug (the token was always valid) — it's a statement-ordering race that only organisation creation could ever hit.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

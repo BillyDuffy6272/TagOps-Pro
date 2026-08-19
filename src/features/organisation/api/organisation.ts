@@ -9,18 +9,35 @@ function slugify(name: string): string {
   return base || 'org'
 }
 
+async function fetchOrganisationBySlug(slug: string): Promise<OrganisationSummary> {
+  const { data, error } = await supabase
+    .from('organisations')
+    .select(ORGANISATION_SUMMARY_COLUMNS)
+    .eq('slug', slug)
+    .single()
+  if (error) throw toError(error)
+  return data
+}
+
 // The owner membership row is created for free by the auto_owner_membership()
-// trigger the moment this insert succeeds — nothing else to do afterwards.
+// trigger the moment this insert succeeds — but that's *after* the insert
+// completes, and chaining .select() onto the insert asks PostgREST for
+// INSERT ... RETURNING, which Postgres re-checks against the table's own
+// SELECT policy ("members can select organisations") before the trigger's
+// effect is visible to that check. For a brand-new organisation the creator
+// isn't a member of anything yet, so that check fails and the whole insert
+// gets rejected — even though the row itself is perfectly valid. Splitting
+// into a plain insert (no RETURNING) followed by a separate SELECT avoids
+// the race: by the time the second request runs, the first has committed
+// and the trigger's membership row is visible.
 export async function createOrganisation(name: string, ownerId: string): Promise<OrganisationSummary> {
   const base = slugify(name)
   for (let attempt = 0; attempt < 5; attempt++) {
     const slug = attempt === 0 ? base : `${base}-${Math.floor(1000 + Math.random() * 9000)}`
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('organisations')
       .insert({ name, slug, owner_id: ownerId, display_id: generateDisplayId('ORGID') })
-      .select(ORGANISATION_SUMMARY_COLUMNS)
-      .single()
-    if (!error) return data
+    if (!error) return fetchOrganisationBySlug(slug)
     if (error.code !== '23505') throw toError(error)
   }
   throw new Error('Could not create your organisation. Please try again.')
