@@ -127,6 +127,8 @@ export default function SettingsView({ session, setActiveView }: Props) {
               <div className="flex items-center gap-2">
                 <input
                   id="org-name"
+                  name="org-name"
+                  autoComplete="off"
                   className="w-full max-w-[320px] rounded-md border border-border bg-surface px-2.5 py-2 text-[13px] text-text-primary transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-60"
                   value={orgNameDraft}
                   disabled={!isOwner || savingName}
@@ -136,7 +138,7 @@ export default function SettingsView({ session, setActiveView }: Props) {
                   <button
                     type="submit"
                     className="shrink-0 rounded-md border border-border bg-transparent px-3 py-2 text-[12.5px] font-semibold text-text-secondary transition-colors duration-150 ease-out hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={savingName || orgNameDraft.trim() === organisation?.name}
+                    disabled={savingName || !organisation || orgNameDraft.trim() === organisation.name}
                   >
                     {savingName ? 'Saving…' : 'Save'}
                   </button>

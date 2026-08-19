@@ -588,6 +588,20 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 ---
 
+### Fixed an ambiguous PostgREST embed surfaced right after organisation creation started working
+
+**Date:** 19/08/2026
+
+**Prompt:** Screenshot of the Settings page after the previous fix — organisation creation had worked, but Settings showed "Could not embed because more than one relationship was found for 'organisation_members' and 'users'", plus: "I am not able to name my organisation for some odd reason."
+
+**Response summary:** Traced both symptoms to one cause. `organisation_members` has two foreign keys into `users` (`user_id` and `invited_by`), so `listOrganisationMembers()`'s bare `users(...)` embed was ambiguous and PostgREST rejected the whole query. That query ran inside a `Promise.all` alongside `getOrganisation()`; when one promise in a `Promise.all` rejects, none of the results get used — so the real organisation name never reached the form, and what looked like text in the name field was actually Chrome autofill guessing into what was really an empty, unset input. Fixed the query to `users!user_id(...)`, explicitly naming which foreign key to embed through. Also hardened the form itself: `autoComplete="off"` on the name input, and the Save button's disabled check now explicitly requires the organisation to have actually loaded rather than relying on an `undefined`-vs-empty-string comparison to happen to come out right.
+
+**What you did with it:** Accepted.
+
+**Why:** The two symptoms looked unrelated (a scary red error banner vs. "I can't type a name") but shared one root cause — worth noting because it's a good example of how a `Promise.all` failure can produce confusing, seemingly-unrelated downstream symptoms rather than one clear error. Worth remembering: any future embed through `organisation_members` (or any table gaining a second FK to the same target) needs the same `!column` treatment.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

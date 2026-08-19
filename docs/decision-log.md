@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0026 — Disambiguated the organisation_members → users embed
+
+- **Date:** 2026-08-19
+- **Status:** Accepted
+- **Context:** After ADR-0025's fix, organisation creation worked and the Settings page loaded — but showed "Could not embed because more than one relationship was found for 'organisation_members' and 'users'". `organisation_members` has two foreign keys into `users` (`user_id` and `invited_by`), so `listOrganisationMembers()`'s bare `users(display_name, avatar_url, email)` embed was ambiguous — PostgREST can't guess which FK to join through. Because that query was one of two promises in a `Promise.all` inside `SettingsView`'s loader, its rejection meant the *other* promise's result (`getOrganisation()`) never got applied to state either, leaving the organisation name field empty — which then looked, in the browser, like Chrome autofill guessing text into an empty input rather than the real loaded name, making "I can't rename my organisation" look like a separate, unrelated bug.
+- **Decision:** Changed the select to `users!user_id(display_name, avatar_url, email)`, telling PostgREST explicitly which foreign key to embed through (the member's own profile, not whoever invited them). Also added `autoComplete="off"` to the organisation-name input and made the Save button's disabled check explicitly require `organisation` to be loaded (`!organisation || …`), rather than relying on `undefined !== ''` happening to evaluate the way we wanted.
+- **Consequences:** One-line fix, no schema change. Worth remembering as a general rule for this schema: any table with more than one FK to the same target (organisation_members → users is the only current example) needs an explicit `!column` qualifier on every embed — a second such ambiguity elsewhere would fail the same way.
+
+---
+
 ## ADR-0025 — Fixed the actual "cannot create an organisation" bug: INSERT ... RETURNING vs. a same-statement trigger
 
 - **Date:** 2026-08-19

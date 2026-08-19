@@ -45,9 +45,12 @@ function mapMemberRow(
 }
 
 export async function listOrganisationMembers(organisationId: string): Promise<OrganisationMemberWithUser[]> {
+  // organisation_members has two FKs into users (user_id, invited_by), so a
+  // bare `users(...)` embed is ambiguous to PostgREST — `!user_id` picks
+  // the one we actually want (the member's own profile, not the inviter's).
   const { data, error } = await supabase
     .from('organisation_members')
-    .select('*, users(display_name, avatar_url, email)')
+    .select('*, users!user_id(display_name, avatar_url, email)')
     .eq('organisation_id', organisationId)
     .order('joined_at')
     .overrideTypes<{ users: { display_name: string | null; avatar_url: string | null; email: string } | null }[]>()
