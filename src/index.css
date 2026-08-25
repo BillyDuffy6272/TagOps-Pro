@@ -10,6 +10,10 @@
   --color-surface-sunken: #090a0b;
   --color-surface-overlay: #111214;
   --color-surface-raised: #18191b;
+  /* Sidebar gets its own surface, deliberately a step apart from canvas
+     rather than the near-identical surface-sunken — the two panes were
+     reading as one continuous surface. */
+  --color-surface-nav: #0e1015;
 
   --color-border: rgba(255, 255, 255, 0.09);
   --color-border-subtle: rgba(255, 255, 255, 0.055);

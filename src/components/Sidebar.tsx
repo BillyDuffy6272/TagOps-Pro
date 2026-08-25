@@ -15,7 +15,7 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined
 
   return (
-    <aside className="flex h-screen flex-col overflow-hidden bg-surface-sunken">
+    <aside className="flex h-screen flex-col overflow-hidden border-r border-border bg-surface-nav shadow-[inset_-1px_0_0_rgba(255,255,255,0.02),4px_0_28px_-12px_rgba(0,0,0,0.65)]">
       <div className="flex shrink-0 items-center gap-3 px-4 pt-4 pb-4">
         <svg width="22" height="22" viewBox="0 0 36 36" fill="none" aria-hidden="true">
           <circle cx="18" cy="18" r="15" fill="#e6e7eb" />

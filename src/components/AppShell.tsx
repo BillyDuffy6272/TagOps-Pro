@@ -38,7 +38,7 @@ export default function AppShell({ session }: Props) {
     <GtmProvider session={session}>
       <div className="grid h-screen grid-cols-[284px_1fr] overflow-hidden bg-canvas text-text-primary">
         <Sidebar activeView={activeView} setActiveView={setActiveView} session={session} />
-        <div className="flex min-w-0 flex-col overflow-hidden border-l border-border-subtle">
+        <div className="flex min-w-0 flex-col overflow-hidden">
           <TopBar activeView={activeView} />
           <main className="min-w-0 flex-1 overflow-y-auto bg-canvas">
             {renderView()}
