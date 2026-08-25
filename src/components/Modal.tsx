@@ -23,7 +23,7 @@ export default function Modal({ title, onClose, children, footer, maxWidth = 520
           <h2 className="m-0 text-[15px] font-semibold text-text-primary">{title}</h2>
           <button
             type="button"
-            className="rounded p-1 text-[15px] leading-none text-text-tertiary transition-colors duration-150 ease-out hover:bg-white/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded p-1 text-[15px] leading-none text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             onClick={onClose}
             aria-label="Close"
           >

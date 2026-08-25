@@ -602,6 +602,20 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 ---
 
+### Added Light/Dark/System theme switching
+
+**Date:** 25/08/2026
+
+**Prompt:** "Can you add a setting in the profile page to switch between light, dark, and system for user viewing?"
+
+**Response summary:** Scoped before writing code: grepped for how many places hardcode `white`-opacity Tailwind utilities for hover/active/ring states (`bg-white/5`, `ring-white/10`, etc.) — 43 occurrences across 18 files, plus a handful of inline `rgba(255,255,255,…)` shadows and the scrollbar thumb, none of which would work correctly on a light background left as-is. Rather than doing a shallow toggle that would ship a broken light mode, did the full pass: added `src/lib/ThemeContext.tsx` (`light | dark | system`, persisted to `localStorage`, applied as a `data-theme` attribute, with a synchronous pre-render apply in `main.tsx` to avoid a flash of the wrong theme on load); rewrote `index.css` to keep every existing token name but add light-mode values under `@media (prefers-color-scheme: light)` plus explicit `[data-theme]` overrides; added a new `--color-overlay` token (white in dark, black in light) and mechanically renamed every `white/N` overlay utility to `overlay/N` across the 18 files via a `grep -l | while read` loop (not a bare `for f in $FILES`, which silently breaks under zsh's default no-word-splitting and was caught immediately when the first attempt touched zero files); converted the remaining inline `rgba(255,255,255,…)` shadows and the scrollbar thumb to `color-mix()` against the same token; darkened the light-mode accent/success/warning/danger values rather than reusing the dark-mode ones, since several are used as button-background-with-light-text and needed a different contrast target. Added a three-way segmented control (Light/Dark/System, each with a small icon) to a new "Appearance" section in Settings, right under Profile. Verified visually in the actual browser — not just lint/typecheck — via a temporary preview bypass in `App.tsx` (Playwright screenshots of the sidebar/dashboard shell and the Settings page, in both light and dark), then fully reverted the bypass (`git diff` on `App.tsx` is empty). Lint, typecheck, the full test suite, and a production build all pass.
+
+**What you did with it:** Accepted.
+
+**Why:** The request read as small ("add a setting") but a shallow implementation would have shipped a light mode with invisible hover states everywhere, since so much of the existing dark theme's interactivity was hardcoded to a literal white overlay rather than a token. Doing the scoping grep first, before writing any component code, is what surfaced that — worth remembering as a general habit: before adding a mode/variant to an existing UI, check how many places assume the *current* mode is the only one. The `for f in $FILES` vs `while read` zsh gotcha is also worth remembering for any future shell scripting in this repo — the sandbox shell is zsh, and it doesn't word-split unquoted variables like bash does by default.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

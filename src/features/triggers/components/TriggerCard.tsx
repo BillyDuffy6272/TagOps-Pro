@@ -35,7 +35,7 @@ export default function TriggerCard({ trigger, usedByTags, onClick }: Props) {
       associations={usedByTags.length > 0 && usedByTags.map((usage, i) => (
         <span
           key={`${usage.tagId}-${usage.relationship}-${i}`}
-          className="inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-md border border-border bg-white/4 px-1.5 py-0.5 text-[10.5px] text-ellipsis whitespace-nowrap text-text-secondary"
+          className="inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-md border border-border bg-overlay/4 px-1.5 py-0.5 text-[10.5px] text-ellipsis whitespace-nowrap text-text-secondary"
         >
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${usage.relationship === 'blocks' ? 'bg-danger' : 'bg-success'}`} aria-hidden="true" />
           {usage.relationship === 'blocks' ? 'blocks' : 'fires'} {usage.name}

@@ -61,7 +61,7 @@ const DOT_MAPS = { tag: TAG_DOT_CLASSES, trigger: TRIGGER_DOT_CLASSES, variable:
 export default function CategoryBadge({ kind, category, label }: Props) {
   const dotClass = DOT_MAPS[kind][category] ?? DOT_MAPS[kind].other
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-border-subtle bg-white/4 px-2 py-0.5 text-[11px] font-medium whitespace-nowrap text-text-secondary">
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-border-subtle bg-overlay/4 px-2 py-0.5 text-[11px] font-medium whitespace-nowrap text-text-secondary">
       <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`} aria-hidden="true" />
       {label}
     </span>

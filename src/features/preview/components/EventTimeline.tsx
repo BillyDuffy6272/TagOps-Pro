@@ -18,7 +18,7 @@ export default function EventTimeline({ steps, selectedEventId, onSelect, totalF
       <button
         type="button"
         className={`flex w-full items-center gap-3 border-b border-border-subtle px-4 py-2.5 text-left transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent ${
-          selectedEventId === 'summary' ? 'bg-accent-muted' : 'hover:bg-white/5'
+          selectedEventId === 'summary' ? 'bg-accent-muted' : 'hover:bg-overlay/5'
         }`}
         onClick={() => onSelect('summary')}
       >
@@ -28,7 +28,7 @@ export default function EventTimeline({ steps, selectedEventId, onSelect, totalF
         </span>
         <span
           className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10.5px] font-semibold ${
-            totalFired > 0 ? 'bg-success/10 text-success' : 'bg-white/5 text-text-faint'
+            totalFired > 0 ? 'bg-success/10 text-success' : 'bg-overlay/5 text-text-faint'
           }`}
           title={`${totalFired} tag(s) fired so far this session`}
         >
@@ -43,7 +43,7 @@ export default function EventTimeline({ steps, selectedEventId, onSelect, totalF
               key={step.event.id}
               type="button"
               className={`flex w-full items-center gap-3 border-t border-border-subtle px-4 py-2.5 text-left transition-colors duration-150 ease-out first:border-t-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent ${
-                isSelected ? 'bg-accent-muted' : 'hover:bg-white/5'
+                isSelected ? 'bg-accent-muted' : 'hover:bg-overlay/5'
               }`}
               onClick={() => onSelect(step.event.id)}
             >
@@ -58,7 +58,7 @@ export default function EventTimeline({ steps, selectedEventId, onSelect, totalF
               </span>
               <span
                 className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10.5px] font-semibold ${
-                  step.firedCount > 0 ? 'bg-success/10 text-success' : 'bg-white/5 text-text-faint'
+                  step.firedCount > 0 ? 'bg-success/10 text-success' : 'bg-overlay/5 text-text-faint'
                 }`}
                 title={`${step.firedCount} tag(s) fired on this event`}
               >

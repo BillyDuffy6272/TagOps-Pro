@@ -14,7 +14,7 @@ type Tab = 'tags' | 'variables' | 'datalayer'
 
 const STATUS_BADGE: Record<TagStatus, { label: string; classes: string }> = {
   fired: { label: 'Fired', classes: 'bg-success/10 text-success' },
-  'not-fired': { label: 'Not fired', classes: 'bg-white/5 text-text-faint' },
+  'not-fired': { label: 'Not fired', classes: 'bg-overlay/5 text-text-faint' },
   paused: { label: 'Paused', classes: 'bg-warning/10 text-warning' },
   blocked: { label: 'Blocked', classes: 'bg-danger/10 text-danger-text' },
 }
@@ -24,7 +24,7 @@ function TagResultRow({ result, onSelect }: { result: TagResult; onSelect: () =>
   return (
     <button
       type="button"
-      className="flex w-full items-start justify-between gap-3 border-t border-border-subtle px-4 py-3 text-left transition-colors duration-150 ease-out first:border-t-0 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+      className="flex w-full items-start justify-between gap-3 border-t border-border-subtle px-4 py-3 text-left transition-colors duration-150 ease-out first:border-t-0 hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       onClick={onSelect}
     >
       <div className="min-w-0">
@@ -64,7 +64,7 @@ export default function TagResultsPanel({ step, variables, onSelectTag }: Props)
               key={t}
               type="button"
               className={`rounded-md px-3 py-1.5 text-[12.5px] font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                tab === t ? 'bg-accent-muted text-accent' : 'text-text-tertiary hover:bg-white/5 hover:text-text-secondary'
+                tab === t ? 'bg-accent-muted text-accent' : 'text-text-tertiary hover:bg-overlay/5 hover:text-text-secondary'
               }`}
               onClick={() => setTab(t)}
             >

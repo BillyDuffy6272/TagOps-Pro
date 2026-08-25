@@ -15,7 +15,7 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined
 
   return (
-    <aside className="flex h-screen flex-col overflow-hidden border-r border-border bg-surface-nav shadow-[inset_-1px_0_0_rgba(255,255,255,0.02),4px_0_28px_-12px_rgba(0,0,0,0.65)]">
+    <aside className="flex h-screen flex-col overflow-hidden border-r border-border bg-surface-nav shadow-[inset_-1px_0_0_color-mix(in_srgb,var(--color-overlay)_2%,transparent),4px_0_28px_-12px_rgba(0,0,0,0.65)]">
       <div className="flex shrink-0 items-center gap-3 px-4 pt-4 pb-4">
         <svg width="22" height="22" viewBox="0 0 36 36" fill="none" aria-hidden="true">
           <circle cx="18" cy="18" r="15" fill="#e6e7eb" />
@@ -42,8 +42,8 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
               type="button"
               className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 isActive
-                  ? 'bg-white/9 text-text-primary shadow-[inset_0_0_0_1px_rgba(255,255,255,0.035)]'
-                  : 'text-text-tertiary hover:bg-white/5 hover:text-text-secondary'
+                  ? 'bg-overlay/9 text-text-primary shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-overlay)_3.5%,transparent)]'
+                  : 'text-text-tertiary hover:bg-overlay/5 hover:text-text-secondary'
               }`}
               onClick={() => setActiveView(item.id)}
             >
@@ -73,14 +73,14 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
         <button
           type="button"
           className={`flex min-w-0 items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-            activeView === 'settings' ? 'bg-white/9 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.035)]' : 'hover:bg-white/5'
+            activeView === 'settings' ? 'bg-overlay/9 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-overlay)_3.5%,transparent)]' : 'hover:bg-overlay/5'
           }`}
           onClick={() => setActiveView('settings')}
         >
           {avatarUrl
-            ? <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full ring-1 ring-white/15" />
+            ? <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full ring-1 ring-overlay/15" />
             : (
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[12px] font-semibold text-text-secondary ring-1 ring-white/10" aria-hidden="true">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[12px] font-semibold text-text-secondary ring-1 ring-overlay/10" aria-hidden="true">
                 {userName.charAt(0).toUpperCase()}
               </div>
             )
@@ -92,7 +92,7 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
         </button>
         <button
           type="button"
-          className="w-full rounded-md px-2 py-2 text-left text-[12.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-white/5 hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="w-full rounded-md px-2 py-2 text-left text-[12.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/5 hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           onClick={() => supabase.auth.signOut()}
         >
           Sign out

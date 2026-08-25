@@ -30,6 +30,102 @@
   --color-warning: #eab308;
   --color-danger: #f87171;
   --color-danger-text: #fca5a5;
+
+  /* A theme-aware "lighten this surface" tint for hover/active/ring states
+     (bg-overlay/5, ring-overlay/10, etc.) — white in dark mode, flipped to
+     black in light mode below, so the same utility darkens instead of
+     lightening once the ground is light. */
+  --color-overlay: #ffffff;
+}
+
+/* ---- Light theme -------------------------------------------------------
+   Same token names, light-mode values. Applied when the OS prefers light
+   AND the user hasn't made an explicit choice, or when they've explicitly
+   picked Light in Settings → Appearance. Explicit dark is re-affirmed too,
+   so a user choice always wins regardless of OS preference or media-query
+   ordering. */
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --color-canvas: #f5f6f8;
+    --color-surface: #ffffff;
+    --color-surface-sunken: #eceef2;
+    --color-surface-overlay: #ffffff;
+    --color-surface-raised: #ffffff;
+    --color-surface-nav: #edeff3;
+
+    --color-border: rgba(15, 23, 42, 0.11);
+    --color-border-subtle: rgba(15, 23, 42, 0.075);
+
+    --color-text-primary: #14161c;
+    --color-text-secondary: #454b58;
+    --color-text-tertiary: #6b7280;
+    --color-text-faint: #9aa1ae;
+
+    --color-accent: #5b52e0;
+    --color-accent-muted: rgba(91, 82, 224, 0.1);
+
+    --color-success: #15803d;
+    --color-warning: #b45309;
+    --color-danger: #dc2626;
+    --color-danger-text: #b91c1c;
+
+    --color-overlay: #000000;
+  }
+}
+
+:root[data-theme='light'] {
+  --color-canvas: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #eceef2;
+  --color-surface-overlay: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-nav: #edeff3;
+
+  --color-border: rgba(15, 23, 42, 0.11);
+  --color-border-subtle: rgba(15, 23, 42, 0.075);
+
+  --color-text-primary: #14161c;
+  --color-text-secondary: #454b58;
+  --color-text-tertiary: #6b7280;
+  --color-text-faint: #9aa1ae;
+
+  --color-accent: #5b52e0;
+  --color-accent-muted: rgba(91, 82, 224, 0.1);
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #dc2626;
+  --color-danger-text: #b91c1c;
+
+  --color-overlay: #000000;
+}
+
+:root[data-theme='dark'] {
+  --color-canvas: #08090a;
+  --color-surface: #0d0e10;
+  --color-surface-sunken: #090a0b;
+  --color-surface-overlay: #111214;
+  --color-surface-raised: #18191b;
+  --color-surface-nav: #0e1015;
+
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-border-subtle: rgba(255, 255, 255, 0.055);
+
+  --color-text-primary: #e6e7eb;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary: #71717a;
+  --color-text-faint: #4b4b54;
+
+  --color-accent: #8b8ef7;
+  --color-accent-muted: rgba(139, 142, 247, 0.12);
+
+  --color-success: #4ade80;
+  --color-warning: #eab308;
+  --color-danger: #f87171;
+  --color-danger-text: #fca5a5;
+
+  --color-overlay: #ffffff;
 }
 
 @layer base {
@@ -46,7 +142,7 @@
     -moz-osx-font-smoothing: grayscale;
     color: var(--color-text-primary);
     background:
-      radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.07), transparent 28rem),
+      radial-gradient(circle at 50% -20%, color-mix(in srgb, var(--color-overlay) 7%, transparent), transparent 28rem),
       var(--color-canvas);
   }
 
@@ -72,14 +168,14 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: color-mix(in srgb, var(--color-overlay) 12%, transparent);
     border: 3px solid transparent;
     border-radius: 999px;
     background-clip: padding-box;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--color-overlay) 20%, transparent);
     border: 3px solid transparent;
     background-clip: padding-box;
   }

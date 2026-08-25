@@ -54,7 +54,7 @@ export default function SimulateBar({ onSimulate }: Props) {
           <button
             key={action.name}
             type="button"
-            className="rounded-md border border-white/10 bg-surface-raised px-3 py-1.5 text-[12.5px] font-medium text-text-secondary transition-colors duration-150 ease-out hover:bg-white/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded-md border border-overlay/10 bg-surface-raised px-3 py-1.5 text-[12.5px] font-medium text-text-secondary transition-colors duration-150 ease-out hover:bg-overlay/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             onClick={() => onSimulate(action.name, action.data)}
             title={`Push ${action.name}`}
           >
@@ -66,7 +66,7 @@ export default function SimulateBar({ onSimulate }: Props) {
           className={`rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
             customOpen
               ? 'border-accent/25 bg-accent-muted text-accent'
-              : 'border-white/10 bg-surface-raised text-text-secondary hover:bg-white/10 hover:text-text-primary'
+              : 'border-overlay/10 bg-surface-raised text-text-secondary hover:bg-overlay/10 hover:text-text-primary'
           }`}
           onClick={() => setCustomOpen(open => !open)}
           aria-expanded={customOpen}

@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { ActiveView } from '../../../components/AppShell'
 import { getMyMembership, type MyMembership } from '../../../lib/organisation'
+import { useTheme, type Theme } from '../../../lib/ThemeContext'
 import { getOrganisation, listOrganisationMembers, updateOrganisationName } from '../api/settings'
 import type { OrganisationMemberWithUser, OrganisationSummary } from '../types'
 import MemberRow from './MemberRow'
@@ -18,10 +19,43 @@ interface Props {
 
 const SECTION_TITLE = 'm-0 text-[13.5px] font-semibold text-text-primary'
 
+const THEME_OPTIONS: { value: Theme; label: string; icon: ReactNode }[] = [
+  {
+    value: 'light',
+    label: 'Light',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+      </svg>
+    ),
+  },
+  {
+    value: 'dark',
+    label: 'Dark',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    ),
+  },
+  {
+    value: 'system',
+    label: 'System',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <path d="M8 21h8M12 17v4" />
+      </svg>
+    ),
+  },
+]
+
 export default function SettingsView({ session, setActiveView }: Props) {
   const user = session.user
   const fullName = user.user_metadata?.full_name as string | undefined
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined
+  const { theme, setTheme } = useTheme()
 
   const [membership, setMembership] = useState<MyMembership | null>(null)
   const [organisation, setOrganisation] = useState<OrganisationSummary | null>(null)
@@ -92,9 +126,9 @@ export default function SettingsView({ session, setActiveView }: Props) {
             </div>
             <div className="flex items-center gap-3 px-4 py-4">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="h-12 w-12 shrink-0 rounded-full ring-1 ring-white/10" />
+                <img src={avatarUrl} alt="" className="h-12 w-12 shrink-0 rounded-full ring-1 ring-overlay/10" />
               ) : (
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[17px] font-semibold text-text-secondary ring-1 ring-white/10" aria-hidden="true">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[17px] font-semibold text-text-secondary ring-1 ring-overlay/10" aria-hidden="true">
                   {(fullName ?? user.email ?? 'U').charAt(0).toUpperCase()}
                 </div>
               )}
@@ -106,6 +140,34 @@ export default function SettingsView({ session, setActiveView }: Props) {
             <p className="m-0 border-t border-border-subtle px-4 py-2.5 text-[11.5px] text-text-faint">
               Your name and photo come from your Google account and can't be edited here.
             </p>
+          </section>
+
+          <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
+            <div className="border-b border-border-subtle px-4 py-3">
+              <h2 className={SECTION_TITLE}>Appearance</h2>
+            </div>
+            <div className="flex items-center justify-between gap-3 px-4 py-4">
+              <div>
+                <div className="text-[13px] font-medium text-text-secondary">Theme</div>
+                <p className="m-0 text-[11.5px] text-text-faint">Choose how TagOps Pro looks on this device.</p>
+              </div>
+              <div className="inline-flex items-center gap-1 rounded-md border border-border bg-surface p-1">
+                {THEME_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    aria-pressed={theme === opt.value}
+                    className={`flex items-center gap-1.5 rounded px-2.5 py-1.5 text-[12.5px] font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                      theme === opt.value ? 'bg-accent-muted text-accent' : 'text-text-tertiary hover:bg-overlay/5 hover:text-text-secondary'
+                    }`}
+                    onClick={() => setTheme(opt.value)}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">

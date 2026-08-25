@@ -99,7 +99,7 @@ export default function HomeView({ session, setActiveView }: Props) {
           <button
             key={section.view}
             type="button"
-            className="grid w-full grid-cols-[22px_1fr_18px] items-center gap-3 border-b border-border-subtle px-4 py-3.5 text-left transition-colors duration-150 ease-out last:border-b-0 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:grid-cols-[22px_180px_1fr_18px]"
+            className="grid w-full grid-cols-[22px_1fr_18px] items-center gap-3 border-b border-border-subtle px-4 py-3.5 text-left transition-colors duration-150 ease-out last:border-b-0 hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:grid-cols-[22px_180px_1fr_18px]"
             onClick={() => setActiveView(section.view)}
           >
             <span className="flex items-center text-text-faint">{section.icon}</span>

@@ -34,7 +34,7 @@ export default function VariableCard({ variable, usedByTags, onClick }: Props) {
       associations={usedByTags.length > 0 && usedByTags.map(tag => (
           <span
             key={tag.tagId}
-            className="max-w-full overflow-hidden rounded-md border border-border bg-white/4 px-1.5 py-0.5 text-[10.5px] text-ellipsis whitespace-nowrap text-text-secondary"
+            className="max-w-full overflow-hidden rounded-md border border-border bg-overlay/4 px-1.5 py-0.5 text-[10.5px] text-ellipsis whitespace-nowrap text-text-secondary"
           >
             {tag.name}
           </span>

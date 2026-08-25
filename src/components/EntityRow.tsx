@@ -36,7 +36,7 @@ export default function EntityRow({
 }: Props) {
   return (
     <div
-      className={`grid min-w-0 grid-cols-1 gap-2 border-b border-border-subtle px-4 py-3.5 transition-colors duration-150 ease-out last:border-b-0 hover:bg-white/5 sm:grid-cols-[minmax(0,1fr)_auto] ${
+      className={`grid min-w-0 grid-cols-1 gap-2 border-b border-border-subtle px-4 py-3.5 transition-colors duration-150 ease-out last:border-b-0 hover:bg-overlay/5 sm:grid-cols-[minmax(0,1fr)_auto] ${
         muted ? 'opacity-55' : ''
       } ${interactive ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent' : ''}`}
       onClick={onClick}

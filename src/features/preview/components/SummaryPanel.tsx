@@ -19,7 +19,7 @@ function SummaryRow({ item, onSelect }: { item: TagSummary; onSelect: () => void
   return (
     <button
       type="button"
-      className="flex w-full items-start justify-between gap-3 border-t border-border-subtle px-4 py-3 text-left transition-colors duration-150 ease-out first:border-t-0 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+      className="flex w-full items-start justify-between gap-3 border-t border-border-subtle px-4 py-3 text-left transition-colors duration-150 ease-out first:border-t-0 hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       onClick={onSelect}
     >
       <div className="min-w-0">
@@ -29,7 +29,7 @@ function SummaryRow({ item, onSelect }: { item: TagSummary; onSelect: () => void
           <div className="mt-0.5 text-[11.5px] text-text-faint">{lastResult.reason}</div>
         )}
       </div>
-      <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10.5px] font-semibold tracking-wide uppercase ${fireCount > 0 ? 'bg-success/10 text-success' : 'bg-white/5 text-text-faint'}`}>
+      <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10.5px] font-semibold tracking-wide uppercase ${fireCount > 0 ? 'bg-success/10 text-success' : 'bg-overlay/5 text-text-faint'}`}>
         {fireCount > 0 ? `Fired ${fireCount}×` : 'Not fired'}
       </span>
     </button>
@@ -57,7 +57,7 @@ export default function SummaryPanel({ summary, eventCount, variables, dataLayer
               key={t}
               type="button"
               className={`rounded-md px-3 py-1.5 text-[12.5px] font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                tab === t ? 'bg-accent-muted text-accent' : 'text-text-tertiary hover:bg-white/5 hover:text-text-secondary'
+                tab === t ? 'bg-accent-muted text-accent' : 'text-text-tertiary hover:bg-overlay/5 hover:text-text-secondary'
               }`}
               onClick={() => setTab(t)}
             >

@@ -154,7 +154,7 @@ export default function ConversionsView({ session }: Props) {
         action={
           <button
             type="button"
-            className="rounded-md border border-white/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-overlay/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-overlay/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
             onClick={openCreateModal}
             disabled={!resolvedContainer}
           >
@@ -226,7 +226,7 @@ export default function ConversionsView({ session }: Props) {
                   <div key={group.category} className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors duration-150 ease-out hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors duration-150 ease-out hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       onClick={() => toggleCategory(group.category)}
                       aria-expanded={!collapsed}
                     >

@@ -38,7 +38,7 @@ export default function ConversionSnippetModal({ event, onClose }: Props) {
             className={`rounded-md px-3 py-1.5 text-[12.5px] font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               kind === tab.kind
                 ? 'bg-accent-muted text-accent'
-                : 'text-text-tertiary hover:bg-white/5 hover:text-text-secondary'
+                : 'text-text-tertiary hover:bg-overlay/5 hover:text-text-secondary'
             }`}
             onClick={() => setKind(tab.kind)}
           >

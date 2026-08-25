@@ -13,8 +13,8 @@ export default function FilterTabs<T extends string>({ options, value, onChange 
           type="button"
           className={`rounded-[5px] px-3.5 py-1.5 text-xs font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
             value === option
-              ? 'bg-surface-raised text-text-primary shadow-[0_1px_0_rgba(255,255,255,0.04)]'
-              : 'text-text-tertiary hover:bg-white/4 hover:text-text-secondary'
+              ? 'bg-surface-raised text-text-primary shadow-[0_1px_0_color-mix(in_srgb,var(--color-overlay)_4%,transparent)]'
+              : 'text-text-tertiary hover:bg-overlay/4 hover:text-text-secondary'
           }`}
           onClick={() => onChange(option)}
         >

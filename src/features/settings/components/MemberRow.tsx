@@ -53,9 +53,9 @@ export default function MemberRow({ member, isCurrentUser, canManage, onChanged 
   return (
     <div className="flex flex-wrap items-center gap-3 border-t border-border-subtle px-4 py-3 first:border-t-0">
       {member.avatarUrl ? (
-        <img src={member.avatarUrl} alt="" className="h-8 w-8 shrink-0 rounded-full ring-1 ring-white/10" />
+        <img src={member.avatarUrl} alt="" className="h-8 w-8 shrink-0 rounded-full ring-1 ring-overlay/10" />
       ) : (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[13px] font-semibold text-text-secondary ring-1 ring-white/10" aria-hidden="true">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-[13px] font-semibold text-text-secondary ring-1 ring-overlay/10" aria-hidden="true">
           {name.charAt(0).toUpperCase()}
         </div>
       )}
@@ -64,7 +64,7 @@ export default function MemberRow({ member, isCurrentUser, canManage, onChanged 
         <div className="flex items-center gap-1.5">
           <span className="truncate text-[13px] font-semibold text-text-primary">{name}</span>
           {isCurrentUser && (
-            <span className="shrink-0 rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-text-faint">You</span>
+            <span className="shrink-0 rounded-md bg-overlay/5 px-1.5 py-0.5 text-[10px] font-semibold text-text-faint">You</span>
           )}
         </div>
         <div className="truncate text-[11.5px] text-text-tertiary">{member.email}</div>

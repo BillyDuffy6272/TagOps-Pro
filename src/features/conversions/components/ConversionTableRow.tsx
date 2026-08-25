@@ -33,7 +33,7 @@ function GoogleAdsIdBadge({ conversionId, label }: { conversionId: string; label
 
 export default function ConversionTableRow({ event, onEdit, onDelete, onSnippet }: Props) {
   return (
-    <tr className={`border-t border-border-subtle transition-colors duration-150 ease-out hover:bg-white/5 ${event.is_active ? '' : 'opacity-55'}`}>
+    <tr className={`border-t border-border-subtle transition-colors duration-150 ease-out hover:bg-overlay/5 ${event.is_active ? '' : 'opacity-55'}`}>
       <td className="px-4 py-3 align-top">
         <div className="text-[13px] font-semibold text-text-primary">{event.display_name || event.event_name}</div>
         <div className="font-mono text-[11.5px] text-text-faint">{event.event_name}</div>
@@ -69,21 +69,21 @@ export default function ConversionTableRow({ event, onEdit, onDelete, onSnippet 
         <div className="flex justify-end gap-2">
           <button
             type="button"
-            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-white/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             onClick={onSnippet}
           >
             Code
           </button>
           <button
             type="button"
-            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-white/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             onClick={onEdit}
           >
             Edit
           </button>
           <button
             type="button"
-            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-white/6 hover:text-danger-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-danger-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             onClick={onDelete}
           >
             Delete
