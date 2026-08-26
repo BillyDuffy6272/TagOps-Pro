@@ -152,6 +152,9 @@ export interface VariableResult {
   // form/etc. simulator produces) get a value; everything else (DOM/JS/URL/
   // cookie variables) is surfaced as unresolved rather than guessed.
   resolved: boolean
+  // Set only when unresolved, to explain why rather than showing the same
+  // generic message for every unsupported type.
+  reason?: string
 }
 
 // GTM's built-in Auto-Event Variable types, mapped to the gtm.* dataLayer
@@ -175,6 +178,71 @@ const AEV_KEY_MAP: Record<string, string> = {
   ELEMENT_VISIBILITY_TIME: 'gtm.visibleTime',
 }
 
+// GTM's built-in variables are container-level toggles, not workspace
+// entities, so — like BUILT_IN_TRIGGERS above — the API never returns them.
+// The common ones are hardcoded here so the preview's Variables tab lists
+// them the same way GTM's own Tag Assistant does. Each either maps to a
+// gtm.* key SIMULATED_ACTIONS already populates, or (for the page-context
+// ones GTM would read off the real page) stays honestly unresolved rather
+// than guessed from TagOps Pro's own URL — see docs/decision-log.md ADR-0019.
+export const BUILT_IN_VARIABLES: GtmVariable[] = [
+  { variableId: 'builtin:debugMode', name: 'Debug Mode', type: 'builtin', path: '' },
+  { variableId: 'builtin:event', name: 'Event', type: 'builtin', path: '' },
+  { variableId: 'builtin:pageUrl', name: 'Page URL', type: 'builtin', path: '' },
+  { variableId: 'builtin:pageHostname', name: 'Page Hostname', type: 'builtin', path: '' },
+  { variableId: 'builtin:pagePath', name: 'Page Path', type: 'builtin', path: '' },
+  { variableId: 'builtin:referrer', name: 'Referrer', type: 'builtin', path: '' },
+  { variableId: 'builtin:clickElement', name: 'Click Element', type: 'builtin', path: '' },
+  { variableId: 'builtin:clickClasses', name: 'Click Classes', type: 'builtin', path: '' },
+  { variableId: 'builtin:clickId', name: 'Click ID', type: 'builtin', path: '' },
+  { variableId: 'builtin:clickTarget', name: 'Click Target', type: 'builtin', path: '' },
+  { variableId: 'builtin:clickText', name: 'Click Text', type: 'builtin', path: '' },
+  { variableId: 'builtin:clickUrl', name: 'Click URL', type: 'builtin', path: '' },
+  { variableId: 'builtin:formElement', name: 'Form Element', type: 'builtin', path: '' },
+  { variableId: 'builtin:formId', name: 'Form ID', type: 'builtin', path: '' },
+  { variableId: 'builtin:formUrl', name: 'Form URL', type: 'builtin', path: '' },
+  { variableId: 'builtin:newHistoryFragment', name: 'New History Fragment', type: 'builtin', path: '' },
+  { variableId: 'builtin:oldHistoryFragment', name: 'Old History Fragment', type: 'builtin', path: '' },
+  { variableId: 'builtin:scrollDepthThreshold', name: 'Scroll Depth Threshold', type: 'builtin', path: '' },
+  { variableId: 'builtin:scrollDepthUnits', name: 'Scroll Depth Units', type: 'builtin', path: '' },
+  { variableId: 'builtin:scrollDirection', name: 'Scroll Direction', type: 'builtin', path: '' },
+  { variableId: 'builtin:errorMessage', name: 'Error Message', type: 'builtin', path: '' },
+  { variableId: 'builtin:errorLine', name: 'Error Line', type: 'builtin', path: '' },
+  { variableId: 'builtin:videoStatus', name: 'Video Status', type: 'builtin', path: '' },
+  { variableId: 'builtin:videoPercent', name: 'Video Percent', type: 'builtin', path: '' },
+  { variableId: 'builtin:percentVisible', name: 'Percent Visible', type: 'builtin', path: '' },
+  { variableId: 'builtin:onScreenDuration', name: 'On-Screen Duration', type: 'builtin', path: '' },
+]
+
+// Mirrors AEV_KEY_MAP, but keyed by the built-in's own variableId rather
+// than a GTM varType code, since built-ins don't carry a varType parameter.
+const BUILT_IN_KEY_MAP: Record<string, string> = {
+  'builtin:clickElement': 'gtm.element',
+  'builtin:clickClasses': 'gtm.elementClasses',
+  'builtin:clickId': 'gtm.elementId',
+  'builtin:clickText': 'gtm.elementText',
+  'builtin:clickUrl': 'gtm.elementUrl',
+  'builtin:formElement': 'gtm.element',
+  'builtin:formId': 'gtm.elementId',
+  'builtin:formUrl': 'gtm.elementUrl',
+  'builtin:newHistoryFragment': 'gtm.newUrl',
+  'builtin:oldHistoryFragment': 'gtm.oldUrl',
+  'builtin:scrollDepthThreshold': 'gtm.scrollThreshold',
+  'builtin:scrollDepthUnits': 'gtm.scrollUnits',
+  'builtin:scrollDirection': 'gtm.scrollDirection',
+  'builtin:errorMessage': 'gtm.errorMessage',
+  'builtin:errorLine': 'gtm.errorLineNumber',
+  'builtin:videoStatus': 'gtm.videoStatus',
+  'builtin:videoPercent': 'gtm.videoPercent',
+  'builtin:percentVisible': 'gtm.visibleRatio',
+  'builtin:onScreenDuration': 'gtm.visibleTime',
+}
+
+// GTM reads these off the real loaded page. This simulator never loads one
+// (that's the "firing verification" roadmap item, not preview — ADR-0019),
+// so they stay unresolved with an explanation instead of a generic message.
+const PAGE_CONTEXT_BUILT_INS = new Set(['builtin:pageUrl', 'builtin:pageHostname', 'builtin:pagePath', 'builtin:referrer'])
+
 export function resolveVariable(variable: GtmVariable, dataLayer: Record<string, unknown>): VariableResult {
   if (variable.type === 'c') {
     const value = variable.parameter?.find(p => p.key === 'value')?.value
@@ -187,6 +255,15 @@ export function resolveVariable(variable: GtmVariable, dataLayer: Record<string,
   if (variable.type === 'aev') {
     const varType = variable.parameter?.find(p => p.key === 'varType')?.value
     const key = varType ? AEV_KEY_MAP[varType] : undefined
+    return { variable, value: key ? dataLayer[key] : undefined, resolved: key !== undefined }
+  }
+  if (variable.type === 'builtin') {
+    if (variable.variableId === 'builtin:debugMode') return { variable, value: true, resolved: true }
+    if (variable.variableId === 'builtin:event') return { variable, value: dataLayer.event, resolved: true }
+    if (PAGE_CONTEXT_BUILT_INS.has(variable.variableId)) {
+      return { variable, value: undefined, resolved: false, reason: 'Needs a real loaded page — not available in simulation' }
+    }
+    const key = BUILT_IN_KEY_MAP[variable.variableId]
     return { variable, value: key ? dataLayer[key] : undefined, resolved: key !== undefined }
   }
   return { variable, value: undefined, resolved: false }

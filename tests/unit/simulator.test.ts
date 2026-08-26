@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { GtmTag, GtmTrigger, GtmVariable } from '../../src/lib/gtm'
 import {
+  BUILT_IN_VARIABLES,
   PAGE_LOAD_EVENTS,
   evaluateTag,
   eventLabel,
@@ -239,5 +240,36 @@ describe('resolveVariable', () => {
 
     const jsVariable = makeVariable({ type: 'jsm' })
     expect(resolveVariable(jsVariable, {})).toMatchObject({ value: undefined, resolved: false })
+  })
+
+  function builtIn(name: string): GtmVariable {
+    const variable = BUILT_IN_VARIABLES.find(v => v.name === name)
+    if (!variable) throw new Error(`no built-in variable named "${name}"`)
+    return variable
+  }
+
+  it('always resolves Debug Mode to true', () => {
+    expect(resolveVariable(builtIn('Debug Mode'), {})).toMatchObject({ value: true, resolved: true })
+  })
+
+  it('resolves the Event built-in from the current data layer event', () => {
+    expect(resolveVariable(builtIn('Event'), { event: 'gtm.click' })).toMatchObject({ value: 'gtm.click', resolved: true })
+  })
+
+  it('resolves Click built-ins via the same gtm.* keys the click simulator populates', () => {
+    const dataLayer = { 'gtm.elementClasses': 'btn btn-primary', 'gtm.elementId': 'cta' }
+    expect(resolveVariable(builtIn('Click Classes'), dataLayer)).toMatchObject({ value: 'btn btn-primary', resolved: true })
+    expect(resolveVariable(builtIn('Click ID'), dataLayer)).toMatchObject({ value: 'cta', resolved: true })
+  })
+
+  it('leaves page-context built-ins unresolved with a specific reason, not a guess', () => {
+    const result = resolveVariable(builtIn('Page URL'), {})
+    expect(result.resolved).toBe(false)
+    expect(result.value).toBeUndefined()
+    expect(result.reason).toMatch(/real loaded page/)
+  })
+
+  it('leaves Click Target unresolved since no simulated action produces it', () => {
+    expect(resolveVariable(builtIn('Click Target'), { 'gtm.element': 'button#cta' })).toMatchObject({ value: undefined, resolved: false })
   })
 })

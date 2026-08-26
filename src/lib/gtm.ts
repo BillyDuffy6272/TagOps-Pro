@@ -386,6 +386,7 @@ export const VARIABLE_TYPE_LABELS: Record<string, string> = {
   remm: 'RegEx Table',
   vis: 'Element Visibility',
   ctv: 'Container Version Number',
+  builtin: 'Built-In Variable',
 }
 
 export const VARIABLE_TYPE_CATEGORY: Record<string, string> = {
@@ -403,6 +404,7 @@ export const VARIABLE_TYPE_CATEGORY: Record<string, string> = {
   remm: 'lookup',
   vis: 'dom',
   ctv: 'constant',
+  builtin: 'builtin',
 }
 
 export function variableLabel(type: string): string {
