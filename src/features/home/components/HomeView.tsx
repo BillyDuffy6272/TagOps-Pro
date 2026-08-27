@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { ActiveView } from '../../../components/AppShell'
 
@@ -87,6 +87,8 @@ export default function HomeView({ session, setActiveView }: Props) {
   const fullName = user.user_metadata?.full_name as string | undefined
   const firstName = fullName?.split(' ')[0] ?? 'there'
   const hasToken = Boolean(session.provider_token)
+  const [guideOpen, setGuideOpen] = useState(false)
+  const guideId = useId()
 
   return (
     <div className="mx-auto max-w-[980px] px-10 pt-10 pb-15">
@@ -124,24 +126,41 @@ export default function HomeView({ session, setActiveView }: Props) {
       </div>
 
       <section className="mt-10">
-        <h2 className="m-0 mb-1 text-[15px] font-semibold text-text-primary">New here? Here's what each page shows</h2>
-        <p className="m-0 mb-5 text-[13px] text-text-tertiary">
-          A quick guide if you're not familiar with Google Tag Manager or GA4 terms like "tag" and "trigger".
-        </p>
+        <button
+          type="button"
+          className="flex w-full items-center justify-between gap-3 rounded-lg border border-border-subtle bg-surface-sunken px-4 py-3.5 text-left transition-colors duration-150 ease-out hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          onClick={() => setGuideOpen(open => !open)}
+          aria-expanded={guideOpen}
+          aria-controls={guideId}
+        >
+          <span className="min-w-0">
+            <span className="block text-[13.5px] font-semibold text-text-primary">New here? Here's what each page shows</span>
+            <span className="block text-[12px] text-text-tertiary">A quick guide if you're not familiar with Google Tag Manager or GA4 terms.</span>
+          </span>
+          <svg
+            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+            className={`shrink-0 text-text-faint transition-transform duration-150 ease-out ${guideOpen ? 'rotate-180' : ''}`}
+            aria-hidden="true"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
 
-        <div className="flex flex-col gap-5">
-          {SECTIONS.map(section => (
-            <article key={section.view} className="flex gap-3.5">
-              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface-sunken text-text-tertiary" aria-hidden="true">
-                {section.icon}
-              </span>
-              <div className="min-w-0">
-                <h3 className="m-0 mb-1 text-[13.5px] font-semibold text-text-primary">{section.label}</h3>
-                <p className="m-0 text-[13px] leading-relaxed text-text-tertiary">{section.guide}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        {guideOpen && (
+          <div id={guideId} className="flex flex-col gap-5 px-1 pt-5">
+            {SECTIONS.map(section => (
+              <article key={section.view} className="flex gap-3.5">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface-sunken text-text-tertiary" aria-hidden="true">
+                  {section.icon}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="m-0 mb-1 text-[13.5px] font-semibold text-text-primary">{section.label}</h3>
+                  <p className="m-0 text-[13px] leading-relaxed text-text-tertiary">{section.guide}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )
