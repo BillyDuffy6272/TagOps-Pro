@@ -24,8 +24,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-canvas">
-        <Spinner size={28} />
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-canvas">
+        <img src="/favicon.svg" alt="TagOps Pro" width="52" height="52" className="rounded-xl" />
+        <Spinner size={22} />
       </div>
     )
   }

@@ -17,10 +17,7 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
   return (
     <aside className="flex h-screen flex-col overflow-hidden border-r border-border bg-surface-nav shadow-[inset_-1px_0_0_color-mix(in_srgb,var(--color-overlay)_2%,transparent),4px_0_28px_-12px_rgba(0,0,0,0.65)]">
       <div className="flex shrink-0 items-center gap-3 px-4 pt-4 pb-4">
-        <svg width="22" height="22" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-          <circle cx="18" cy="18" r="15" className="fill-text-primary" />
-          <path d="M8 12.5 23.5 28M12.5 8 28 23.5M7.5 19.5 16.5 28.5" className="stroke-canvas" strokeWidth="3" strokeLinecap="round" />
-        </svg>
+        <img src="/favicon.svg" alt="" width="26" height="26" className="shrink-0 rounded-md ring-1 ring-overlay/10" />
         <div className="min-w-0">
           <div className="truncate text-[15px] font-semibold text-text-primary">TagOps Pro</div>
           <div className="truncate text-[11.5px] font-medium text-text-faint">Tracking workspace</div>
