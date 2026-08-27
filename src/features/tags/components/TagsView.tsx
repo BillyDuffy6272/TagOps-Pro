@@ -98,6 +98,7 @@ export default function TagsView() {
             <input
               className="w-[230px] rounded-md border border-border-subtle bg-surface-sunken px-3 py-1.5 text-[13px] text-text-primary transition-colors duration-150 ease-out placeholder:text-text-faint hover:border-border focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent"
               type="search"
+              aria-label="Search tags"
               placeholder="Search tags…"
               value={search}
               onChange={e => setSearch(e.target.value)}

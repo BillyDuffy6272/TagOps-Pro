@@ -6,6 +6,7 @@ interface SectionCard {
   view: ActiveView
   label: string
   description: string
+  guide: string
   icon: ReactNode
 }
 
@@ -14,6 +15,8 @@ const SECTIONS: SectionCard[] = [
     view: 'tags',
     label: 'Tags',
     description: 'View and filter all tags synced from your GTM container.',
+    guide:
+      "A tag is a small piece of tracking code — like the Google Ads or GA4 snippet that records a page visit or a purchase. This page lists every tag in your GTM container, whether it's currently on or paused, and what kind of tag it is, so you can see at a glance what's actually running on your site without opening Google Tag Manager itself.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
@@ -25,6 +28,8 @@ const SECTIONS: SectionCard[] = [
     view: 'triggers',
     label: 'Triggers',
     description: 'Manage the conditions that fire your tags.',
+    guide:
+      "A trigger is the condition that decides when a tag actually fires — for example, \"when someone clicks the Submit button\" or \"when someone reaches the thank-you page.\" This page shows what has to happen for each of your tags to activate, so you can check the logic behind your tracking without digging through GTM's own interface.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -35,6 +40,8 @@ const SECTIONS: SectionCard[] = [
     view: 'variables',
     label: 'Variables',
     description: 'Track data layer variables and their expected values.',
+    guide:
+      "Variables are the small pieces of information your tags and triggers rely on — things like a button's ID, the current page URL, or a value pulled from your site's data layer. This page lists what each variable is expected to capture, which helps you spot when a tag might be misfiring because a variable isn't returning what it should.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="16 18 22 12 16 6" />
@@ -46,6 +53,8 @@ const SECTIONS: SectionCard[] = [
     view: 'conversions',
     label: 'Conversions',
     description: 'Document and verify your GA4 and Google Ads conversion events.',
+    guide:
+      'Conversions are the actions that actually matter to your business — a completed purchase, a submitted enquiry form, a phone number click. This page documents every conversion event you track in GA4 and Google Ads, including the exact code snippet used to record it, so you or whoever set it up can confirm it\'s still wired up correctly.',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -57,6 +66,8 @@ const SECTIONS: SectionCard[] = [
     view: 'preview',
     label: 'Preview',
     description: 'Simulate events against your container and see which tags fire.',
+    guide:
+      "Before trusting your tracking data, it helps to test it. This page lets you simulate real visitor actions — a page view, a click, a form submission — and see exactly which tags would fire and what data they'd send, without needing to open GTM's own, fairly technical, preview mode.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -111,6 +122,27 @@ export default function HomeView({ session, setActiveView }: Props) {
           </button>
         ))}
       </div>
+
+      <section className="mt-10">
+        <h2 className="m-0 mb-1 text-[15px] font-semibold text-text-primary">New here? Here's what each page shows</h2>
+        <p className="m-0 mb-5 text-[13px] text-text-tertiary">
+          A quick guide if you're not familiar with Google Tag Manager or GA4 terms like "tag" and "trigger".
+        </p>
+
+        <div className="flex flex-col gap-5">
+          {SECTIONS.map(section => (
+            <article key={section.view} className="flex gap-3.5">
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface-sunken text-text-tertiary" aria-hidden="true">
+                {section.icon}
+              </span>
+              <div className="min-w-0">
+                <h3 className="m-0 mb-1 text-[13.5px] font-semibold text-text-primary">{section.label}</h3>
+                <p className="m-0 text-[13px] leading-relaxed text-text-tertiary">{section.guide}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

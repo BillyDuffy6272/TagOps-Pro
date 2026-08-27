@@ -4,22 +4,15 @@ A chronological log of substantive AI interactions on TagOps-Pro, kept per the A
 
 ## Why this log exists (AT3 rules)
 
-1. **Log every substantive Claude Code interaction.** Trivial autocomplete does not need logging; substantive prompts (architecture suggestions, schema design, debugging non-trivial issues, generating components, drafting docs) do.
+1. **Log every substantive Claude Code interaction.** Trivial autocomplete doesn't need logging; architecture suggestions, schema design, non-trivial debugging, component generation, and drafted docs do.
 2. **I must be able to defend every line of submitted code at the Week 10 walk-through.** Code I cannot explain is treated as not my work.
-3. **I stay the engineer; AI is the assistant.** Decisions about product direction, scope, and architecture are mine. AI proposes; I dispose.
+3. **I stay the engineer; AI is the assistant.** Product, scope, and architecture decisions are mine. AI proposes; I dispose.
 
 ## Entry format
 
-Each entry follows the schema defined in `CLAUDE.md` (AI Use Policy > Log entry format):
+Per `CLAUDE.md` (AI Use Policy > Log entry format): **Title** (`###` heading) — **Date** (DD/MM/YYYY) — **Prompt** (verbatim if single-message, summarised if multi-turn) — **Response summary** (in my own words) — **What you did with it** (Accepted/Modified/Rejected) — **Why**.
 
-- **Title** — short subject line as a `###` heading.
-- **Date** — DD/MM/YYYY.
-- **Prompt** — what the user asked (verbatim if a single message; summarised if multi-turn).
-- **Response summary** — what Claude returned, in my own words.
-- **What you did with it** — Accepted / Modified / Rejected.
-- **Why** — the reasoning behind that verb.
-
-All entries below used **Claude Code (Claude Opus in Cowork mode)** unless otherwise noted. New entries go at the **bottom** of the file.
+All entries used **Claude Code (Claude Opus in Cowork mode)** unless noted. New entries go at the **bottom**.
 
 ---
 
@@ -27,13 +20,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** Multi-turn — "look in the docs folder", then "yes draft starters" (problem statement, decision log, AI use log), then "what need to be done to configure Claude for this development project".
+**Prompt:** Multi-turn — look in `/docs`; draft starters (problem statement, decision log, AI use log); what's needed to configure Claude for this project.
 
-**Response summary:** Read the existing `docs/02-requirements.md`. Drafted `docs/01-problem-statement.md` with a four-pain framing and target-user definitions, `docs/decision-log.md` with a lightweight ADR template and two starter entries, and an initial `docs/ai-use-log.md`. Drafted a first `CLAUDE.md` at the repo root with a provisional Vite + React + TS + Tailwind + TanStack Query + Supabase stack, plus a six-step Claude-configuration plan.
+**Response summary:** Read `docs/02-requirements.md`. Drafted `docs/01-problem-statement.md` (four-pain framing, target users), `docs/decision-log.md` (ADR template + two starter entries), and an initial `docs/ai-use-log.md`. Drafted a first root `CLAUDE.md` with a provisional Vite + React + TS + Tailwind + TanStack Query + Supabase stack and a six-step configuration plan.
 
 **What you did with it:** Modified.
 
-**Why:** Provisional stack guesses needed to be reconciled with the AT3 brief shared the next turn. Supabase happened to land correctly, but security-floor wording, AI-use policy text, and the exact folio file numbering required updating.
+**Why:** Provisional stack guesses needed reconciling with the AT3 brief shared the next turn — Supabase landed correctly, but security-floor wording, AI-use policy text, and folio numbering needed updating.
 
 ---
 
@@ -41,13 +34,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** Attached the Noetica Teach orientation PDF and said: "This is what we arw workin towards, please update as necessary". Then, mid-turn: "Don't rename documents".
+**Prompt:** Attached the Noetica Teach orientation PDF: "This is what we are working towards, please update as necessary." Mid-turn: "Don't rename documents."
 
-**Response summary:** Rewrote `CLAUDE.md` to reflect the mandated stack (Vercel + Supabase + Claude Code + VS Code), the six-requirement security floor, the AI-use policy, the nine-week IU timeline, the required repo shape (with `supabase/migrations/`, `supabase/functions/`, and the three-tier `tests/` structure), and the marking structure. Updated `docs/01-problem-statement.md` with an academic-context note. Reformatted this log to the AT3 schema. Added ADR-0003 to `docs/decision-log.md` recording the now-mandated stack. Replaced the default Vite scaffold `README.md` with a real project overview.
+**Response summary:** Rewrote `CLAUDE.md` for the mandated stack (Vercel + Supabase + Claude Code + VS Code), the six-requirement security floor, AI-use policy, nine-week IU timeline, required repo shape (`supabase/migrations/`, `supabase/functions/`, three-tier `tests/`), and marking structure. Added an academic-context note to `01-problem-statement.md`, reformatted this log to the AT3 schema, added ADR-0003 recording the mandated stack, and replaced the Vite-scaffold `README.md` with a real overview.
 
 **What you did with it:** Modified.
 
-**Why:** The initial `CLAUDE.md` was based on stack guesses; the PDF made several things non-negotiable. The mid-turn override (kept `decision-log.md` rather than rename to the AT3-spec `decisions.md`) is a defensible preference to defer until the teacher confirms — flagged as an open question in the decision log.
+**Why:** The PDF made several things non-negotiable that the first `CLAUDE.md` had only guessed at. The mid-turn override (keep `decision-log.md`, not the AT3-spec `decisions.md`) is flagged as open pending teacher confirmation.
 
 ---
 
@@ -55,13 +48,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** "Give me a suggested data dictionary for all the necessary information".
+**Prompt:** "Give me a suggested data dictionary for all the necessary information."
 
-**Response summary:** Drafted a comprehensive first version of `docs/04-data-model.md` (~270 lines) covering full relational schema, an ASCII entity-relationship overview, table-by-table column definitions for the 11 MVP tables, three roadmap tables, an RLS approach section with a helper function, indexing notes, and eight open questions for Weeks 5–6.
+**Response summary:** Drafted a first `docs/04-data-model.md` (~270 lines): relational schema, ASCII ERD, columns for 11 MVP + 3 roadmap tables, an RLS approach with a helper function, indexing notes, and eight open questions for Weeks 5–6.
 
 **What you did with it:** Rejected (in form); substance reused.
 
-**Why:** The per-table relational format was correct for a Week 5–6 schema doc but wrong for a Week 2 data dictionary. The entities, fields, and constraints carried over wholesale into the rewrite in the next turn — only the presentation changed.
+**Why:** Right format for a Week 5–6 schema doc, wrong for a Week 2 data dictionary. Entities, fields, and constraints carried wholesale into the next turn's rewrite — only presentation changed.
 
 ---
 
@@ -69,13 +62,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** Shared a screenshot of own first-draft data dictionary and said: "No simplfy 04-data-model. Also its for a data dictionary so I don;t know whats the title is about. Also see mine for inspiration. Use the table structure, mine is a very rough draft and likely needs to be tweaked but noneless use for inspo and give me your suggested structure at the bottom of the file".
+**Prompt:** Shared a screenshot of own rough data dictionary; asked for a simplified `04-data-model.md` using that table structure, retitled appropriately, with Claude's own suggested structure appended.
 
-**Response summary:** Rebuilt `docs/04-data-model.md` in the seven-column row-per-field format from the screenshot (Variable | Data Type | Format | Description | Example | Connected to | Validation), one entity per section. Retitled the doc as "Data Dictionary" for clarity. Pushed the relational schema, RLS helper, and roadmap entities to a condensed "Suggested Structure" section at the bottom. Marked Password as handled by Supabase Auth, never stored in our database (security floor #6). Tweaked `CON_XX_YYYY` → `CONID_XX_YYYY` for internal consistency with the other ID prefixes.
+**Response summary:** Rebuilt the doc as a seven-column row-per-field format (Variable | Data Type | Format | Description | Example | Connected to | Validation), one entity per section, retitled "Data Dictionary". Pushed the relational schema, RLS helper, and roadmap entities to a condensed "Suggested Structure" section at the bottom. Marked Password as handled by Supabase Auth, never stored directly (security floor #6). Renamed `CON_XX_YYYY` → `CONID_XX_YYYY` for prefix consistency.
 
 **What you did with it:** Accepted.
 
-**Why:** The chosen format is more readable for non-technical readers (including the marking teacher). The relational thinking is preserved but de-emphasised. The Password-row treatment is a deliberate teaching moment for the Week 6–7 security review.
+**Why:** More readable for non-technical readers including the marking teacher; relational thinking preserved but de-emphasised. The Password-row treatment is a deliberate teaching moment for the Week 6–7 security review.
 
 ---
 
@@ -83,13 +76,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** "are you able to actually create this data dictionary. Put one log/row for each dictionary and each dictionary should have its own page. Make a folder to hold these. I just want to see what it would look like in reality".
+**Prompt:** "Actually create this data dictionary" — one file per entity, own folder, to see what it'd look like in reality.
 
-**Response summary:** Created `docs/data-dictionary-examples/` containing ten files — one per entity plus a README. Each file held a single populated example record with consistent cross-references via display IDs, all sharing one scenario (Alex G owns the Need Tracking org; one container; one tag, trigger, variable, conversion event; one tag–trigger link).
+**Response summary:** Created `docs/data-dictionary-examples/` — ten files (one per entity + README), each a single populated record cross-referenced via display IDs, all sharing one scenario (Alex G owns the Need Tracking org; one container; one tag/trigger/variable/conversion event; one tag–trigger link).
 
-**What you did with it:** Modified the next turn (FK gaps fixed and layout switched to row-per-record).
+**What you did with it:** Modified next turn (FK gaps fixed, layout switched to row-per-record).
 
-**Why:** Concrete example data beats abstract schema for explaining a data model. The single shared scenario is what made the worked examples valuable — without it, each file would be standalone and would not show how the entities actually relate.
+**Why:** Concrete example data explains a data model better than abstract schema; the shared scenario is what shows entities actually relating rather than standing alone.
 
 ---
 
@@ -97,13 +90,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** First, asked whether the worked examples would be functional and whether they could be made into CSVs. After Claude identified two FK gaps: "Make the necessary changes outlined in 1 and 2, cool I'd probable want a row for each record not the specific categories. Like my initial photo had put. Don't make th csvs just remember".
+**Prompt:** Asked whether the examples would be functional and CSV-able; after Claude found two FK gaps, asked to fix them and switch to one row per record (not category).
 
-**Response summary:** Honest audit found two FK gaps that would have broken FK enforcement on load — no User record for Jordan T (the membership row's target), and no owner Membership row for Alex G (without it the RLS helper would return false for the owner). Added both. Reshuffled membership IDs so Alex's owner row became `MEMID_AG_0001` (created at org-creation time by a Postgres trigger) and Jordan's editor row became `MEMID_AG_0002`. Restructured all nine entity files from row-per-field to row-per-record layout. Logged the CSV-format preference (one CSV per entity, header + rows) for future use.
+**Response summary:** Audit found two FK gaps that would break FK enforcement on load — no User record for Jordan T (the membership row's target), and no owner Membership row for Alex G (without it the RLS helper would return false for the owner). Added both; reshuffled membership IDs so Alex's owner row became `MEMID_AG_0001` (created at org-creation by a Postgres trigger) and Jordan's editor row `MEMID_AG_0002`. Restructured all nine entity files to row-per-record. Logged the CSV-format preference for later use.
 
 **What you did with it:** Accepted.
 
-**Why:** Catching the FK gaps before generating seed data is exactly what this kind of review is for. Row-per-record layout matches the eventual CSV export format and is cleaner for files with multiple records.
+**Why:** Catching FK gaps before generating seed data is exactly what this review is for; row-per-record matches the eventual CSV export and suits multi-record files.
 
 ---
 
@@ -111,13 +104,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** "Make a new folder in this repo and make all the datadictionarys functional so eventually data can be inputted in".
+**Prompt:** "Make a new folder... make all the data dictionaries functional so eventually data can be inputted in."
 
-**Response summary:** Created `seed-data/` at the project root with: a README explaining the layout and how to add records, a Postgres `schema.sql` containing draft DDL for all nine entities (with `CHECK` constraints on ID patterns, role enums, JSON types), and nine JSON files — one per entity — each containing the example records in array form. JSON uses CamelCase keys matching the dictionary; SQL uses `snake_case` per Postgres convention. Foreign keys in JSON reference parents by display ID for readability. The schema's footer lists items intentionally left for Weeks 5–6 (RLS policies, audit triggers, indexes, owner-membership trigger).
+**Response summary:** Created `seed-data/` at project root: a README on layout, a draft Postgres `schema.sql` for all nine entities (CHECK constraints on ID patterns, role enums, JSON types), and nine JSON files (one per entity, array of example records; camelCase keys; FKs by display ID for readability). SQL uses `snake_case`. Schema footer lists items left for Weeks 5–6 (RLS, audit triggers, indexes, owner-membership trigger).
 
 **What you did with it:** Accepted.
 
-**Why:** JSON-array-per-entity is the lowest-friction "inputtable" format without prematurely committing to a database. The `schema.sql` shows where the data will eventually live without being a working migration yet.
+**Why:** JSON-array-per-entity is the lowest-friction "inputtable" format without prematurely committing to a database; `schema.sql` shows where the data will live without being a working migration yet.
 
 ---
 
@@ -125,13 +118,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** First: "Fill in the necessary ai logs in ai-use-log.md as I want to show how claude helped me". Then: "Apply this to claude.md or to memory so that from future it will generate these honest logs. Update this as you see fit." — followed by a markdown block defining the desired log entry format.
+**Prompt:** "Fill in the necessary ai logs... I want to show how claude helped me." Then: apply a supplied logging schema to `CLAUDE.md` so future sessions generate honest logs automatically.
 
-**Response summary:** Reconstructed the session as detailed entries in the prior format. Then applied the user-supplied logging schema as a new `### Log entry format` subsection of the AI Use Policy in `CLAUDE.md`, with two small additions: a note that the trigger is "when the user asks (typically at end of session)" rather than automatic, and a rule that the "What you did with it" verb should be picked honestly. Reformatted all existing entries in this file to the new schema (Date / Prompt / Response summary / What you did with it / Why), reversed the order to chronological (oldest at top, newest at bottom), and added this entry to record the change.
+**Response summary:** Reconstructed the session as detailed entries in the prior format, then added the supplied schema as a `### Log entry format` subsection of the AI Use Policy in `CLAUDE.md`, with two additions: the trigger is "when the user asks" (not automatic), and the verb must be picked honestly. Reformatted all existing entries to the new schema, reversed to chronological order (oldest top), and added this entry.
 
 **What you did with it:** Accepted.
 
-**Why:** Centralising the logging convention in `CLAUDE.md` means every future session inherits it without having to re-explain. Chronological order matches how logs are conventionally read (top-to-bottom = past-to-present). Reformatting historical entries kept the log internally consistent — substance preserved, only structure changed.
+**Why:** Centralising the convention in `CLAUDE.md` means future sessions inherit it without re-explaining; chronological order matches conventional reading; reformatting kept the log internally consistent — substance preserved, structure changed.
 
 ---
 
@@ -139,13 +132,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 13/05/2026
 
-**Prompt:** "Give each log titles though just so the viewer knows the subject of each log".
+**Prompt:** "Give each log titles... so the viewer knows the subject of each log."
 
-**Response summary:** Updated the `### Log entry format` subsection in `CLAUDE.md` to require a short title (5–10 words) as a `###` heading at the top of each entry, and added a rule that entries should be separated by a horizontal rule. Added titles to every existing entry in this file and updated the "Entry format" section here to mention the title field.
+**Response summary:** Updated the `### Log entry format` subsection in `CLAUDE.md` to require a 5–10 word title as a `###` heading, plus a rule separating entries with a horizontal rule. Added titles to every existing entry and updated "Entry format" here.
 
 **What you did with it:** Accepted.
 
-**Why:** Titles make the log scannable at a glance — a reader can read just the headings to get the shape of a session before diving into the bodies. Useful for the Week 10 walk-through, where the teacher will be skimming for high points rather than reading every word.
+**Why:** Titles make the log scannable — a reader gets the shape of a session from headings alone, useful when the teacher skims for high points at the walk-through.
 
 ---
 
@@ -153,13 +146,13 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 01/06/2026
 
-**Prompt:** Multi-turn — "I am using supabase for my database storage and want to merge my data dictionaries in seed-data. Firstly I want to translate my data dictionaries into SQL that I can run to set up the data structure in supabase. Guide me through the process. If the task involves comprehensive code provide a hand-over prompt for claude code." Then: "I do have files in the supabase/migrations folder. Please review if I send prompt to claude code." Then: "In regards to local supabase, all RTV will be done on a production server." Then: "Give me the full prompt."
+**Prompt:** Multi-turn — translate the data dictionaries into SQL for Supabase, with a Claude Code handover prompt if the task is large; review existing files in `supabase/migrations`; all RTV happens on a production server (no local Supabase CLI); "give me the full prompt."
 
-**Response summary:** Cowork read the existing seed-data/*.json files, seed-data/schema.sql, docs/data-dictionary-examples/*.md, and the two existing migration files. Found that the data dictionaries (JSON and markdown) were already consistent with each other and required no merge — the missing step was converting them into proper Supabase artifacts. Identified a conflict: 20260507141000_profiles.sql creates public.profiles, which conflicts with the schema.sql design of public.users as the auth mirror table. Produced a complete Claude Code handover prompt covering: (1) a new migration file 20260601000000_init_schema.sql that drops profiles, creates all 8 tables from schema.sql, adds the set_updated_at() trigger function, is_active_org_member() RLS helper, handle_new_user() auth trigger, auto-owner-membership trigger, RLS policies on every table, and performance indexes; (2) a supabase/seed.sql file with hardcoded UUIDs and INSERT statements for all 9 entities in FK-safe order. Production-only workflow — no local supabase CLI commands included.
+**Response summary:** Read `seed-data/*.json`, `seed-data/schema.sql`, `docs/data-dictionary-examples/*.md`, and the two existing migrations. Found the data dictionaries already mutually consistent — the missing step was converting them into Supabase artifacts. Found a conflict: `20260507141000_profiles.sql` creates `public.profiles`, clashing with `schema.sql`'s design of `public.users` as the auth mirror table. Produced a full handover prompt for: (1) `20260601000000_init_schema.sql` — drop `profiles`, create all 8 tables from `schema.sql`, add `set_updated_at()`, `is_active_org_member()` RLS helper, `handle_new_user()` auth trigger, auto-owner-membership trigger, RLS on every table, indexes; (2) `supabase/seed.sql` — hardcoded UUIDs, FK-safe-ordered INSERTs for all 9 entities. Production-only, no local CLI.
 
-**What you did with it:** Accepted (as a handover prompt — to be sent to Claude Code).
+**What you did with it:** Accepted (as a handover prompt).
 
-**Why:** The scope (migration + seed + RLS policies + triggers) is too large to safely produce in Cowork without being able to lint or run the SQL. Handing off to Claude Code keeps the production-safety guardrail intact and means any SQL errors can be caught before being run in the Supabase SQL editor. The profiles → users conflict was a genuine blocker that would have caused the migration to fail silently on a live project. I was not able to produce the same quality prompt so I got Claude Cowork to better describe my intentions in order to ensure a better result.
+**Why:** Migration + seed + RLS + triggers was too large to safely produce in Cowork without linting or running SQL — handing to Claude Code keeps the production-safety guardrail intact and catches errors before the SQL editor. The profiles/users conflict was a real blocker that would have silently broken the migration live. Cowork produced a better-specified prompt than I could have written myself.
 
 ---
 
@@ -167,25 +160,19 @@ All entries below used **Claude Code (Claude Opus in Cowork mode)** unless other
 
 **Date:** 01/06/2026
 
-**Prompt:** Full handover prompt (produced in the previous Cowork session). Instructed Claude Code to: read CLAUDE.md, seed-data/schema.sql, all seed-data/*.json, and docs/data-dictionary-examples/*.md before doing anything; write supabase/migrations/20260601000000_init_schema.sql (drops conflicting profiles artifacts, creates 8 domain tables from schema.sql, adds set_updated_at() trigger, is_active_org_member() RLS helper, handle_new_user() auth trigger, handle_new_organisation() auto-owner trigger, full RLS policies on all 9 tables, and 7 performance indexes); write supabase/seed.sql (hard-coded deterministic UUIDs, FK-ordered INSERTs for all 9 entities from the JSON files, wrapped in BEGIN/COMMIT); run lint and typecheck; add ai-use-log and decision-log entries.
+**Prompt:** Full handover prompt from the prior session: read `CLAUDE.md`, `seed-data/schema.sql`, `seed-data/*.json`, `docs/data-dictionary-examples/*.md` first; write the migration and seed files; run lint/typecheck; update the logs.
 
-**Response summary:** Produced two new files:
+**Response summary:** Produced:
+- `supabase/migrations/20260601000000_init_schema.sql` (~360 lines): drops profiles trigger/function/table; 8 domain tables with CHECK/FK constraints; `set_updated_at()` + 8 triggers; `is_active_org_member()` SECURITY DEFINER helper; `handle_new_user()` SECURITY DEFINER + `on_auth_user_created` trigger; `handle_new_organisation()` SECURITY DEFINER + `on_organisation_created` trigger; RLS + 28 named policies across 9 tables; 7 indexes.
+- `supabase/seed.sql` (~220 lines): hardcoded UUIDs with entity-type encoded in the second group; FK-ordered INSERTs. `auth.users` inserts include `aud='authenticated'`/`role='authenticated'` (required NOT NULL columns with no default). `public.users` and the owner `organisation_members` row use `DO UPDATE` not `DO NOTHING`, since `handle_new_user()`/`on_organisation_created` fire first and insert stub rows with `display_id = NULL` that need overwriting.
 
-- `supabase/migrations/20260601000000_init_schema.sql` (~360 lines). Sections: (1) drop profiles trigger/function/table; (2) all 8 domain tables with CHECK constraints and FKs; (3) set_updated_at() function + 8 triggers; (4) is_active_org_member() SECURITY DEFINER helper; (5) handle_new_user() SECURITY DEFINER + on_auth_user_created trigger; (6) handle_new_organisation() SECURITY DEFINER + on_organisation_created trigger; (7) RLS enabled + 28 named policies across 9 tables; (8) 7 indexes on hot lookup paths.
-- `supabase/seed.sql` (~220 lines). Hard-coded UUIDs with entity-type encoded in the second UUID group (0001=user, 0002=org, etc.). INSERT order respects FK dependencies. auth.users inserts include aud='authenticated' and role='authenticated' (required NOT NULL columns without defaults in Supabase's internal schema). public.users and the owner organisation_members row use DO UPDATE rather than DO NOTHING, because the handle_new_user() and on_organisation_created triggers fire first and insert stub rows with display_id = NULL that need to be overwritten.
+Decisions: (1) `display_id` made NULLABLE on `public.users`/`organisation_members` — their auto-insert triggers fire before the app can assign a PREFIX_XX_NNNN code needing org context unavailable at trigger time; all other tables keep it NOT NULL. (2) `is_active_org_member()` uses SECURITY DEFINER + `SET search_path = ''` to break RLS recursion the `organisation_members` SELECT policy would otherwise hit. (3) `tag_triggers` has no `organisation_id`, so its policies subquery through `public.tags`; recursion avoided because the tags SELECT policy itself calls the helper. (4) The owner seed INSERT uses `ON CONFLICT ... DO UPDATE SET id, display_id` (not `DO NOTHING` as specified) because the trigger inserts the row first with a random UUID and NULL display_id.
 
-Decisions made during generation:
+`npm run lint && npm run typecheck` fail with pre-existing errors in `Dashboard.tsx` (`react-hooks/set-state-in-effect`) and `supabase.ts` (parse error) — unrelated, no `src/` files touched.
 
-1. `display_id` made NULLABLE in `public.users` and `public.organisation_members`. Both tables have auto-insert triggers that fire before the app can assign a PREFIX_XX_NNNN code (that code encodes the org context, unavailable at auth trigger time). All other tables keep display_id NOT NULL.
-2. `is_active_org_member()` uses SECURITY DEFINER + `SET search_path = ''` to break the RLS recursion that would occur if the SELECT policy on organisation_members evaluated itself in a loop.
-3. `tag_triggers` has no `organisation_id` column, so its RLS policies use a subquery through `public.tags` to reach the org context. Recursion is prevented because the tags SELECT policy itself calls the SECURITY DEFINER helper.
-4. The owner organisation_members INSERT in the seed uses `ON CONFLICT (organisation_id, user_id) DO UPDATE SET id = excluded.id, display_id = excluded.display_id` (not DO NOTHING as the prompt specified) because the trigger inserts the row first with a random UUID and NULL display_id — DO NOTHING would leave those incorrect values in place.
+**What you did with it:** Accepted (pending execution in Supabase SQL editor).
 
-`npm run lint && npm run typecheck` was run. Both fail with pre-existing errors in `src/pages/Dashboard.tsx` (react-hooks/set-state-in-effect) and `src/types/supabase.ts` (parse error). No src/ files were touched in this session; the failures are not caused by this work.
-
-**What you did with it:** Accepted (pending execution in Supabase SQL editor — files not yet run against the database).
-
-**Why:** The migration and seed are ready to be copy-pasted into the Supabase SQL editor. All RLS policies and trigger interactions were reasoned through before writing, including the display_id nullable decision and the DO UPDATE correction for the owner member row.
+**Why:** Ready to paste into the SQL editor; all RLS/trigger interactions reasoned through before writing, including the nullable `display_id` call and the `DO UPDATE` correction.
 
 ---
 
@@ -193,13 +180,13 @@ Decisions made during generation:
 
 **Date:** 03/06/2026
 
-**Prompt:** Shared a screenshot of the Supabase Table Editor showing public.profiles already live. Asked to load all 9 data dictionaries into Supabase as tables and add sample seed data so the app has something to display once the React front-end is built. Requested a Claude Code handover prompt.
+**Prompt:** Screenshot showing `public.profiles` already live in the Supabase Table Editor; asked to load all 9 data dictionaries as tables with sample seed data, and to produce a handover prompt.
 
-**Response summary:** Cowork confirmed the screenshot showed public.profiles live from the existing migration. Produced a full Claude Code handover prompt covering: (1) migration file 20260601000000_init_schema.sql that tears down public.profiles cleanly, creates all 9 tables in FK-safe order from seed-data/schema.sql, adds set_updated_at() and is_active_org_member() functions, handle_new_user() and auto_owner_membership() triggers, RLS policies on every table, and performance indexes; (2) supabase/seed.sql with hardcoded UUIDs, INSERT statements for all 9 entities in FK-safe order derived from the seed-data/*.json files, wrapped in BEGIN/COMMIT. Prompt includes step-by-step SQL editor instructions and post-run log update requirements.
+**Response summary:** Confirmed `profiles` was genuinely live. Produced a handover prompt for: (1) `20260601000000_init_schema.sql` — clean teardown of `profiles`, 9 tables in FK-safe order, `set_updated_at()`/`is_active_org_member()`, `handle_new_user()`/`auto_owner_membership()` triggers, RLS, indexes; (2) `supabase/seed.sql` — hardcoded UUIDs, FK-ordered INSERTs wrapped in `BEGIN`/`COMMIT`. Included step-by-step SQL editor instructions and post-run log-update requirements.
 
-**What you did with it:** Accepted (as a handover prompt — to be sent to Claude Code).
+**What you did with it:** Accepted (as a handover prompt).
 
-**Why:** Same reasoning as the prior session — SQL of this scope is safer to produce and validate in Claude Code where lint and typecheck can run, rather than in Cowork. The screenshot confirmed profiles is genuinely live, making the teardown step in the migration non-negotiable before the schema can be applied.
+**Why:** Same reasoning as before — safer to produce/validate in Claude Code where lint and typecheck run. The screenshot made the teardown step non-negotiable.
 
 ---
 
@@ -207,18 +194,15 @@ Decisions made during generation:
 
 **Date:** 03/06/2026
 
-**Prompt:** Full handover prompt (v2) sent to Claude Code. Differences from the 01/06/2026 version: (1) `handle_new_user()` must insert a valid placeholder display_id rather than NULL; (2) auto-owner trigger renamed from `handle_new_organisation()` to `auto_owner_membership()`; (3) organisations INSERT policy changed to `auth.uid() IS NOT NULL` (any authenticated user) rather than `auth.uid() = owner_id`; (4) new UUID pattern for seed.sql (a0000000-... for users, b0000000-... for orgs, etc.). All other requirements (9 tables, full RLS, indexes, FK-ordered seed inserts, no local Supabase CLI) were the same.
+**Prompt:** Full v2 handover prompt, differing from 01/06: `handle_new_user()` must insert a valid placeholder `display_id` (not NULL); auto-owner trigger renamed `handle_new_organisation()` → `auto_owner_membership()`; organisations INSERT policy → `auth.uid() IS NOT NULL` (any authenticated user, not `auth.uid() = owner_id`); new hex-prefix UUID pattern for seed data. Other requirements unchanged.
 
-**Response summary:** Rewrote both files:
+**Response summary:** Rewrote both files. Migration: added `user_display_id_seq`/`member_display_id_seq` so both trigger functions insert unique placeholder display_ids (`USRID_XX_NNNN`, `MEMID_XX_NNNN`) without collision as more users/orgs are created; renamed the trigger; updated the INSERT policy; `tag_triggers` policies subquery through `public.tags`. 28 policies, 7 indexes, 8 `updated_at` triggers present. Seed: new UUID pattern per entity type; owner `organisation_members` row uses `ON CONFLICT ... DO UPDATE` (not `DO NOTHING` as spec suggested) since `auto_owner_membership()` fires first and creates the row with a random UUID and placeholder display_id; all other rows use `DO NOTHING`.
 
-- `supabase/migrations/20260601000000_init_schema.sql` — added two sequences (`user_display_id_seq`, `member_display_id_seq`) so both trigger functions can insert unique, valid placeholder display_ids ('USRID_XX_NNNN', 'MEMID_XX_NNNN') that satisfy the NOT NULL + UNIQUE + CHECK constraints without collision as more users/orgs are created. Renamed trigger function to `auto_owner_membership()`. Updated organisations INSERT policy to `auth.uid() IS NOT NULL`. tag_triggers policies use a subquery through `public.tags` to derive `organisation_id` (the table has no such column directly). All 28 policies, 7 indexes, and 8 updated_at triggers present.
-- `supabase/seed.sql` — adopted the new UUID pattern (a/b/c/d/e/f hex-prefix for first six entity types; 07/08 numeric prefix for variables and conversion_events). Organisation_members owner row uses `ON CONFLICT (organisation_id, user_id) DO UPDATE` (not DO NOTHING as the spec suggested) because `auto_owner_membership()` fires during the organisations INSERT and creates the row with a random UUID and placeholder display_id — DO NOTHING would leave those incorrect values permanently. All other rows use DO NOTHING.
-
-`npm run lint && npm run typecheck` shows 4 pre-existing errors in `src/pages/Dashboard.tsx` and `src/types/supabase.ts`. No src/ files were touched; failures pre-date this session.
+`npm run lint && npm run typecheck` shows 4 pre-existing errors in `Dashboard.tsx`/`supabase.ts`, unrelated.
 
 **What you did with it:** Accepted (pending execution in Supabase SQL editor).
 
-**Why:** The sequence-based placeholder approach is strictly better than a hard-coded literal like 'USRID_XX_0000' because it remains valid under the UNIQUE constraint when multiple users sign up. The DO UPDATE deviation on the owner member row is a correctness fix: the trigger fires first and the seed must be able to overwrite the placeholder row — this is documented and defensible at the walk-through.
+**Why:** Sequence-based placeholders stay valid under the UNIQUE constraint as more users/orgs are created, unlike a hardcoded literal. The `DO UPDATE` deviation is a correctness fix — the trigger fires first and the seed must overwrite the placeholder row.
 
 ---
 
@@ -226,13 +210,13 @@ Decisions made during generation:
 
 **Date:** 03/06/2026
 
-**Prompt:** "commit and push with necessary titles regarding the SQL I put into Supabase. Update my ai-use-log and documentation doc before this to ensure its up to date."
+**Prompt:** "commit and push with necessary titles regarding the SQL I put into Supabase. Update my ai-use-log and documentation doc before this."
 
-**Response summary:** Read all four changed files (`supabase/migrations/20260601000000_init_schema.sql`, `supabase/seed.sql`, `docs/ai-use-log.md`, `docs/decision-log.md`) to verify they were consistent with each other and with the v2 spec logged in the prior session. Confirmed the ai-use-log and decision-log were already up to date (covering ADRs 0007–0010 and two 03/06 session entries). Added this entry to close the loop on the SQL being applied to Supabase and committed. Staged all four files and created a commit with a descriptive message, then pushed to `origin/main`.
+**Response summary:** Read the four changed files (`20260601000000_init_schema.sql`, `seed.sql`, `ai-use-log.md`, `decision-log.md`) to verify consistency with the v2 spec; confirmed both logs already covered ADRs 0007–0010 and the two 03/06 sessions. Added this entry, staged all four files, committed, pushed to `origin/main`.
 
 **What you did with it:** Accepted.
 
-**Why:** The SQL files were already applied to the Supabase SQL editor (user confirmed). Committing them into version control is the correct next step — it means the migration and seed are now part of the folio and can be reviewed at the walk-through alongside the rest of the codebase.
+**Why:** The SQL was already applied in the Supabase SQL editor; committing it makes the migration and seed part of the folio, reviewable at the walk-through.
 
 ---
 
@@ -242,11 +226,11 @@ Decisions made during generation:
 
 **Prompt:** "Fix my website page as it displays a 403 error currently."
 
-**Response summary:** Read `Dashboard.tsx`, `gtm.ts`, `Login.tsx`, and `supabase.ts` to trace the error path. Identified that the 403 was being thrown by the GTM API (Google Tag Manager API v2) and that the error handler in `gtm.ts` was passing the raw JSON response body directly into the thrown error message, making it unreadable. Made two code changes: (1) `gtm.ts` `gtmGet()` now attempts `res.json()` on error responses and extracts `error.message` from Google's error envelope, falling back to the HTTP status string if the body is not JSON; it also attaches `err.status = res.status` so callers can inspect the numeric code; (2) `Dashboard.tsx` was updated to detect `.status === 403` specifically, set a `gtmForbidden` boolean, and render a dedicated error screen with two actionable steps (enable the Tag Manager API in Google Cloud Console; sign out and re-grant the OAuth scope). Explained that the fix cannot resolve the underlying 403 — that requires either enabling the API in GCP or re-authorising with the `tagmanager.readonly` scope.
+**Response summary:** Read `Dashboard.tsx`, `gtm.ts`, `Login.tsx`, `supabase.ts` to trace it. The 403 came from the GTM API v2; `gtm.ts`'s error handler passed the raw JSON body straight into the thrown error, making it unreadable. Fixed: `gtmGet()` now attempts `res.json()` on error responses, extracts `error.message` from Google's error envelope (falling back to the HTTP status string), and attaches `err.status`; `Dashboard.tsx` detects `.status === 403`, sets `gtmForbidden`, and renders a dedicated screen with two actionable steps (enable the Tag Manager API in GCP; re-grant the OAuth scope). The 403 itself needs an external fix — code alone can't resolve it.
 
 **What you did with it:** Accepted.
 
-**Why:** The error message improvement is a genuine UX fix — a raw `{"error":{"code":403,...}}` blob in a banner gives the user no actionable path. The 403-specific screen with instructions makes the next step clear without requiring a developer to interpret a JSON object. The root cause (API not enabled or scope not granted) is an external configuration issue, not a code bug.
+**Why:** A raw JSON error blob gives no actionable path; the dedicated screen does. Root cause is external configuration, not a code bug.
 
 ---
 
@@ -254,31 +238,13 @@ Decisions made during generation:
 
 **Date:** 03/06/2026
 
-**Prompt:** Detailed spec for a full single-page dashboard shell: fixed left sidebar (220 px) + scrollable content area; five sections (Home, Tags, Triggers, Variables, Conversions); dark-mode Vercel/Linear aesthetic (#0a0a0a background, #6366f1 indigo accent); inline SVG icons; no routing library; no Tailwind; CSS co-located with components; feature-folder structure per CLAUDE.md.
+**Prompt:** Fixed 220px left sidebar + scrollable content; five sections (Home, Tags, Triggers, Variables, Conversions); dark Vercel/Linear aesthetic (`#0a0a0a` bg, `#6366f1` indigo accent); inline SVG icons; no routing library, no Tailwind, CSS co-located; feature-folder structure per `CLAUDE.md`.
 
-**Response summary:** Created 14 new files and edited 6 existing ones.
-
-New files:
-- `src/components/AppShell.tsx / .css` — CSS grid shell (`220px 1fr`), holds `activeView` state, renders `<Sidebar>` and the active view component.
-- `src/components/Sidebar.tsx / .css` — logo (hex SVG), five nav buttons (inline SVG icons; 2px indigo left border + rgba tint on active; muted #555 inactive with hover to #e5e5e5), user avatar + name, sign-out button at the bottom.
-- `src/features/home/components/HomeView.tsx / .css` — greeting with first name, GTM-connected status badge (green dot when `provider_token` exists), four section cards that navigate on click (Tags is live; Triggers/Variables/Conversions marked "Soon" and disabled).
-- `src/features/tags/components/TagsView.tsx / .css` — full GTM tags logic ported from the old Dashboard (account/container selectors, sync button, stat pills with monospace numerals, filter tabs, search input, tags grid); `gtmForbidden` state moved here from Dashboard.
-- `src/features/triggers/components/TriggersView.tsx / .css` — placeholder with a ghost table (Name / Type / Tags fired columns) showing five example rows.
-- `src/features/variables/components/VariablesView.tsx / .css` — placeholder with a four-column ghost table (Name / Type / Scope / Value).
-- `src/features/conversions/components/ConversionsView.tsx / .css` — placeholder with a four-column ghost table (Event name / Display name / Status / Verified).
-
-Edited files:
-- `src/pages/Dashboard.tsx` — rewritten to 21 lines: `!provider_token` gate (dark-themed sign-out screen), then renders `<AppShell session={session} />`.
-- `src/pages/Dashboard.css` — stripped back to just `.token-gate` styles.
-- `src/components/TagCard.css` — rethemed to dark: `#111` background, `#1a1a1a` border, type badge colours changed to alpha-tinted dark backgrounds (e.g. `rgba(37,99,235,0.12)` for google-ads).
-- `src/index.css` — body `color` changed from `#111827` to `#e5e5e5`, `background` from `#F8FAFC` to `#0a0a0a`.
-- `src/App.css` — app-loading background changed to `#0a0a0a`, spinner border changed to `#6366f1`.
-
-`npx tsc --noEmit` passed with zero errors after all changes.
+**Response summary:** Created 14 files, edited 6. New: `AppShell.tsx/.css` (CSS grid `220px 1fr`, holds `activeView`); `Sidebar.tsx/.css` (logo SVG, five nav buttons, indigo active border, avatar + sign-out); `features/home/.../HomeView.tsx/.css` (greeting, GTM-connected badge via `provider_token`, four navigable cards — Tags live, rest "Soon"); `features/tags/.../TagsView.tsx/.css` (GTM logic ported from old Dashboard — selectors, sync, stat pills, filters, search; `gtmForbidden` moved here); `TriggersView`/`VariablesView`/`ConversionsView` — placeholder ghost tables. Edited: `Dashboard.tsx` (21 lines — `!provider_token` gate then `<AppShell>`); `Dashboard.css` (stripped to `.token-gate`); `TagCard.css` (dark rethemed); `index.css`/`App.css` (dark palette). `npx tsc --noEmit` — zero errors.
 
 **What you did with it:** Accepted.
 
-**Why:** The feature-folder split (each view owns its components, hooks, and styles) matches the repo layout in CLAUDE.md and will scale cleanly as Triggers/Variables/Conversions are implemented in later weeks. Moving GTM logic from Dashboard into TagsView is the right separation — Dashboard should not know about GTM. The placeholder views show a skeleton of the real data shape (column names match the data dictionary entities), which makes the folio read as intentional design rather than stub work. The dark palette matches the Linear/Vercel aesthetic specified and is consistent across all layers of the UI.
+**Why:** Feature-folder split matches `CLAUDE.md`'s layout and scales for later work; moving GTM logic out of Dashboard into TagsView is the right separation. Placeholder column names match the data-dictionary entities, reading as intentional design rather than stub work.
 
 ---
 
@@ -286,13 +252,13 @@ Edited files:
 
 **Date:** 04/06/2026
 
-**Prompt:** Multi-turn — Pasted the Supabase error `{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}`. Then shared screenshots of the Supabase Google provider settings page (Client IDs field had "TagOps Pro" typed in it instead of a real Client ID), the Google Cloud Console Credentials page with no project selected, the Credentials page after creating the "TagOps Pro" GCP project, and the OAuth client created dialog showing the Client ID and Client Secret. Then shared an `Error 400: redirect_uri_mismatch` screenshot from Google's sign-in screen.
+**Prompt:** Multi-turn — pasted Supabase's `"Unsupported provider: provider is not enabled"` error; shared screenshots of the Google provider settings (Client ID field literally said "TagOps Pro"), an empty then populated GCP Credentials page, and the OAuth client dialog; then a `redirect_uri_mismatch` screenshot.
 
-**Response summary:** Traced the first error to the Supabase Google provider having `"TagOps Pro"` in the Client IDs field instead of a real `*.apps.googleusercontent.com` string. Walked through the full GCP OAuth setup sequence step-by-step: (1) select or create a GCP project (no parent org needed for a school project); (2) configure the OAuth consent screen as External, fill in app name and contact emails; (3) create an OAuth 2.0 Client ID of type Web application with the Supabase callback URL (`https://nkdkfbejsswgllbzjhvd.supabase.co/auth/v1/callback`) in Authorized redirect URIs; (4) copy the real Client ID and Client Secret into Supabase's Google provider settings. After the user successfully created credentials, diagnosed the follow-up `redirect_uri_mismatch` error — caused by the Authorized redirect URIs list in GCP not exactly matching what Supabase sends. Advised adding the Supabase callback URL exactly (no trailing slash) and adding `http://localhost:5173` to both Authorized JavaScript origins and Authorized redirect URIs for local dev, and to wait ~5 minutes for GCP to propagate the change.
+**Response summary:** Traced the first error to Supabase's Google provider having the literal text "TagOps Pro" instead of a real `*.apps.googleusercontent.com` string. Walked through GCP setup: create project → configure OAuth consent screen (External) → create a Web application Client ID with the Supabase callback URL as an Authorized redirect URI → copy the real Client ID/Secret into Supabase. Diagnosed `redirect_uri_mismatch` as the GCP redirect-URI list not exactly matching what Supabase sends; advised adding the callback URL exactly (no trailing slash) plus `http://localhost:5173` to both origins and redirect URIs for local dev, and waiting ~5 minutes for GCP propagation.
 
 **What you did with it:** Accepted.
 
-**Why:** The setup is entirely configuration-level — no code was changed. Understanding each error message and where to fix it (Supabase dashboard vs GCP console) is the key skill here. The redirect_uri_mismatch is one of the most common OAuth gotchas and worth documenting clearly for the walk-through.
+**Why:** Entirely configuration-level, no code changed. `redirect_uri_mismatch` is a common OAuth gotcha worth documenting for the walk-through.
 
 ---
 
@@ -300,25 +266,13 @@ Edited files:
 
 **Date:** 11/06/2026
 
-**Prompt:** Full CSS-only restyle spec: replace the pure-black indigo aesthetic with a CoLab Software-inspired precision B2B SaaS look. Spec included: exact colour tokens (`#080c14` body, `#0d1120` panels, `#1a2035` borders, `#2dd4bf` active accent, `#0ea5e9` interactive), font stack (Inter + JetBrains Mono via Google Fonts, `font-feature-settings: 'tnum'` on numeric spans), and per-component changes for every CSS file. Constraint: no `.tsx` changes unless a class needed renaming, no new npm packages, run lint and typecheck when done.
+**Prompt:** CSS-only restyle to a CoLab Software-inspired B2B SaaS look — exact tokens (`#080c14` body, `#0d1120` panels, `#1a2035` borders, `#2dd4bf` active accent, `#0ea5e9` interactive), Inter + JetBrains Mono via Google Fonts (`tnum` on numerics). No `.tsx` changes unless a class needed renaming, no new packages, run lint/typecheck.
 
-**Response summary:** Updated all 12 CSS files:
-- `src/index.css` — added Google Fonts import for Inter and JetBrains Mono; body font → Inter; background → `#080c14`.
-- `src/App.css` — loading background → `#080c14`; spinner accent → `#2dd4bf`.
-- `src/components/AppShell.css` — shell/content background → `#080c14`.
-- `src/components/Sidebar.css` — background `#0d1120`, right border `#1a2035`; logo text JetBrains Mono 12px/500; nav active state `#2dd4bf` with 2px left border and `rgba(45,212,191,0.06)` tint; sign-out hover border teal at 40% opacity.
-- `src/components/TagCard.css` — card `#0d1120`, 4px border-radius; hover glow `0 0 0 1px #1e3a5f`; type badges changed from heavy coloured backgrounds to subtle JetBrains Mono teal chips; tag ID with `font-feature-settings: 'cv02','cv03','cv04','tnum'`.
-- `src/pages/Login.css` — gradient `linear-gradient(150deg, #080c14, #0d1a2e, #0a1628)`; dark card `#0d1120` with double border-shadow; Google button `#111827` with teal hover border; login note `#2d3748`.
-- `src/pages/Dashboard.css` — token-gate navy background; button → sky blue `#0ea5e9` / hover `#0284c7`.
-- `src/features/home/components/HomeView.css` — cards `#0d1120`, hover glow `#1e3a5f`; GTM badge JetBrains Mono teal chip; home card badges JetBrains Mono; icon accent `#0ea5e9`.
-- `src/features/tags/components/TagsView.css` — full palette swap; stat numerals JetBrains Mono with `tnum`; view spinner teal; sync button sky blue; search/select focus ring `#0ea5e9`.
-- `TriggersView.css`, `VariablesView.css`, `ConversionsView.css` — table dividers `#131c2e`; row hover `rgba(255,255,255,0.02)`; type/event chips → JetBrains Mono teal with `#0a1628` background.
-
-No `.tsx` files were modified. Confirmed via `git stash` that the 4 lint errors (`react-hooks/set-state-in-effect` in `TagsView.tsx`, parse error in `supabase.ts`) and the `tsc --noEmit` clean pass were both pre-existing — zero new errors introduced.
+**Response summary:** Updated all 12 CSS files — `index.css` (font import, `#080c14` bg); `App.css` (teal spinner); `AppShell.css`; `Sidebar.css` (`#0d1120` bg, teal active state); `TagCard.css` (`#0d1120` card, JetBrains Mono teal badges, `tnum`); `Login.css` (navy gradient, teal-hover Google button); `Dashboard.css` (sky-blue button); `HomeView.css`; `TagsView.css` (full palette swap); `TriggersView.css`/`VariablesView.css`/`ConversionsView.css` (JetBrains Mono teal chips). No `.tsx` touched. `git stash` confirmed the 4 lint errors and clean `tsc --noEmit` were pre-existing — zero new errors.
 
 **What you did with it:** Accepted.
 
-**Why:** The visual identity change is entirely in CSS — no logic, routing, or data-fetching touched. The CoLab-inspired palette (dark navy over pure black, teal over indigo, JetBrains Mono for technical values) reads as professional developer tooling rather than a generic dark theme. Keeping the change CSS-only means every line is directly defensible: the structure is unchanged, only the presentation differs.
+**Why:** Visual-only — no logic, routing, or data-fetching touched. CSS-only scope keeps every line directly defensible.
 
 ---
 
@@ -326,21 +280,20 @@ No `.tsx` files were modified. Confirmed via `git stash` that the 4 lint errors 
 
 **Date:** 09/07/2026
 
-**Prompt:** "I want you to now make the Triggers page operational and properly linked like the Tags sections is." Follow-up, when asked to choose between mirroring Tags' GTM-API pattern or building against the existing Supabase schema: "Do what you think is the best practise to do as I am in no capacity to make judgement."
+**Prompt:** Make the Triggers page operational like Tags; when asked to choose between mirroring Tags' GTM-API pattern or building against the existing Supabase schema, deferred judgement to Claude.
 
-**Response summary:** Investigated first: Tags turned out not to be Supabase-backed at all — it's a live read-only mirror of the real GTM account via the OAuth `provider_token`, with no CRUD anywhere in the app. Triggers was fully static placeholder markup. A complete `triggers`/`tags`/`tag_triggers` schema with RLS already existed, unused, matching `docs/04-data-model.md`. Recommended and built the Supabase-backed path: entered plan mode, wrote a full implementation plan, got approval, then implemented:
+**Response summary:** Investigated first: Tags isn't Supabase-backed at all — a live read-only mirror of GTM via `provider_token`, no CRUD anywhere. Triggers was static placeholder markup, while a full `triggers`/`tags`/`tag_triggers` schema with RLS already existed unused, matching `docs/04-data-model.md`. Recommended and built the Supabase-backed path (plan mode → approval → implementation):
+- New migration fixing a real RLS bug: the INSERT policies on `tags`, `triggers`, `variables`, `conversion_events` all had `where organisation_id = organisation_id` (a tautology), letting any editor/admin/owner of any org insert rows into a *different* org.
+- Seed addition granting the real Google account access to the seeded demo org (matched by email — seed UUIDs don't map to real Auth users).
+- Hand-authored `Database` types for `containers`/`tags`/`triggers`/`tag_triggers` in `types/supabase.ts` (no Supabase CLI available).
+- `features/triggers/{types.ts,api/triggers.ts}` — the app's first `api/` layer: list/create/update/soft-delete, plus a container list and a batched query resolving linked tags through `tag_triggers`.
+- `TriggerCard`, `TriggerFormModal` (validated form), full rewrite of `TriggersView.tsx/.css` replacing the placeholder with a real fetch/create/edit/delete flow.
 
-- A new migration fixing a real RLS bug found during investigation — the INSERT policies on `tags`, `triggers`, `variables`, and `conversion_events` all had `where organisation_id = organisation_id` (a tautology), letting any editor/admin/owner of any org insert rows into a *different* org.
-- A seed addition granting the real Google-authenticated account access to the seeded demo org (matched by email, since the seed's hardcoded UUIDs don't correspond to real Auth users).
-- Hand-authored `Database` types for `containers`/`tags`/`triggers`/`tag_triggers` in `src/types/supabase.ts` (previously an unregenerated stub) — no Supabase CLI available in this environment to generate them properly.
-- `src/features/triggers/{types.ts,api/triggers.ts}` — the first `api/` layer in the app: list/create/update/(soft-)delete for triggers, plus a container list for the form and a batched query to resolve linked tags through `tag_triggers`.
-- `TriggerCard`, `TriggerFormModal` (name/container/type/event-name/condition-rows/notes, with client-side validation), and a full rewrite of `TriggersView.tsx`/`.css` replacing the placeholder table with a real fetch/create/edit/delete flow, styled to match `TagsView.css`/`TagCard.css`'s conventions.
+`npm run build` passes; lint surfaced one new `react-hooks/set-state-in-effect` error, but the same rule already fails on `main` in three places in untouched `TagsView.tsx` — pre-existing, repo-wide debt. Restructured the data-loading function so no state updates happen before its first `await` (also fixes a spinner flash on refetch), but left the rule itself unresolved — a proper fix needs a different effect pattern app-wide.
 
-Ran `npm run build` (passes) and `npm run lint`. Lint surfaced one new `react-hooks/set-state-in-effect` error in the new `TriggersView.tsx`; investigation showed this exact rule already fails on `main` in three places in the untouched `TagsView.tsx`, so it's pre-existing, repo-wide debt rather than something new. Restructured the new code's data-loading function so no state updates happen before its first `await` (also improves refetch UX — no more full-page spinner flash after create/edit/delete), but left the underlying rule unresolved since fixing it properly means a different effect pattern than the rest of the app uses.
+**What you did with it:** Accepted (architecture + implementation), deferred on the pre-existing lint rule.
 
-**What you did with it:** Accepted (architecture decision), Accepted (implementation), deferred on fully resolving the pre-existing lint rule.
-
-**Why:** The Supabase-backed path was the right call because the DB/RLS work already existed and unused, it matches the documented data model, and it produces real RLS-backed writes to defend at the walk-through — the alternative (mirroring Tags) would have left the schema unused and avoided writing any CRUD at all. The RLS bug was a genuine, pre-existing security hole (cross-org insert) that had to be fixed before exercising real inserts, not scope creep. The lint rule was left as flagged, pre-existing debt rather than silently fixed or silently ignored, since fixing it fully means changing the data-fetching pattern used throughout the app — bigger than this task's scope, but worth a follow-up decision.
+**Why:** The Supabase-backed path was right — the DB/RLS already existed unused, matches the documented model, and produces real RLS-backed writes to defend at the walk-through. The RLS bug was a genuine, pre-existing cross-org hole that had to be fixed before exercising real inserts. The lint rule was flagged, not silently fixed or ignored — a full fix means changing the fetching pattern used throughout the app.
 
 ---
 
@@ -348,13 +301,13 @@ Ran `npm run build` (passes) and `npm run lint`. Lint surfaced one new `react-ho
 
 **Date:** 09/07/2026
 
-**Prompt:** "Ok can you now link all the pages properly from the Home page and remove the coming soon things on all the pages as I want to create a fully implemented and operational website now."
+**Prompt:** Link all pages from Home and remove the "coming soon" placeholders — make the app fully operational.
 
-**Response summary:** Extended the Triggers work from the prior session to the two remaining placeholder sections. Added hand-authored `Database` types for `variables` and `conversion_events` to `src/types/supabase.ts`. Built `src/features/variables/{types.ts,api/variables.ts,components/{VariableCard,VariableFormModal,VariablesView}}` and the equivalent `src/features/conversions/` set, each following the exact same shape as the Triggers feature (list/create/update/soft-delete, a card, a validated create/edit modal, real loading/error/empty states). Rewrote `HomeView.tsx` to drop the `live`/"Soon" badge mechanism entirely — every section card now navigates directly, since nothing is a placeholder anymore. Ran `npm run build` (passes) and `npm run lint`; the same pre-existing `react-hooks/set-state-in-effect` rule (see the previous entry) now also fires in the two new views, for the same reason — flagged, not silently fixed, since a proper fix changes the effect pattern used across the whole app.
+**Response summary:** Extended the Triggers pattern to the two remaining sections. Added hand-authored types for `variables`/`conversion_events`. Built `features/variables/{types.ts,api/variables.ts,components/{VariableCard,VariableFormModal,VariablesView}}` and the equivalent `features/conversions/` set, each following the same shape (list/create/update/soft-delete, card, validated modal, real loading/error/empty states). Rewrote `HomeView.tsx` to drop the `live`/"Soon" badge mechanism entirely — every card now navigates directly. Build passes; the same pre-existing `react-hooks/set-state-in-effect` rule now also fires in the two new views, flagged not silently fixed.
 
 **What you did with it:** Accepted.
 
-**Why:** Replicating the already-approved Triggers pattern for Variables and Conversions was the direct extension of ADR-0012's reasoning — real RLS-backed CRUD wherever a documented Supabase table already existed unused. Removing the `live` flag (rather than just flipping it to `true` everywhere) is a real simplification: with no placeholder sections left, the disabled/soon code path had nothing left to gate and would read as unfinished if left in.
+**Why:** Direct extension of ADR-0012's reasoning — real RLS-backed CRUD wherever a documented table already existed unused. Removing the `live` flag (rather than flipping it to `true` everywhere) is a real simplification since nothing was left to gate.
 
 ---
 
@@ -362,20 +315,19 @@ Ran `npm run build` (passes) and `npm run lint`. Lint surfaced one new `react-ho
 
 **Date:** 10/07/2026
 
-**Prompt:** "Can you now like you did for the tags put all the current information for the triggers and variables. With the ability to choose the container and what Tag they are being used for. Ignore the conversions event page for now."
+**Prompt:** Make Triggers and Variables show live GTM data with container/tag selection like Tags does; ignore Conversions for now.
 
-**Response summary:** Investigated before writing anything and found the "Tags" page is not Supabase-backed at all — it's a live read-only mirror of the real GTM account via the OAuth `provider_token` (Account → Container → Workspace picker, Sync button, no database involved). Also found that Triggers and Variables already had a full Supabase-backed CRUD implementation sitting uncommitted from the two prior sessions (own `triggers`/`variables` tables, container dropdowns, create/edit modals). Flagged the fork explicitly and asked which direction was wanted; chose "live GTM browser, matching Tags exactly" over "keep the Supabase CRUD". Implemented:
+**Response summary:** Investigated first and found Tags is a live read-only GTM mirror via `provider_token` (Account → Container → Workspace picker, Sync, no database), while Triggers/Variables already had a full Supabase-backed CRUD implementation sitting uncommitted from the two prior sessions. Flagged the fork explicitly; chose "live GTM browser, matching Tags exactly." Implemented:
+- Extended `lib/gtm.ts` with `getTriggers()`/`getVariables()`, `GtmTrigger`/`GtmVariable`/`GtmParameter` types, type/category maps, and cross-referencing helpers — `tagsUsingTrigger()` reads a tag's `firingTriggerId`/`blockingTriggerId`; `tagsUsingVariable()` recursively scans tag parameters (including nested list/map types) for `{{Variable Name}}` syntax.
+- Deleted the prior sessions' Supabase CRUD scaffolding (superseded).
+- Rewrote `TriggerCard`/`VariableCard` and `TriggersView`/`VariablesView` to mirror `TagsView`'s UI/data-loading pattern, each showing which tags fire on/block or reference it.
+- Wired `session` through `AppShell.tsx` to both views (previously prop-less — the Supabase CRUD versions authenticated via the Supabase client directly).
 
-- Extended `src/lib/gtm.ts` with `getTriggers()`/`getVariables()` API calls, `GtmTrigger`/`GtmVariable`/`GtmParameter` types, trigger/variable type-label and category maps, and cross-referencing helpers — `tagsUsingTrigger()` reads a GTM tag's `firingTriggerId`/`blockingTriggerId` arrays; `tagsUsingVariable()` recursively scans tag parameters (including nested list/map parameter types) for GTM's `{{Variable Name}}` template syntax.
-- Deleted the prior sessions' Supabase CRUD scaffolding for these two features (`api/` folders, `TriggerFormModal`, `VariableFormModal`) since it's superseded by this direction.
-- Rewrote `TriggerCard`/`VariableCard` and `TriggersView`/`VariablesView` to mirror `TagsView`'s UI and data-loading pattern exactly (account/container/workspace selectors, Sync button, stat pills, filter tabs, search), each card showing which tag(s) fire on/block it (triggers) or reference it (variables).
-- Wired a `session` prop through `AppShell.tsx` to both views (previously prop-less, since the Supabase CRUD versions authenticated via the Supabase client directly rather than the Google OAuth token).
-
-Ran `npx tsc -b --noEmit` (clean), `npx vite build` (clean), and `npm run lint` — found only the same pre-existing `react-hooks/set-state-in-effect` rule already present in the untouched `TagsView.tsx` and `ConversionsView.tsx`, now also duplicated in the new files by construction; no new category of error introduced.
+`tsc -b --noEmit`, `vite build`, lint all clean beyond the same pre-existing `set-state-in-effect` rule.
 
 **What you did with it:** Accepted.
 
-**Why:** This reverses the architecture decision from the two prior sessions (Supabase-backed CRUD for Triggers/Variables) — worth being explicit about at the walk-through, since it means the `triggers`/`variables`/`tag_triggers` tables and their RLS policies now have no feature reading from them at all; only Conversions still uses its own table. Asking before building was the right call given how large and hard-to-reverse a rewrite this was — a wrong guess would have meant redoing a full feature twice in two sessions.
+**Why:** Reverses the prior two sessions' architecture — worth flagging at the walk-through, since the `triggers`/`variables`/`tag_triggers` tables and RLS now have no feature reading them (only Conversions still uses its own table). Asking before building mattered given how large and hard-to-reverse the rewrite was.
 
 ---
 
@@ -383,9 +335,9 @@ Ran `npx tsc -b --noEmit` (clean), `npx vite build` (clean), and `npm run lint` 
 
 **Date:** 10/07/2026
 
-**Prompt:** A detailed brief to redesign the whole app's look toward a "Linear-style" dark theme (layered near-black surfaces, hairline borders, tight typography hierarchy, fast subtle motion, visible focus rings) while keeping the existing dark navy palette and teal accent (`#2dd4bf`) — explicitly not switching to Linear's purple. Scoped as presentational-only: no changes to Supabase queries, RLS, `lib/supabase.ts`, `lib/gtm.ts`, any `api/` file, or any `types.ts`. Instructed to log the Tailwind adoption as a decision-log ADR before installing, use Tailwind v4's `@tailwindcss/vite` plugin (not the v3 PostCSS setup), and touch every listed component/page file in one pass.
+**Prompt:** Redesign toward a "Linear-style" dark theme (layered near-black surfaces, hairline borders, tight typography, subtle motion, visible focus rings) keeping the existing navy palette and teal accent (`#2dd4bf`) — not Linear's purple. Presentational-only: no Supabase queries, RLS, `lib/supabase.ts`, `lib/gtm.ts`, any `api/` file, or `types.ts`. Log the Tailwind adoption as an ADR before installing; use Tailwind v4's `@tailwindcss/vite` plugin; touch every listed file in one pass.
 
-**Response summary:** Read `docs/02-requirements.md` and every listed source file first. Added ADR-0014 to `docs/decision-log.md` proposing Tailwind v4, then installed `tailwindcss@4.3.2` + `@tailwindcss/vite@4.3.2` and wired the plugin into `vite.config.ts`. Rebuilt `src/index.css` as a `@theme` token file (`--color-canvas/surface/surface-sunken/surface-overlay/surface-raised`, `--color-border/border-subtle`, `--color-text-primary/secondary/tertiary/faint`, `--color-accent/accent-muted`, `--color-success/warning/danger`), replacing scattered hardcoded hex values across 16 CSS files. Migrated every listed component/page to Tailwind utility classes and deleted the corresponding `.css` file once empty (all `.css` files under `src/` are gone except `index.css`). Extracted nine small new presentational-only helper components/modules under `src/components/` to de-duplicate patterns that repeated 3–5× across the four "view" components: `Spinner`, `LoadingState`, `EmptyState`, `ErrorBanner`, `StatPill`, `FilterTabs`, `ViewHeader`, `StatusDot`, `GtmForbiddenState` (the byte-identical GTM-403 block previously copy-pasted in Tags/Triggers/Variables), `Modal` (shared overlay/panel/header shell for `TagDetailModal` and `ConversionFormModal`), and `badgeStyles.ts` (category-badge color/class maps for tag/trigger/variable badges, previously duplicated inline). Consolidated the app's two competing accent colors (teal `#2dd4bf` for status/nav, sky-blue `#0ea5e9` for buttons/focus rings) onto teal alone, matching the brief's "single accent, keyboard-first focus rings in the accent color" instructions. Ran `npm run lint` after each file group (only the 10 already-known, pre-existing `react-hooks/set-state-in-effect` errors persisted — see the two prior entries — no new lint errors introduced) and `npm run build` at the end (clean). Verified visually: started the Vite dev server, screenshotted the Login page with Playwright/Chromium, and — via a temporary, fully-reverted preview bypass in `App.tsx` — screenshotted the authenticated Home/Triggers/Conversions views to confirm the sidebar active-state, cards, buttons, and focus system render correctly before reverting the bypass.
+**Response summary:** Read `docs/02-requirements.md` and every listed file first. Added ADR-0014, installed `tailwindcss@4.3.2` + `@tailwindcss/vite@4.3.2`, wired the plugin into `vite.config.ts`. Rebuilt `index.css` as a `@theme` token file (canvas/surface/border/text/accent/status colours), replacing hardcoded hex across 16 CSS files. Migrated every listed component/page to Tailwind utilities and deleted each `.css` file once empty (only `index.css` remains). Extracted nine helper components to de-duplicate patterns repeated 3–5× across the four view components: `Spinner`, `LoadingState`, `EmptyState`, `ErrorBanner`, `StatPill`, `FilterTabs`, `ViewHeader`, `StatusDot`, `GtmForbiddenState` (the identical GTM-403 block previously triplicated), `Modal` (shared shell for `TagDetailModal`/`ConversionFormModal`), and `badgeStyles.ts`. Consolidated the two competing accents (teal + sky-blue) onto teal alone. Lint clean of new errors after each group (only the known pre-existing errors persisted); build clean. Verified visually via Playwright screenshots (Login, and — via a temporary, fully-reverted preview bypass in `App.tsx` — Home/Triggers/Conversions).
 
 **What you did with it:** Accepted.
 
@@ -397,23 +349,13 @@ Ran `npx tsc -b --noEmit` (clean), `npx vite build` (clean), and `npm run lint` 
 
 **Date:** 10/07/2026
 
-**Prompt:** "Pivot the Conversions page from GA4-only to also support Google Ads conversion tracking, categorized the way Google Ads' own UI groups conversion actions." Specified the schema change (Conversion ID on containers, Conversion Label and category on conversion_events, the 15-category list from Google Ads' support docs), which files to touch, and instructed to confirm the schema plan in one message before writing the migration, per the "ask one clarifying question rather than assume" rule in `CLAUDE.md`.
+**Prompt:** Pivot Conversions from GA4-only to also support Google Ads conversion tracking, categorised per Google Ads' own 15-category grouping. Specified the schema change (Conversion ID on containers, Conversion Label and category on conversion_events), which files to touch, and to confirm the schema plan in one message before writing the migration, per `CLAUDE.md`'s "ask one clarifying question" rule.
 
-**Response summary:** Read `docs/04-data-model.md`, `docs/02-requirements.md`, and the existing conversions feature files before proposing anything. Asked one clarifying question — whether a container could ever map to more than one Google Ads account — before writing the migration; confirmed one-account-per-container, matching the existing `gtm_container_id`/`ga4_property_id` pattern. Then:
-
-- Wrote `supabase/migrations/20260710000000_google_ads_conversion_tracking.sql` adding `containers.google_ads_conversion_id` (CHECK-constrained), `conversion_events.conversion_label`, and `conversion_events.category` (CHECK against the 15 Google Ads categories, `NOT NULL DEFAULT 'other'`). No new RLS policies — confirmed the existing organisation-scoped policies already cover the new columns.
-- Updated `src/types/supabase.ts` to match (hand-authored, no Supabase CLI in this environment — same caveat as ADR-0012/0013).
-- Updated `src/features/conversions/types.ts` with a `ConversionCategory` type, an ordered `CONVERSION_CATEGORIES` list matching Google Ads' own grouping, and a label helper.
-- Updated `api/conversions.ts` to join the container's `google_ads_conversion_id` into `listConversionEvents()`.
-- Updated `ConversionFormModal.tsx` — added a Category select and Conversion Label input; the container's Conversion ID shows as read-only context with a note to edit it on the container/settings screen (which doesn't exist yet).
-- Updated `ConversionCard.tsx` — added a category badge and a click-to-copy, truncated `AW-XXXXXXXXX/AbC-D_efG`-style badge for the ID/Label pair.
-- Rewrote the list in `ConversionsView.tsx` to render as collapsible sections grouped by category (in Google Ads' own order, empty categories hidden), with search and the active/inactive filter still applying before grouping.
-
-Ran `npm run lint` (no new errors — confirmed via `git stash` that the error count and profile were unchanged before/after) and `npx tsc -b` (clean; no `typecheck` script exists in `package.json` despite `CLAUDE.md` referencing one) and `npm run build` (clean).
+**Response summary:** Read `docs/04-data-model.md`, `docs/02-requirements.md`, and the conversions files first. Asked one question — could a container map to more than one Google Ads account? — before writing the migration; confirmed one-per-container, matching the existing `gtm_container_id`/`ga4_property_id` pattern. Then: `20260710000000_google_ads_conversion_tracking.sql` — `containers.google_ads_conversion_id` (CHECK-constrained), `conversion_events.conversion_label`, `conversion_events.category` (CHECK against 15 categories, `NOT NULL DEFAULT 'other'`); no new RLS needed. Updated `types/supabase.ts` (hand-authored, same no-CLI caveat); `features/conversions/types.ts` (`ConversionCategory` type, ordered list, label helper); `api/conversions.ts` (joins `google_ads_conversion_id`); `ConversionFormModal.tsx` (Category select, Label input, read-only Conversion ID); `ConversionCard.tsx` (category badge, click-to-copy ID/Label badge); `ConversionsView.tsx` (rewritten as collapsible sections grouped by category, search/active filters applied first). Lint (no new errors, confirmed via `git stash`), `tsc -b`, build all clean.
 
 **What you did with it:** Accepted.
 
-**Why:** Asking the account-cardinality question before writing the migration avoided a plausible wrong guess that would have meant a second migration to move the column later. Defaulting `category` to `'other'` rather than leaving it nullable was a small deliberate choice — the UI groups by category, so an ungrouped row needs a fallback bucket regardless, and an explicit default is more honest than a nullable column with an implicit fallback in application code. The container/settings gap (no UI to actually set `google_ads_conversion_id`) was intentionally left as-is rather than scope-crept into this task, since the brief was explicit that it's edited elsewhere — flagged as a known gap rather than silently worked around.
+**Why:** Asking the cardinality question first avoided a wrong guess needing a second migration. Defaulting `category` to `'other'` (not nullable) was deliberate — an ungrouped row needs a fallback bucket regardless, and an explicit default is more honest than an implicit application-code one. The missing container-settings UI (no way to set `google_ads_conversion_id`) was flagged as a known gap, not scope-crept.
 
 ---
 
@@ -421,22 +363,20 @@ Ran `npm run lint` (no new errors — confirmed via `git stash` that the error c
 
 **Date:** 10/07/2026
 
-**Prompt:** After confirming the prior session's migration had been run (error banner gone), the Conversions page still showed "No containers found for your organisation yet." Shared a screenshot of that state plus a screenshot of Google Ads' own "Goals" UI (category cards like "Submit lead form" / "Phone call lead" with a metadata header and a conversion-action table underneath) and asked: "I want you to do the same thing with previous pages. Be able to view the conversion events based on the container. Format it exactly like Google Ads."
+**Prompt:** After confirming the prior migration ran, Conversions still showed "No containers found." Shared that plus a screenshot of Google Ads' "Goals" UI (category cards, conversion-action table) and asked to view conversion events by container, formatted exactly like Google Ads.
 
-**Response summary:** Investigated before proposing anything — grepped the codebase and confirmed nothing writes to Supabase's `containers` table for a real organisation; it's only ever populated by the seed script for the fictional demo org, and Tags/Triggers/Variables sidestepped this entirely by reading live from the GTM API instead. Rather than assume a fix, asked two targeted questions: (1) whether Conversions should get its container from the same live GTM picker as the other pages (auto-creating the matching Supabase row behind the scenes) or from a new standalone "add container" form; (2) since Google Ads' table shows real reported metrics TagOps-Pro doesn't track, whether to swap those columns for real fields or show them as literal "—" placeholders. User picked the recommended option both times (live GTM picker with auto-provisioning; swap for real fields). Implemented:
+**Response summary:** Investigated first — grepped and confirmed nothing writes to Supabase's `containers` table for a real org; only the seed script populates it, while Tags/Triggers/Variables sidestep this by reading live from GTM. Asked two questions rather than assuming: (1) container source — live GTM picker with auto-provisioning, or a standalone form; (2) since Google Ads' table shows real metrics TagOps-Pro doesn't track, swap for real fields or literal "—" placeholders. Both answered with the recommended option. Implemented:
+- `getCurrentOrganisationId()`/`ensureContainerForGtmContainer()` in `api/conversions.ts` — the latter finds-or-creates a `containers` row keyed by `(organisation_id, gtm_container_id)`, retrying on the unique-constraint race, mirroring the existing display_id-collision pattern.
+- Added the missing `organisation_members` table to `types/supabase.ts`.
+- Rewrote `ConversionsView.tsx` with the same Account → Container selector the other views use, resolving/creating the Supabase row on selection. Replaced the flat list with collapsible per-category cards (counts, a "Ready"/"Needs setup" pill from real data) each with a real `<table>`.
+- Replaced `ConversionCard.tsx` with `ConversionTableRow.tsx` (Ads ID·Label/Value/Status columns standing in for Google Ads' live metrics).
+- Simplified `ConversionFormModal.tsx` to a single ambient `container` prop; wired `session` through `AppShell.tsx`.
 
-- `getCurrentOrganisationId()` and `ensureContainerForGtmContainer()` added to `src/features/conversions/api/conversions.ts` — the latter finds-or-creates a Supabase `containers` row keyed by `(organisation_id, gtm_container_id)`, with a retry loop for the rare unique-constraint race, mirroring the existing display_id-collision retry pattern already used by `createConversionEvent`.
-- Added the missing `organisation_members` table to the hand-authored `src/types/supabase.ts` (needed for the org lookup; wasn't there before).
-- Rewrote `ConversionsView.tsx` to add the same GTM Account → Container selector Tags/Triggers/Variables use; selecting a container now resolves/creates its Supabase row and scopes the event list to it. Replaced the flat list with collapsible per-category cards (header: category dot/label via a new `conversion` kind on the shared `CategoryBadge` component, event/active counts, and a "Ready"/"Needs setup" pill derived from real data — flagged only when an event has a Conversion Label but its container has no Conversion ID) each containing a real `<table>`.
-- Replaced `ConversionCard.tsx` with `ConversionTableRow.tsx` (a `<tr>`, not a card) with columns Conversion action / Ads ID·Label / Value / Status / Actions — the Ads ID/Label pair and Value/Currency stand in for Google Ads' live "All conv." / "All conv. value" metrics, per the second answer.
-- Simplified `ConversionFormModal.tsx` to take a single ambient `container` prop instead of a dropdown of all containers, since the container is now chosen at the page level.
-- Wired `session` through `AppShell.tsx` to `ConversionsView` (previously prop-less).
-
-While fixing this, caught and fixed a genuine bug introduced in the same pass: `useMemo` for the grouped-by-category list was called after a conditional early return (`if (gtmForbidden) return ...`), which `npm run lint` flagged as a rules-of-hooks violation (inconsistent hook call order across renders) — moved the early return after all hooks. Ran `npx tsc -b` (clean) and `npm run build` (clean). `npm run lint` showed 12 errors, all the same pre-existing `react-hooks/set-state-in-effect` category already present in `TagsView`/`TriggersView`/`VariablesView`, now also present in `ConversionsView` by construction (three effects, matching the existing pattern) — not a new category of debt.
+Caught and fixed a genuine bug from the same pass: a `useMemo` called after a conditional early return — a rules-of-hooks violation lint flagged; moved the return after all hooks. `tsc -b`/build clean; lint's 12 errors all fell in the same pre-existing `set-state-in-effect` category.
 
 **What you did with it:** Accepted.
 
-**Why:** Asking before building here mattered on both axes — the container-source question is a real architecture fork (same mistake almost repeated as the Triggers/Variables Supabase-CRUD-vs-live-GTM fork from the prior week), and the metrics-column question was about whether to show fabricated numbers under real ad-platform column names, which would misrepresent the app's actual capabilities at the walk-through. The rules-of-hooks bug was caught by lint before being shipped, not by manual review — a reminder that "the build passes" isn't the same guarantee as "lint passes clean of new issues," and both need checking every time.
+**Why:** The container-source question was a real architecture fork (nearly the same mistake as the Triggers/Variables fork the prior week); the metrics-column question was about not showing fabricated numbers under real ad-platform column names, which would misrepresent the app's capabilities at the walk-through. The rules-of-hooks bug was caught by lint, not manual review — a passing build isn't the same guarantee as clean lint.
 
 ---
 
@@ -444,19 +384,18 @@ While fixing this, caught and fixed a genuine bug introduced in the same pass: `
 
 **Date:** 11/07/2026
 
-**Prompt:** "Make me an application based off this: make improvements where you see fit and make Google Ads work. Optimse everything and include a preview mode like GTM. Overall just improve improve improve" — an open-ended, autonomous-mode brief (Claude Fable 5), so the choices below were made by the assistant and are flagged here for my review rather than pre-approved per decision.
+**Prompt:** Open-ended, autonomous-mode brief (Claude Fable 5) — improve wherever appropriate, make Google Ads work, add a GTM-like preview mode. Choices below were the assistant's, flagged for review rather than pre-approved.
 
-**Response summary:** Read the full codebase and folio first, then delivered three blocks of work, each recorded as its own ADR:
+**Response summary:** Read the codebase and folio first, delivered three blocks, each its own ADR:
+1. **Shared GTM selection + caching (ADR-0017).** New `GtmProvider` context and shared `ContainerPicker` replace four per-view copies of the fetch-and-pick plumbing; `lib/gtm.ts` gained a 60s TTL + in-flight-promise cache with cache-clearing Sync; selection survives switching views. Disabled `react-hooks/set-state-in-effect` with an explanatory comment (12 pre-existing errors — the flagged pattern is the standard fetch-on-mount idiom, properly fixed by the planned TanStack Query move) — lint clean again.
+2. **Google Ads end-to-end (ADR-0018).** The dead-ended container Conversion ID gets a real screen (`GoogleAdsSettingsModal`) with client-side `AW-` validation mirroring the migration's CHECK; new per-event "Code" action generating copyable gtag.js/dataLayer snippets (`lib/snippets.ts`).
+3. **Preview mode (ADR-0019).** GTM-debug-style view replaying the real page-load event sequence through the container's actual tags/triggers (read-only from the API), simulating clicks/forms/scroll/dataLayer pushes, explaining per-tag why it fired or didn't; unevaluatable trigger conditions surfaced as explicit caveats, not guessed. Nothing injected into any real site.
 
-1. **Shared GTM selection + caching (ADR-0017).** New `GtmProvider` context and shared `ContainerPicker` replace the four per-view copies of the account/container fetch-and-pick plumbing; `lib/gtm.ts` gained a 60s TTL + in-flight-promise cache with a cache-clearing Sync. Selection now survives switching views. Also turned off the `react-hooks/set-state-in-effect` lint rule with an explanatory config comment (12 pre-existing errors; the flagged pattern is the standard fetch-on-mount idiom, properly fixed by the planned TanStack Query move) — lint is clean again.
-2. **Google Ads working end-to-end (ADR-0018).** The previously-dead-ended container Conversion ID now has a real screen (`GoogleAdsSettingsModal`, opened from a link-status chip on the Conversions picker bar) with client-side `AW-` validation mirroring the migration's CHECK; conversion labels validated in the form; new per-event "Code" action generating copyable gtag.js and dataLayer snippets (pure functions in `lib/snippets.ts`).
-3. **Preview mode (ADR-0019).** GTM-debug-style view: replays the real page-load event sequence through the container's actual tags/triggers (read-only from the GTM API), simulates clicks/forms/scroll/custom dataLayer pushes, and explains per tag why it fired / didn't (paused, blocked by exception, no matching trigger), with built-in All Pages/Init trigger IDs resolved and unevaluatable trigger conditions surfaced as explicit caveats rather than guessed. Nothing is injected into any real site.
+Supporting: installed Vitest (planned but not pre-approved this session — flagged), 23 unit tests for the simulator/snippets per the datalayer-testing rule, `typecheck`/`test` scripts, `npm audit fix` (4 dev-only vulnerabilities → 0). Lint, typecheck, tests, build all clean; app boots with no console errors (signed-in flows need my Google account, so checks beyond login were type/test-level only).
 
-Supporting work: installed **Vitest** (planned in the folio but not pre-approved this session — flagged) and wrote 23 unit tests for the simulator and snippet generators per the "datalayer code must have unit tests" rule; added `typecheck`/`test` scripts; ran `npm audit fix` (4 dev-only vulnerabilities → 0); sidebar/home/topbar wired for the new Preview view. Verified: lint, typecheck, tests, and production build all clean; app boots in the browser with no console errors (signed-in flows need my Google account, so view-level checks beyond login were type/test-level only).
+**What you did with it:** Pending review — provisionally accepted by running it; still need to click through Conversions linking and Preview against my real container and confirm the three ADRs read as my decisions.
 
-**What you did with it:** Pending review — accepted provisionally by running it; I still need to click through Conversions linking and Preview against my real container and confirm the three ADRs read as my decisions before the walk-through.
-
-**Why:** The brief explicitly delegated judgement ("improvements where you see fit"). The assistant kept inside the mandated stack, reused existing patterns (feature folders, modal/table conventions, retry-on-collision), and confined new dependencies to the one already planned in the folio. The lint-rule-off and Vitest-install calls are the two decisions I most need to own or overturn at review.
+**Why:** The brief explicitly delegated judgement. The assistant stayed inside the mandated stack, reused existing patterns, and confined new dependencies to the one already planned. The lint-rule-off and Vitest-install calls are the two decisions I most need to own or overturn at review.
 
 ---
 
@@ -466,11 +405,11 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 **Prompt:** "Is this an application, I don't want a website"
 
-**Response summary:** Explained that TagOps-Pro is already an application delivered through the browser (same category as GTM itself), that the AT3 brief mandates the Vercel-URL web deliverable, and offered three paths (installable PWA / keep as-is / native Tauri-Electron wrapper) with a recommendation. On choosing PWA: added `public/manifest.webmanifest` (standalone display, dark theme colours, 192/512/maskable icons rasterised from the existing `favicon.svg` onto the app's surface colour using macOS `qlmanage`/`sips` — no new dependencies), linked it from `index.html` with `theme-color` and iOS Add-to-Home-Screen metadata, and fixed the page title (`tagops-pro` → `TagOps Pro`). Deliberately no service worker (reasoning in ADR-0020). Verified in the browser that the manifest and all three icons serve with correct types, and that the production build ships them in `dist/`.
+**Response summary:** Explained TagOps-Pro is already a browser-delivered application (same category as GTM), that the AT3 brief mandates the Vercel-URL deliverable, and offered three paths (installable PWA / keep as-is / native Tauri-Electron wrapper). On choosing PWA: added `public/manifest.webmanifest` (standalone display, dark theme colours, 192/512/maskable icons rasterised from the existing favicon via macOS `qlmanage`/`sips` — no new dependencies), linked it with `theme-color` and iOS Add-to-Home-Screen metadata, fixed the page title. Deliberately no service worker (ADR-0020). Verified in-browser the manifest and icons serve correctly and ship in `dist/`.
 
 **What you did with it:** Accepted.
 
-**Why:** The PWA route satisfies "feels like an app" (own window, own icon, installable from Chrome or iOS home screen) without leaving the mandated stack, adding dependencies, or creating a second build target to defend at the walk-through.
+**Why:** Satisfies "feels like an app" without leaving the mandated stack, adding dependencies, or creating a second build target to defend at the walk-through.
 
 ---
 
@@ -480,11 +419,11 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 **Prompt:** "Can you please make this an application separate to a website"
 
-**Response summary:** Built a standalone desktop app as an Electron shell in `desktop/` (recorded as ADR-0021) that wraps the existing built frontend — one codebase, no fork. Key pieces: a private `tagops://` protocol serving `dist/` (real origin → Supabase sessions persist; no `file://` or local-server hacks); Google sign-in brokered through the *system browser* with a loopback callback server on `127.0.0.1:53682`, because Google blocks OAuth in embedded app windows — this required switching the shared Supabase client to the PKCE flow, which the web app also uses without behaviour change; a one-function preload bridge (`window.desktopAuth.signIn`) with context isolation intact; electron-builder packaging to an unsigned `TagOps Pro.app` with an icon derived from the existing favicon artwork. Electron was upgraded to v43 immediately after install to clear a high-severity `npm audit` advisory. Verified: lint/typecheck/23 tests/build all green; dev shell and the packaged `.app` both boot and load the UI with no renderer errors; the web app still loads clean after the PKCE switch. Full sign-in could not be exercised by the assistant (needs my Google account **and** a one-time Supabase dashboard step: add `http://127.0.0.1:53682/auth/callback` to Authentication → URL Configuration → Redirect URLs).
+**Response summary:** Built a standalone Electron shell in `desktop/` (ADR-0021) wrapping the existing built frontend — one codebase, no fork. Key pieces: a private `tagops://` protocol serving `dist/` (real origin → Supabase sessions persist, no `file://`/local-server hacks); Google sign-in via the system browser with a loopback callback server on `127.0.0.1:53682` (Google blocks OAuth in embedded windows) — required switching the shared Supabase client to PKCE, which the web app also now uses without behaviour change; a one-function preload bridge (`window.desktopAuth.signIn`) with context isolation intact; electron-builder packaging to an unsigned `.app` with an icon derived from the favicon. Electron upgraded to v43 immediately to clear a high-severity `npm audit` advisory. Verified: lint/typecheck/23 tests/build all green; dev shell and packaged `.app` boot with no renderer errors; web app still loads clean after the PKCE switch. Full sign-in not exercised by the assistant — needs my Google account and a one-time Supabase redirect-URL addition.
 
 **What you did with it:** Pending review — I need to do the Supabase redirect-URL step and test desktop sign-in end-to-end myself.
 
-**Why:** The explicit ask was a real desktop application. Electron over Tauri is the boring/no-new-toolchain choice; system-browser OAuth is the correct pattern rather than user-agent spoofing inside a webview. Two new devDependencies (electron, electron-builder) live only in `desktop/package.json`, keeping the AT3 submission's dependency tree untouched — and the desktop target must be framed at the walk-through as an extra on top of the mandated Vercel deliverable, not a replacement.
+**Why:** Electron over Tauri is the boring/no-new-toolchain choice; system-browser OAuth is correct rather than user-agent spoofing in a webview. The two new devDependencies live only in `desktop/package.json`, keeping the AT3 submission's dependency tree untouched — the desktop target must be framed at the walk-through as an extra, not a replacement.
 
 ---
 
@@ -492,13 +431,13 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 **Date:** 08/08/2026
 
-**Prompt:** "Please like you have made for the Tags page enbable me to open a small preview of the item (or different Tags in that case) but for every page except Conversion Events. I just want the same pop-up with infor but for the rest of the pages. That being triggers + variaables"
+**Prompt:** Replicate the Tags detail pop-up on Triggers and Variables (not Conversion Events).
 
-**Response summary:** Read `TagsView.tsx`, `TagDetailModal.tsx`, `Modal.tsx`, and the Triggers/Variables cards and views before writing anything, to copy the exact existing pattern rather than invent a new one. Added `formatCondition()` to `lib/gtm.ts` (no existing helper rendered a trigger's `arg0`/`arg1` filter conditions as readable text). Created `TriggerDetailModal.tsx` (trigger type, event name, filter/auto-event conditions, notes, and which tags fire on/are blocked by it) and `VariableDetailModal.tsx` (variable type, parameters, notes, and which tags use it), both built on the shared `Modal` component Tags already uses. Made `TriggerCard`/`VariableCard` clickable (`onClick`, `interactive`, Enter/Space keyboard support — same as `TagCard`) and wired `detailTrigger`/`detailVariable` state into `TriggersView.tsx`/`VariablesView.tsx`, reusing the already-loaded `tagsUsingTrigger`/`tagsUsingVariable` helpers for the "usage" section. Conversion Events was left untouched, as instructed. Ran `npm run lint` and `npm run typecheck` — both clean.
+**Response summary:** Read `TagsView.tsx`, `TagDetailModal.tsx`, `Modal.tsx`, and the Triggers/Variables cards/views first, to copy the existing pattern. Added `formatCondition()` to `lib/gtm.ts` (no helper rendered a trigger's `arg0`/`arg1` filters as readable text). Created `TriggerDetailModal.tsx` and `VariableDetailModal.tsx` on the shared `Modal` component. Made `TriggerCard`/`VariableCard` clickable (same interaction as `TagCard`) and wired `detailTrigger`/`detailVariable` state into the views, reusing the already-loaded `tagsUsingTrigger`/`tagsUsingVariable` helpers. Conversion Events left untouched. Lint/typecheck clean.
 
 **What you did with it:** Accepted.
 
-**Why:** This was my initiative — I asked Claude to replicate a pattern I'd already approved on the Tags page rather than design something new, so the request was really "extend this, don't reinvent it." I inspected the resulting modals and card behaviour on Triggers and Variables afterward and confirmed they match what I intended: same look, same interaction, same restraint on which page to leave alone.
+**Why:** My initiative — asked Claude to replicate an already-approved pattern rather than design something new. Confirmed the modals/cards match: same look, same interaction, same restraint on which page to leave alone.
 
 ---
 
@@ -506,13 +445,13 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 **Date:** 08/08/2026
 
-**Prompt:** Shared a screenshot of Google Tag Manager's own Preview/Debug pane (Tag Assistant) showing its pinned "Summary" entry above the numbered lifecycle stages (Message, Consent Initialization, Initialization, Container Loaded, DOM Ready, Window Loaded), with a Tags Fired / Tags Not Fired breakdown on the right. Said: "For the preview tab in the actual GTM preview there is a summary of what tags have fired and what have not. I like how you can press on each indivusal stages but please make a summary"
+**Prompt:** Shared a screenshot of GTM's own Tag Assistant (pinned "Summary" above numbered lifecycle stages, Tags Fired/Not Fired breakdown). Asked for the same summary, keeping the per-stage click behaviour already liked.
 
-**Response summary:** Read `PreviewView.tsx`, `EventTimeline.tsx`, `TagResultsPanel.tsx`, and `lib/simulator.ts` first — confirmed the existing per-event timeline (clickable numbered stages) already matched the GTM pattern the user liked, and the only gap was the aggregate rollup. Added `summarizeSteps()` and a `TagSummary` type to `simulator.ts`, rolling up each tag's fire count and latest status across every simulated event in the session so far (not just the selected one). Built `SummaryPanel.tsx` (Tags fired / Tags not fired, styled to match the existing `TagResultsPanel`). Added a pinned "Summary" row above the per-event list in `EventTimeline.tsx`, with a badge showing how many distinct tags have fired session-wide — mirroring the screenshot's left-rail layout. Wired it into `PreviewView.tsx`: a new session now opens on Summary by default, and the existing per-event stage clicks are unchanged. Ran `npm run lint` and `npm run typecheck` — both clean.
+**Response summary:** Read `PreviewView.tsx`, `EventTimeline.tsx`, `TagResultsPanel.tsx`, `lib/simulator.ts` first — the per-event clickable timeline already matched; the gap was the aggregate rollup. Added `summarizeSteps()`/`TagSummary` to `simulator.ts`, rolling up each tag's fire count and latest status across the whole session. Built `SummaryPanel.tsx` (matching `TagResultsPanel`'s style) and a pinned Summary row above the per-event list in `EventTimeline.tsx` with a distinct-tags-fired badge. Wired into `PreviewView.tsx` — a new session opens on Summary by default, existing stage clicks unchanged. Lint/typecheck clean.
 
 **What you did with it:** Accepted.
 
-**Why:** I pointed Claude at a specific reference (my own screenshot of real GTM) and asked for that exact concept, not a general "improve the preview page" — the initiative and the design target were both mine. Claude's job was translating that concept into the app's existing simulator/component conventions rather than deciding what the feature should be. I reviewed the diff and confirmed it does what I asked: the individual-stage navigation I already liked still works exactly as before, with the Summary rollup added on top.
+**Why:** I pointed at a specific reference and asked for that exact concept, not an open-ended improvement. Claude's job was translating it into existing conventions. Confirmed the existing navigation still works exactly as before, with Summary added on top.
 
 ---
 
@@ -520,15 +459,15 @@ Supporting work: installed **Vitest** (planned in the folio but not pre-approved
 
 **Date:** 08/08/2026
 
-**Prompt:** After confirming the Summary row from the previous session now renders correctly, shared four more screenshots of real GTM's Tag Assistant — its "Tag Details" flyout (Properties table, "Messages Where This Tag Fired", Firing Triggers with a Filters sub-table, Blocking Triggers), its "Output of container" tab row (Tags / Variables / Data Layer / Consent / Console), its Variables tab (Variable / Variable Type / Return Type / Value table), and its Data Layer tab (JSON dump per message). Said: "Can you also please allow me to expand on the tags that fired as I want to see specifically what fired. Like this:. Can you also make it so there are tje different tabs, just variables and datalayer as they are the really important ones. Make this seeable in the sumary and each indivusl one as well" — explicitly scoping the tab set down to Variables and Data Layer only (not Consent/Console, which don't apply to a local simulator with no real page or consent state).
+**Prompt:** Four more GTM Tag Assistant screenshots (Tag Details flyout, output-tab row, Variables tab, Data Layer tab). Asked to expand fired tags to see specifics, and add Variables and Data Layer tabs only (explicitly excluding Consent/Console, which don't apply to a local simulator with no real page or consent state) — to both Summary and per-event views.
 
-**Response summary:** Read `TagResultsPanel.tsx`, `SummaryPanel.tsx`, `simulator.ts`, and the existing `TagDetailModal`/`TriggerDetailModal` before writing anything, to reuse established conventions rather than clone GTM pixel-for-pixel. Added to `simulator.ts`: `tagFiredSteps()` (which session events a given tag actually fired on — the data behind "Messages Where This Tag Fired"), and `resolveVariable()` with an `AEV_KEY_MAP`, which resolves Constant, Data Layer, and Auto-Event variables from data the simulator already has, and explicitly marks DOM/JS/URL/cookie variable types as "Not resolved in simulation" rather than fabricating a value — consistent with how unevaluated trigger conditions are already surfaced elsewhere in Preview. Built `PreviewTagDetailModal.tsx` (Tag Details, fired-messages list, firing/blocking triggers with their filter conditions) opened by clicking any tag row in either panel; `VariablesTab.tsx` and `DataLayerTab.tsx` as shared components used by both `TagResultsPanel` and `SummaryPanel`, replacing the Data Layer JSON block that used to be duplicated inline; `PreviewView.tsx` now also fetches `getVariables()` and holds the `detailTag` modal state. Added 6 unit tests (`tagFiredSteps`, `resolveVariable` across all four resolvable/unresolvable type branches) per the datalayer-code testing rule — 29/29 tests pass, plus clean lint, typecheck, and build.
+**Response summary:** Read `TagResultsPanel.tsx`, `SummaryPanel.tsx`, `simulator.ts`, and the existing detail modals first, to reuse conventions rather than clone GTM pixel-for-pixel. Added `tagFiredSteps()` (which session events a tag fired on) and `resolveVariable()` with an `AEV_KEY_MAP` to `simulator.ts`, resolving Constant/Data Layer/Auto-Event variables from data the simulator already has, and explicitly marking DOM/JS/URL/cookie types as "Not resolved in simulation" rather than fabricating values — consistent with how unevaluated trigger conditions are already surfaced. Built `PreviewTagDetailModal.tsx` (Tag Details, fired-messages list, firing/blocking triggers with filters), `VariablesTab.tsx`/`DataLayerTab.tsx` shared between `TagResultsPanel` and `SummaryPanel` (replacing a duplicated inline JSON block); `PreviewView.tsx` now also fetches `getVariables()`. Added 6 unit tests across the resolvable/unresolvable branches — 29/29 tests pass, lint/typecheck/build clean.
 
-One deliberate simplification flagged rather than silently decided: trigger filter conditions render as one readable line (`{{Page URL}} contains /checkout`) via the existing `formatCondition()` helper, not GTM's three-part badge layout — matches `TriggerDetailModal`'s established pattern instead of adding a one-off richer format just for this modal.
+One deliberate simplification flagged: trigger filter conditions render as one readable line via the existing `formatCondition()` helper, not GTM's three-part badge layout, matching `TriggerDetailModal`'s pattern.
 
 **What you did with it:** Accepted.
 
-**Why:** This was my initiative in the same way as the Summary work — I supplied the exact reference screenshots and named precisely which tabs I wanted (Variables and Data Layer, explicitly not Consent/Console) rather than asking for an open-ended "make it more like GTM." Claude's job was translating that reference into the app's existing component/testing conventions and flagging the one place it chose a simpler format than the screenshot showed, not deciding what the feature should be. I reviewed the result and confirmed it's what I intended before this was logged.
+**Why:** My initiative, same as the Summary work — exact reference screenshots and named tabs, explicitly excluding Consent/Console. Claude's job was translating that into existing conventions and flagging the one simplification, not deciding the feature.
 
 ---
 
@@ -536,13 +475,13 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 **Date:** 09/08/2026
 
-**Prompt:** "Also can you make a settings / profile page. I feel as if this is something that would be needed" — an open-ended ask with no spec attached, unlike the two prior sessions which pointed at a specific screenshot or pattern to copy.
+**Prompt:** "Also can you make a settings / profile page" — open-ended, no spec attached, unlike the two prior sessions.
 
-**Response summary:** Before writing anything, checked `docs/02-requirements.md` and found "Add/remove people from the Account" and "expiry dates for people" already listed as MVP must-haves, and that the `organisation_members` table (role + expiry, full RLS) had existed unused since Week 5–6 — no page in the app read or wrote it. Rather than guess how big "a settings page" should be, asked one scoping question: a lightweight profile-only page, or the full version wired to that existing schema. Chose the full version. Investigating further surfaced two real RLS gaps: `public.users` only allows selecting your own row (so a team list joining to it would show every teammate as null), and "add by email" needs to look up someone who isn't a teammate yet, which a same-org-only fix wouldn't cover. Wrote migration `20260809000000_settings_team_management.sql` — an additive `users` SELECT policy scoped to "shares an organisation with you" (not a global directory), plus a narrow `find_user_by_email()` SECURITY DEFINER RPC that returns only the fields needed to add someone, for an exact match only. Built the new `src/features/settings/` feature (types, `api/settings.ts`, `SettingsView`/`MemberRow`/`AddMemberModal`): a read-only profile card sourced from the Google session (not `public.users`, which has no UPDATE policy by design); an organisation-name field editable only by the owner; a team list with per-row role/expiry/remove controls gated by the caller's role in the UI (RLS is the real enforcement). Owner is not an assignable role or a removable row from this UI. Noticed `getCurrentOrganisationId`/`generateDisplayId` were about to be duplicated a second time (Conversions already had them) and promoted them to a shared `src/lib/organisation.ts` instead. Reached via the existing sidebar profile row rather than a new primary nav item, since account settings is a different category from the GTM-entity views. Added hand-authored `users`/`organisations` table types and a `find_user_by_email` `Functions` entry to `src/types/supabase.ts` (same no-CLI caveat as every prior hand-authored addition). Ran lint, typecheck, the full test suite, and a production build — all clean; also started the dev server and confirmed the new module graph compiles and serves without error (full authenticated click-through wasn't possible without a real session).
+**Response summary:** Checked `docs/02-requirements.md` first and found "add/remove people" and expiry dates already listed as MVP must-haves, and the `organisation_members` table (role + expiry, full RLS) had existed unused since Week 5–6. Asked one scoping question — profile-only, or the full version wired to that schema — and chose full. Investigating further surfaced two RLS gaps: `public.users` only allows selecting your own row (a team list join would show every teammate as null), and "add by email" needs to look up someone not yet a teammate. Wrote `20260809000000_settings_team_management.sql`: an additive `users` SELECT policy scoped to "shares an organisation with you" (not a global directory), plus a narrow `find_user_by_email()` SECURITY DEFINER RPC returning only the fields needed to add someone, exact match only. Built `features/settings/` (types, `api/settings.ts`, `SettingsView`/`MemberRow`/`AddMemberModal`): a read-only profile card from the Google session (not `public.users`, which has no UPDATE policy by design); an org-name field editable only by the owner; a team list with per-row role/expiry/remove controls gated by role in the UI (RLS is the real enforcement); Owner not assignable/removable from this UI. Promoted `getCurrentOrganisationId`/`generateDisplayId` (about to be duplicated a second time) to `lib/organisation.ts`. Reached via the sidebar profile row, not a new nav item. Lint, typecheck, tests, build all clean; dev server confirmed the module graph compiles (full click-through not possible without a real session).
 
-**What you did with it:** Accepted the full-scope answer to the scoping question; implementation not yet exercised against real data.
+**What you did with it:** Accepted the full-scope answer; implementation not yet exercised against real data.
 
-**Why:** The request itself was mine, but the shape of the answer — team management wired to real, previously-unused schema, rather than a cosmetic profile page — was Claude's proposal after reading the requirements doc, which I approved when asked directly rather than assumed. The RLS-widening decision is the one piece of this I most need to sit with before the walk-through: it's a deliberate, scoped trade-off (teammates can see each other's name/email/avatar) rather than an oversight, but it's new attack surface on `public.users` and deserves its own line in `docs/05-security-review.md` once that file exists, not just this log entry. **Outstanding: the migration has not been run in the Supabase SQL editor yet** — the Settings page will fail on the team list and "Add member" until that step happens, same as every schema change before it.
+**Why:** The request was mine, but the shape of the answer — team management wired to real, previously-unused schema — was Claude's proposal after reading the requirements doc, approved when asked. The RLS-widening decision (teammates can see each other's name/email/avatar) is a deliberate, scoped trade-off, not an oversight, but is new attack surface on `public.users` deserving its own line in `docs/05-security-review.md`. **Outstanding: the migration has not been run in the Supabase SQL editor yet** — the team list and "Add member" will fail until then.
 
 ---
 
@@ -550,13 +489,13 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 **Date:** 18/08/2026
 
-**Prompt:** "next I want you to allow for me to join or create an organisation/team. Or add another page decidicstr for this, I just want this to ink to the profile settigns page" — again open-ended on the mechanism, leaving the choice of a dedicated page vs. inline between me and Claude, but explicit that it had to be reachable from Settings.
+**Prompt:** Add the ability to join or create an organisation/team, reachable from Settings — open-ended on mechanism.
 
-**Response summary:** Investigated before proposing anything: `Dashboard.tsx` never checked organisation membership at all, so a brand-new sign-in (not the one manually-seeded test account) would hit "No organisation membership found" the moment they opened Conversions or Settings — a genuine, previously-invisible onboarding dead end. "Create" already worked at the schema level (an existing insert policy + trigger); "join" didn't exist in any form. Asked one scoping question — self-service invite code vs. no self-serve join at all (rely on the "add by email" already built last session) — and picked the invite-code option. Wrote migration `20260818000000_organisation_invite_codes.sql`: `organisations.invite_code` with column-level `SELECT`/`UPDATE` revoked from `authenticated` entirely (a plain column would otherwise leak through the existing "members can select organisations" policy to every viewer, since RLS is row- not column-scoped), and three `SECURITY DEFINER` functions as the only access path — `get_invite_code`/`regenerate_invite_code` (owner/admin only, checked inside the function) and `redeem_invite_code` (any authenticated user; joins as Editor, or no-ops if already a member). Revoking column SELECT meant `getOrganisation()`/`updateOrganisationName()` from last session's Settings feature would now fail outright on their `select('*')` — fixed both to an explicit column list. Built `src/features/organisation/`: `OrganisationOnboarding` (full-screen Create/Join gate, styled like `Login.tsx`, rendered by `Dashboard.tsx` in place of `AppShell` when membership is confirmed absent) and `OrganisationView` (an in-app page showing the org and, for owner/admin, the invite code with copy/regenerate — reached via a new "Invite teammates" button in Settings). `Dashboard.tsx` now distinguishes "confirmed no membership" from "the membership check itself failed" (network/permissions) via a new non-throwing `checkMyMembership()`, so a transient error can't be mistaken for a real user needing onboarding. Ran lint, typecheck, the full test suite, and a production build — all clean; started the dev server and confirmed the new modules compile and serve (full click-through needs a real second Google account with no prior org, which wasn't available in this session).
+**Response summary:** Investigated first: `Dashboard.tsx` never checked organisation membership, so any brand-new sign-in would hit "No organisation membership found" the moment they opened Conversions or Settings — a previously-invisible onboarding dead end. "Create" already worked at the schema level; "join" didn't exist. Asked one scoping question — self-service invite code vs. relying on "add by email" — and chose invite code. Wrote `20260818000000_organisation_invite_codes.sql`: `organisations.invite_code` with column-level SELECT/UPDATE revoked from `authenticated` entirely (a plain column would otherwise leak through the existing "members can select organisations" policy, since RLS is row- not column-scoped), and three SECURITY DEFINER functions as the only access path — `get_invite_code`/`regenerate_invite_code` (owner/admin only, checked inside the function) and `redeem_invite_code` (any authenticated user; joins as Editor, or no-ops if already a member). Revoking column SELECT broke the prior session's `select('*')` in `getOrganisation()`/`updateOrganisationName()` — fixed both to explicit column lists. Built `features/organisation/`: `OrganisationOnboarding` (full-screen Create/Join gate styled like `Login.tsx`, rendered in place of `AppShell` when membership is confirmed absent) and `OrganisationView` (shows the org and, for owner/admin, the invite code with copy/regenerate). `Dashboard.tsx` now distinguishes "confirmed no membership" from "the check itself failed" via a new non-throwing `checkMyMembership()`, so a transient error can't be mistaken for real onboarding. Lint, typecheck, tests, build clean; dev server confirmed the modules compile (full click-through needs a second Google account with no prior org, unavailable this session).
 
 **What you did with it:** Accepted.
 
-**Why:** The request was mine and squarely aimed at a real gap I'd have hit the moment I tested with any account other than the seeded one. The invite-code-vs-admin-only-add fork was Claude's to surface, not decide — I picked the self-service option. The column-level revoke (rather than an RLS row policy, which can't express "this one column, not the rest of the row") is the one piece of this session I most need to be able to explain cleanly at the walk-through: it's a different enforcement mechanism from every other policy in the schema so far, and it exists specifically because RLS alone couldn't express "any member can see this row, but only owners/admins can see this one column of it." **Outstanding: the migration has not been run in the Supabase SQL editor yet** — both "Join with code" and Settings' "Invite teammates" will fail until it is.
+**Why:** The request was mine, aimed at a real gap I'd hit testing with any account but the seeded one. The invite-code-vs-admin-add fork was Claude's to surface, not decide. The column-level revoke (rather than an RLS row policy, which can't express "this one column, not the rest of the row") is the piece I most need to explain at the walk-through — it exists because RLS alone can't express partial-row visibility. **Outstanding: the migration has not been run in the Supabase SQL editor yet** — "Join with code" and "Invite teammates" will fail until it is.
 
 ---
 
@@ -564,13 +503,13 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 **Date:** 19/08/2026
 
-**Prompt:** "I cannot create an organisaiton but the inital loading page is good"
+**Prompt:** "I cannot create an organisation but the initial loading page is good"
 
-**Response summary:** Asked what the exact error text was rather than guessing; the answer — "Failed to create your organisation." — matched a hardcoded fallback string in `OrganisationOnboarding.tsx`'s catch block word-for-word, which meant the real error was being discarded, not that this particular string was the real cause. Read the installed `@supabase/postgrest-js` source directly to confirm: PostgREST's `{ data, error }` returns `error` as a plain object, not an `Error` instance, unless `.throwOnError()` is called on the builder — which nothing in this codebase does. Every api function's `if (error) throw error` was therefore throwing a plain object, and every component's `catch (err) { err instanceof Error ? err.message : 'fallback' }` was silently discarding the real message as a result — a bug present since the very first Supabase write (`conversions.ts`), not something introduced this session. Verified `@supabase/auth-js`'s `AuthError` genuinely does extend `Error` (so `Login.tsx` was already correct and left alone). Added a `toError()` helper to `lib/supabase.ts` and applied it at all ~18 affected throw sites across `lib/organisation.ts`, `features/organisation/api/organisation.ts`, `features/settings/api/settings.ts`, and `features/conversions/api/conversions.ts`. Ran lint, typecheck, the full test suite, and a production build — all clean.
+**Response summary:** Asked for the exact error text rather than guessing; it matched a hardcoded fallback string in `OrganisationOnboarding.tsx`'s catch block word-for-word, meaning the real error was being discarded. Read the installed `@supabase/postgrest-js` source to confirm: PostgREST's `{ data, error }` returns `error` as a plain object, not an `Error` instance, unless `.throwOnError()` is called — which nothing in this codebase does. Every api function's `if (error) throw error` was therefore throwing a plain object, and every component's `err instanceof Error ? ... : 'fallback'` silently discarded the real message — a bug present since the first Supabase write (`conversions.ts`), not introduced this session. Verified `@supabase/auth-js`'s `AuthError` genuinely extends `Error` (`Login.tsx` was already correct). Added a `toError()` helper to `lib/supabase.ts` and applied it at ~18 throw sites across `lib/organisation.ts`, `features/organisation/api/organisation.ts`, `features/settings/api/settings.ts`, `features/conversions/api/conversions.ts`. Lint, typecheck, tests, build all clean.
 
 **What you did with it:** Accepted.
 
-**Why:** This doesn't fix the actual "cannot create an organisation" problem — it fixes the app's ability to tell us what that problem is. I need to retry creating an organisation and report back whatever error now actually appears, since that's the real next diagnostic step. Worth flagging for the walk-through: this bug would have masked the true cause of *any* Supabase failure anywhere in the app, not just this one — a good example of why "the error message is generic" is itself a bug worth chasing down rather than accepting.
+**Why:** Doesn't fix the actual "cannot create an organisation" problem — fixes the app's ability to say what the problem is. This bug would have masked the true cause of any Supabase failure anywhere in the app — worth chasing rather than accepting a generic error message.
 
 ---
 
@@ -578,13 +517,13 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 **Date:** 19/08/2026
 
-**Prompt:** Multi-turn, following straight on from the error-swallowing fix. Provided screenshots at each step: the real error ("new row violates row-level security policy for table \"organisations\""), the RLS policy list and its expanded `WITH CHECK` text from the Supabase dashboard, a decoded JWT from the browser console, and the output of several SQL Editor queries I asked to be run in sequence — explicitly asking each time to be walked through the exact clicks rather than given a command to run blind.
+**Prompt:** Multi-turn, following the error-swallowing fix. Provided screenshots at each step: the real RLS error, the policy list and `WITH CHECK` text, a decoded JWT, and SQL Editor query output run in sequence — explicitly asking to be walked through the exact clicks rather than given commands to run blind.
 
-**Response summary:** Ruled out causes one at a time, live, against the real database rather than guessing: (1) confirmed the RLS policy text stored in `pg_policies` matches the migration byte-for-byte — no drift; (2) decoded the browser's actual JWT — valid `sub`, `role: authenticated`, correct issuer, not expired, ruling out a stale/broken session; (3) used `set_config('request.jwt.claims', …)` plus `set local role authenticated` in the SQL Editor to impersonate the user's exact ID directly in Postgres and proved `auth.uid()` resolves correctly immediately before the same insert. That left one variable: `createOrganisation()` chained `.select().single()` onto the insert, which makes PostgREST issue `INSERT ... RETURNING`. Postgres checks a `RETURNING` row against the table's SELECT policy, which for a brand-new org can only pass once the `auto_owner_membership()` trigger's own insert (a side effect of the *same* statement) has run — a chicken-and-egg race unique to organisation creation, since every other insert-then-select in the app is performed by someone already independently qualifying for that SELECT policy via a pre-existing row. Confirmed by running the identical insert without `RETURNING` in the SQL Editor — it succeeded, and the row was there afterward. Fixed `createOrganisation()` to insert without `.select()` and issue a separate follow-up `SELECT ... WHERE slug = …` once the first request has committed. No migration or RLS change needed. Ran lint, typecheck, tests, and build — all clean. Gave cleanup SQL for the test organisations (`test-org-9995` etc.) created directly in the database during debugging.
+**Response summary:** Ruled out causes one at a time, live: (1) confirmed `pg_policies` matched the migration byte-for-byte — no drift; (2) decoded the JWT — valid `sub`, correct role/issuer, not expired, ruling out a stale session; (3) used `set_config('request.jwt.claims', …)` + `set local role authenticated` in the SQL Editor to impersonate the user's exact ID, proving `auth.uid()` resolves correctly right before the same insert. That left `createOrganisation()`'s `.select().single()` chained onto the insert, making PostgREST issue `INSERT ... RETURNING`. Postgres checks a `RETURNING` row against the SELECT policy, which for a brand-new org can only pass once the `auto_owner_membership()` trigger's own insert (a side effect of the same statement) has run — a chicken-and-egg race unique to organisation creation, since every other insert-then-select in the app is performed by someone already qualifying independently. Confirmed by running the identical insert without `RETURNING` — it succeeded. Fixed `createOrganisation()` to insert without `.select()` and issue a separate follow-up `SELECT ... WHERE slug = …` after commit. No migration or RLS change needed. Lint, typecheck, tests, build all clean. Gave cleanup SQL for the test organisations created during debugging.
 
 **What you did with it:** Accepted.
 
-**Why:** This was collaborative live debugging against real production data, not something I could reproduce or verify locally (no Supabase CLI in this environment, per the standing caveat on every prior migration). Each step was a targeted test designed to eliminate exactly one variable — policy text, token validity, `auth.uid()` resolution — before landing on the actual cause, rather than guessing at fixes and hoping. The bug itself is a genuinely subtle Postgres RLS+trigger+RETURNING interaction that's worth being able to explain clearly at the walk-through: it's not a security hole (the policy was always correct) and not a client bug (the token was always valid) — it's a statement-ordering race that only organisation creation could ever hit.
+**Why:** Collaborative live debugging against real production data, not reproducible locally (no Supabase CLI). Each step eliminated exactly one variable — policy text, token validity, `auth.uid()` resolution — before landing on the cause. A genuinely subtle Postgres RLS+trigger+RETURNING interaction worth explaining clearly: not a security hole (policy always correct), not a client bug (token always valid) — a statement-ordering race only organisation creation could hit.
 
 ---
 
@@ -592,13 +531,13 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 **Date:** 19/08/2026
 
-**Prompt:** Screenshot of the Settings page after the previous fix — organisation creation had worked, but Settings showed "Could not embed because more than one relationship was found for 'organisation_members' and 'users'", plus: "I am not able to name my organisation for some odd reason."
+**Prompt:** Screenshot showing Settings now erroring "Could not embed because more than one relationship was found for 'organisation_members' and 'users'", plus "I am not able to name my organisation for some odd reason."
 
-**Response summary:** Traced both symptoms to one cause. `organisation_members` has two foreign keys into `users` (`user_id` and `invited_by`), so `listOrganisationMembers()`'s bare `users(...)` embed was ambiguous and PostgREST rejected the whole query. That query ran inside a `Promise.all` alongside `getOrganisation()`; when one promise in a `Promise.all` rejects, none of the results get used — so the real organisation name never reached the form, and what looked like text in the name field was actually Chrome autofill guessing into what was really an empty, unset input. Fixed the query to `users!user_id(...)`, explicitly naming which foreign key to embed through. Also hardened the form itself: `autoComplete="off"` on the name input, and the Save button's disabled check now explicitly requires the organisation to have actually loaded rather than relying on an `undefined`-vs-empty-string comparison to happen to come out right.
+**Response summary:** Traced both symptoms to one cause. `organisation_members` has two foreign keys into `users` (`user_id` and `invited_by`), so `listOrganisationMembers()`'s bare `users(...)` embed was ambiguous and PostgREST rejected the query. That query ran inside a `Promise.all` alongside `getOrganisation()`; when one promise in a `Promise.all` rejects, none of the results get used — so the real organisation name never reached the form, and what looked like text in the name field was Chrome autofill guessing into what was really an empty input. Fixed the query to `users!user_id(...)`, naming the foreign key explicitly. Also hardened the form: `autoComplete="off"`, and the Save button's disabled check now explicitly requires the organisation to have loaded rather than relying on an `undefined`-vs-empty-string comparison.
 
 **What you did with it:** Accepted.
 
-**Why:** The two symptoms looked unrelated (a scary red error banner vs. "I can't type a name") but shared one root cause — worth noting because it's a good example of how a `Promise.all` failure can produce confusing, seemingly-unrelated downstream symptoms rather than one clear error. Worth remembering: any future embed through `organisation_members` (or any table gaining a second FK to the same target) needs the same `!column` treatment.
+**Why:** The two symptoms looked unrelated (a red error banner vs. "I can't type a name") but shared one root cause — a good example of `Promise.all` producing confusing downstream symptoms. Any future embed through `organisation_members` (or any table gaining a second FK to the same target) needs the same `!column` treatment.
 
 ---
 
@@ -608,19 +547,72 @@ One deliberate simplification flagged rather than silently decided: trigger filt
 
 **Prompt:** "Can you add a setting in the profile page to switch between light, dark, and system for user viewing?"
 
-**Response summary:** Scoped before writing code: grepped for how many places hardcode `white`-opacity Tailwind utilities for hover/active/ring states (`bg-white/5`, `ring-white/10`, etc.) — 43 occurrences across 18 files, plus a handful of inline `rgba(255,255,255,…)` shadows and the scrollbar thumb, none of which would work correctly on a light background left as-is. Rather than doing a shallow toggle that would ship a broken light mode, did the full pass: added `src/lib/ThemeContext.tsx` (`light | dark | system`, persisted to `localStorage`, applied as a `data-theme` attribute, with a synchronous pre-render apply in `main.tsx` to avoid a flash of the wrong theme on load); rewrote `index.css` to keep every existing token name but add light-mode values under `@media (prefers-color-scheme: light)` plus explicit `[data-theme]` overrides; added a new `--color-overlay` token (white in dark, black in light) and mechanically renamed every `white/N` overlay utility to `overlay/N` across the 18 files via a `grep -l | while read` loop (not a bare `for f in $FILES`, which silently breaks under zsh's default no-word-splitting and was caught immediately when the first attempt touched zero files); converted the remaining inline `rgba(255,255,255,…)` shadows and the scrollbar thumb to `color-mix()` against the same token; darkened the light-mode accent/success/warning/danger values rather than reusing the dark-mode ones, since several are used as button-background-with-light-text and needed a different contrast target. Added a three-way segmented control (Light/Dark/System, each with a small icon) to a new "Appearance" section in Settings, right under Profile. Verified visually in the actual browser — not just lint/typecheck — via a temporary preview bypass in `App.tsx` (Playwright screenshots of the sidebar/dashboard shell and the Settings page, in both light and dark), then fully reverted the bypass (`git diff` on `App.tsx` is empty). Lint, typecheck, the full test suite, and a production build all pass.
+**Response summary:** Scoped before writing code: grepped for hardcoded `white`-opacity Tailwind utilities on hover/active/ring states — 43 occurrences across 18 files, plus inline `rgba(255,255,255,…)` shadows and the scrollbar thumb, none of which would work on a light background. Did the full pass rather than a shallow toggle: added `src/lib/ThemeContext.tsx` (`light | dark | system`, persisted to `localStorage`, applied as a `data-theme` attribute, with a synchronous pre-render apply in `main.tsx` to avoid a flash of the wrong theme); rewrote `index.css` keeping every token name but adding light-mode values under `@media (prefers-color-scheme: light)` plus `[data-theme]` overrides; added a `--color-overlay` token and mechanically renamed every `white/N` overlay utility to `overlay/N` across the 18 files via a `grep -l | while read` loop (a bare `for f in $FILES` silently breaks under zsh's default no-word-splitting — caught immediately when the first attempt touched zero files); converted remaining inline shadows/scrollbar to `color-mix()` against the same token; darkened the light-mode accent/status values rather than reusing dark-mode ones, since several are used as button-background-with-light-text and needed a different contrast target. Added a three-way segmented control to a new "Appearance" section in Settings. Verified visually via Playwright screenshots (both themes) through a temporary, fully-reverted preview bypass in `App.tsx`. Lint, typecheck, tests, build all pass.
 
 **What you did with it:** Accepted.
 
-**Why:** The request read as small ("add a setting") but a shallow implementation would have shipped a light mode with invisible hover states everywhere, since so much of the existing dark theme's interactivity was hardcoded to a literal white overlay rather than a token. Doing the scoping grep first, before writing any component code, is what surfaced that — worth remembering as a general habit: before adding a mode/variant to an existing UI, check how many places assume the *current* mode is the only one. The `for f in $FILES` vs `while read` zsh gotcha is also worth remembering for any future shell scripting in this repo — the sandbox shell is zsh, and it doesn't word-split unquoted variables like bash does by default.
+**Why:** The request read as small, but a shallow implementation would have shipped a light mode with invisible hover states everywhere, since so much interactivity was hardcoded to a literal white overlay rather than a token. Scoping-grep-first is worth remembering as a habit before adding a mode/variant to an existing UI. The `for f in $FILES` vs. `while read` zsh gotcha is worth remembering for future shell scripting — the sandbox shell is zsh, which doesn't word-split unquoted variables like bash does.
+
+---
+
+### Fixed the sidebar logo mark to stay visible in light theme
+
+**Date:** 26/08/2026
+
+**Prompt:** "Please adjust the logo so when it switches to white it can be seen as clearly as when it is black" — referring to theme switching.
+
+**Response summary:** Investigated first — the logo (an inline SVG in `Sidebar.tsx`, not a separate asset) used hardcoded hex colours (`fill="#e6e7eb"`, `stroke="#08090a"`) instead of the theme-aware CSS custom properties every other themed element uses. Those values happen to equal the dark-mode `--color-text-primary`/`--color-canvas` tokens, so the logo looked correct in dark mode by coincidence, but since it never read `data-theme`, light theme left it the same near-white grey, nearly invisible against the light sidebar. Swapped the two hex values for the existing `fill-text-primary`/`stroke-canvas` Tailwind utilities, resolving through the same tokens `index.css` already defines per theme (ADR-0027) — same contrast relationship, correctly inverted, no new colour values or asset variants. `typecheck`/`lint` clean.
+
+**What you did with it:** Accepted.
+
+**Why:** A one-line-per-attribute fix using existing tokens was the right scope — no need for separate light/dark logo assets when the theme-token system already solves this everywhere else. Flagged that this wasn't verified with a browser screenshot (no Playwright available in this sandbox) rather than claiming a visual check that didn't happen.
+
+---
+
+### Added GTM's built-in variables to the Preview mode Variables tab
+
+**Date:** 26/08/2026
+
+**Prompt:** Shared a screenshot of GTM's populated Variables tab (Click/Page/Referrer/Scroll Depth built-ins, each resolved or "undefined"); asked for the same in the preview page's Variables tab.
+
+**Response summary:** Investigated first rather than assuming greenfield work — Preview mode (ADR-0019) already has a working Variables tab that correctly resolves values it knows about. The real gap: it only lists the container's own custom variables from the GTM API, and that endpoint never returns GTM's built-in variables at all (they're container-level toggles, not workspace entities), so every screenshot row was structurally impossible to show regardless of resolution logic. Also found variable-type resolution covered only 3 of GTM's ~14 types even for custom variables. Asked which gap to close; "add the built-ins" was chosen. Implemented a hardcoded `BUILT_IN_VARIABLES` list (26 entries — Debug Mode, Event, Page URL/Hostname/Path, Referrer, Click*, Form*, Scroll Depth*, Error*, Video*, etc.) in `simulator.ts`, mirroring the existing `BUILT_IN_TRIGGERS` pattern for the same reason. Extended `resolveVariable()` with a `builtin` branch reading each from the same `gtm.*` data-layer keys the click/scroll/form actions already populate — no new simulation logic, just more rows over already-computed data. Kept ADR-0019's honesty rule: Page URL/Hostname/Path and Referrer need a real loaded page this simulator deliberately never has (the separate "firing verification" roadmap item), so those stay explicitly unresolved with a reason string rather than faked from TagOps Pro's own URL. `VariablesTab.tsx` now merges container variables and built-ins alphabetically. Added 6 new unit tests (34 total, all passing). Typecheck/lint clean.
+
+**What you did with it:** Accepted.
+
+**Why:** Investigating first avoided duplicating an already-existing feature — the real fix was narrower than "build a preview variables feature" would suggest. Asking one scoping question kept the change to the documented gap rather than under- or over-shooting — faking Page URL/Referrer would misrepresent the customer's real site, a genuine concern given the tracking-platform safety rules. The new unit tests keep the resolution logic defensible at the walk-through.
+
+---
+
+### Full-repo security, accessibility, and code-quality audit, then fixed everything critical/high
+
+**Date:** 27/08/2026
+
+**Prompt:** "Please look through my entire repo/folder and do a full audit including safety, accessibility and general review of the entire document. Exclude the documentation which is a work in progress." Follow-up: "Make the necessary changes as you see fit and then update both the decision logs and ai use logs."
+
+**Response summary:** Ran three parallel subagent audits (security, accessibility, code quality) across `src/`, `supabase/`, `desktop/`, and config, then personally verified every high-severity claim against the actual files before acting on it (read the flagged SQL/CSS/TSX directly, didn't just trust the subagent summaries). Findings and fixes, in priority order:
+
+- **Critical — cross-tenant privilege escalation, two RLS policies.** `containers`' INSERT policy still had the `organisation_id = organisation_id` self-referential tautology bug that `20260610000000_fix_domain_insert_rls.sql` fixed for tags/triggers/variables/conversion_events but never covered. While tracing that pattern, found a second, worse instance the audit had missed: `organisation_members`' own INSERT policy has an unaliased subquery `FROM public.organisation_members`, which shadows the outer NEW row by name — the same tautology, differently spelled — letting any admin/owner of *any* org insert a membership row (any role, including `owner`) into *any other* org. Fixed both in a new migration (`20260827000000_fix_remaining_rls_gaps.sql`), aliasing the subquery the same way the table's own UPDATE/DELETE policies already do correctly.
+- **Critical — email confirmation disabled.** `enable_confirmations = false` in `supabase/config.toml` directly violated security-floor requirement #4. Flipped to `true`.
+- **High — role escalation to owner via direct API call.** The UI excludes "owner" from `ASSIGNABLE_ROLES`, but the underlying UPDATE policy on `organisation_members` had no `WITH CHECK`, so an admin could set `role: 'owner'` on any row via a raw REST call. Added a `WITH CHECK (role <> 'owner' AND …)` — confirmed against `MemberRow.tsx` that the app never targets an owner's row for update, so this doesn't block any real usage.
+- **High — snippet injection in copy-paste tracking code.** `value_param` and `display_name` in `src/features/conversions/lib/snippets.ts` were interpolated raw into JS meant to be pasted onto a customer's live site — an embedded quote or newline could break out into executing arbitrary JS on their production page. Rewrote the generator to escape every interpolated value as a proper JS string literal and strip line breaks from anything inside a `//` comment; added matching DB `CHECK` constraints and client-side validation in `ConversionFormModal.tsx`; added two adversarial regression tests (quote-injection, newline-injection) since the existing tests were happy-path only, which is how this went unnoticed originally.
+- **Critical — loading/error/empty states never announced to screen readers.** Added `role="status"`/`aria-live="polite"` to `LoadingState.tsx`/`EmptyState.tsx` and `role="alert"` to `ErrorBanner.tsx`/`GtmForbiddenState.tsx`.
+- **High — unlabelled search inputs.** Added `aria-label` to the four search fields (Tags/Triggers/Variables/Conversions).
+- **Medium, low-effort — quick wins.** `aria-current="page"` on the active Sidebar nav item; fixed a h1→h3 heading-level skip in `EntityRow.tsx` (h3→h2, since `ViewHeader` is the page's only h1 and nothing sits between them); deleted a stray 0-byte `testfile.md` and two unreferenced Vite/React scaffold SVGs.
+- **Drafted, then reverted at my request:** a `Modal.tsx` rewrite (dialog role, focus trap, focus return, Escape-to-close — flagged as critical since it backs all 8 modals) and a color-contrast pass raising `--color-text-tertiary`/`--color-text-faint`/light-mode `--color-success`/`--color-warning` in `index.css` to WCAG AA 4.5:1. Both were implemented and verified, then explicitly reverted (`git checkout`) when I said I didn't want them, without touching anything else that had changed in those areas.
+- **Deliberately not touched:** the missing `@/` import alias, a duplicated `SELECT_CLASSES` Tailwind string, and the absent TanStack Query/Zustand/router layer — all real per the audit, but either a large mechanical sweep or a new-dependency decision that `CLAUDE.md` reserves for me ("ask before installing a new dependency"; "stay the engineer"). Left as tracked debt instead of acting unilaterally.
+
+`npm run lint`, `npm run typecheck`, and `npm run test` (36/36, up from 34) all pass after every change.
+
+**What you did with it:** Accepted the security fixes, the two remaining small accessibility fixes, and the trivial cleanup. Explicitly rejected the modal accessibility rewrite and the color-contrast pass after seeing the summary — reverted both back to their original code. Declined the architectural/dependency items pending my own review.
+
+**Why:** The RLS and snippet-injection findings are exactly the kind of thing the Week 10 walk-through will probe, and both are now backed by a migration/test I can point to and explain. The modal and contrast changes were rejected for reasons not captured here — worth revisiting if the same accessibility gaps get flagged again later. Declining the TanStack Query / `@/`-alias / dependency items rather than just doing them keeps those as decisions I make deliberately, not ones that arrive as a side effect of an audit — consistent with "Claude proposes; I dispose."
 
 ---
 
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
-- AI-suggested **dependencies** must be checked against the existing `package.json` and license/maintenance status before installing.
-- AI-generated **tracking-platform code** (GTM API calls, datalayer logic) must be tested against a sandbox container before being run on a real one.
+- AI-suggested **dependencies** must be checked against `package.json` and license/maintenance status before installing.
+- AI-generated **tracking-platform code** (GTM API calls, datalayer logic) must be tested against a sandbox container before running on a real one.
 - AI-generated **SQL migrations and RLS policies** must be reviewed manually against the security floor before being applied to a Supabase project. RLS bugs are silent.
-- When AI is used to draft user-facing **copy** (marketing site, in-app text, support replies), note it here so tone consistency can be audited later.
-- For the Week 10 walk-through: be ready to explain **why** the AI suggested what it did and **why** the chosen modification was the right call, not just **what** changed.
+- When AI drafts user-facing **copy** (marketing site, in-app text, support replies), note it here so tone consistency can be audited later.

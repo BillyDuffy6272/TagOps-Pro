@@ -60,4 +60,21 @@ describe('dataLayerConversionSnippet', () => {
     const snippet = dataLayerConversionSnippet(makeEvent({ value_param: 'purchase_value' }))
     expect(snippet).toContain(`'purchase_value': 0,`)
   })
+
+  it('escapes a quote in value_param instead of breaking out of the string literal', () => {
+    const snippet = dataLayerConversionSnippet(makeEvent({ value_param: "x'}); alert(1); ({'x" }))
+    expect(snippet).not.toContain("'x'}); alert(1); ({'x': 0,")
+    expect(snippet).toContain(`\\'`)
+  })
+
+  it('strips a newline in display_name instead of breaking out of the comment', () => {
+    const baselineLineCount = dataLayerConversionSnippet(makeEvent({})).split('\n').length
+    const snippet = dataLayerConversionSnippet(
+      makeEvent({ display_name: 'Purchase\nalert(document.cookie);' })
+    )
+    const lines = snippet.split('\n')
+    expect(lines).toHaveLength(baselineLineCount)
+    expect(lines[0].startsWith('//')).toBe(true)
+    expect(lines[0]).toContain('alert(document.cookie);')
+  })
 })

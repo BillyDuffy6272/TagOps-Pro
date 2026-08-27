@@ -11,6 +11,8 @@ interface Props {
 }
 
 const EVENT_NAME_PATTERN = /^[a-z_][a-z0-9_]*$/
+const VALUE_PARAM_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_]*$/
+const LINE_BREAK_PATTERN = /[\r\n]/
 
 const FIELD_LABEL = 'text-[10.5px] font-semibold tracking-[0.07em] text-text-tertiary uppercase'
 const FIELD_INPUT =
@@ -47,6 +49,16 @@ export default function ConversionFormModal({ container, initial, onClose, onSav
       setError('Conversion label should be the short code from Google Ads (letters, numbers, - and _ only), e.g. AbC-D_efG.')
       return
     }
+    const trimmedValueParam = valueParam.trim()
+    if (trimmedValueParam && !VALUE_PARAM_PATTERN.test(trimmedValueParam)) {
+      setError('Value parameter must start with a letter or underscore and contain only letters, numbers, and underscores.')
+      return
+    }
+    const trimmedDisplayName = displayName.trim()
+    if (LINE_BREAK_PATTERN.test(trimmedDisplayName)) {
+      setError('Display name can’t contain line breaks — this text is embedded directly in the copy-paste tracking snippet.')
+      return
+    }
 
     setSaving(true)
     try {
@@ -54,8 +66,8 @@ export default function ConversionFormModal({ container, initial, onClose, onSav
         container_id: container.id,
         organisation_id: container.organisation_id,
         event_name: trimmedEventName,
-        display_name: displayName.trim() || null,
-        value_param: valueParam.trim() || null,
+        display_name: trimmedDisplayName || null,
+        value_param: trimmedValueParam || null,
         currency: trimmedCurrency,
         is_active: isActive,
         category,

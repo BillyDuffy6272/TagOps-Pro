@@ -47,9 +47,9 @@ export default function EntityRow({
       <div className="flex min-w-0 items-center gap-2.5">
         {leading}
         {badge}
-        <h3 className={`m-0 min-w-0 truncate text-[13.5px] leading-5 font-semibold text-text-primary ${titleMono ? 'font-mono' : ''}`}>
+        <h2 className={`m-0 min-w-0 truncate text-[13.5px] leading-5 font-semibold text-text-primary ${titleMono ? 'font-mono' : ''}`}>
           {title}
-        </h3>
+        </h2>
       </div>
 
       <div className="flex min-w-0 items-center gap-2 sm:justify-end">

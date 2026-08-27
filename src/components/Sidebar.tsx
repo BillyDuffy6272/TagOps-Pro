@@ -46,6 +46,7 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
                   : 'text-text-tertiary hover:bg-overlay/5 hover:text-text-secondary'
               }`}
               onClick={() => setActiveView(item.id)}
+              aria-current={isActive ? 'page' : undefined}
             >
               {isActive && <span className="absolute top-3 bottom-3 left-0 w-0.5 rounded-r-full bg-accent" aria-hidden="true" />}
               <span
@@ -76,6 +77,7 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
             activeView === 'settings' ? 'bg-overlay/9 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-overlay)_3.5%,transparent)]' : 'hover:bg-overlay/5'
           }`}
           onClick={() => setActiveView('settings')}
+          aria-current={activeView === 'settings' ? 'page' : undefined}
         >
           {avatarUrl
             ? <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full ring-1 ring-overlay/15" />
