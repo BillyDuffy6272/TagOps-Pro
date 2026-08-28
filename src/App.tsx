@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
+import { useTheme } from './lib/ThemeContext'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Spinner from './components/Spinner'
@@ -8,6 +9,7 @@ import Spinner from './components/Spinner'
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -25,7 +27,13 @@ export default function App() {
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-canvas">
-        <img src="/favicon.svg" alt="TagOps Pro" width="52" height="52" className="rounded-xl" />
+        <img
+          src={resolvedTheme === 'light' ? '/favicon-light.svg' : '/favicon.svg'}
+          alt="TagOps Pro"
+          width="52"
+          height="52"
+          className="rounded-xl"
+        />
         <Spinner size={22} />
       </div>
     )

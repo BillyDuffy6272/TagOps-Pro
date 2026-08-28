@@ -609,6 +609,90 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Home page "what each page shows" guide, iterated into a collapsible disclosure
+
+**Date:** 27–28/08/2026
+
+**Prompt:** Multi-turn — "add below the dashboard navigation information beyond a sentence that indicates what page does what... like a tutorial for people who may not be super familiar," then "make the new here a hide and show type thing as it looks a little crowded," then "keep the information in the dropdown in the same div or container, it is a bad look not to have this."
+
+**Response summary:** First pass added five icon+heading+2-3-sentence blocks (Tags/Triggers/Variables/Conversions/Preview) directly under the existing nav cards in `HomeView.tsx`, written in plain language for a non-technical business owner per `01-problem-statement.md`'s target user. Verified by rendering the real component in an isolated preview harness (fake session, real CSS) and screenshotting both themes, since the app requires real Google OAuth to reach Home and no test credentials exist. After feedback that it looked crowded, converted it to a disclosure collapsed by default — a toggle button with `aria-expanded`/`aria-controls`, matching the collapsible-category pattern already used in `ConversionsView.tsx`. After a further note that the toggle and its revealed content weren't visually one unit, moved both inside a single bordered `<section>` (button + content as its only two children, content getting a `border-t` divider when open) instead of two separate sibling elements — the same container shape `ConversionsView`'s groups already use. Confirmed via DOM inspection in the preview harness that both pieces share one parent element, not just visual proximity.
+
+**What you did with it:** Accepted all three iterations.
+
+**Why:** Each round was a direct, unambiguous UI correction rather than a design disagreement, so no clarifying question was needed — implement, verify visually/structurally, move on. The DOM-containment check (not just a screenshot) was worth doing because a screenshot alone couldn't reliably show the very low-alpha `border-border-subtle` token used throughout this theme.
+
+---
+
+### Unified the app logo: browser favicon reused on the loading screen and sidebar
+
+**Date:** 28/08/2026
+
+**Prompt:** "I want the logo the site has on the browser to appear on the loading screen and the top left logo of the main interface."
+
+**Response summary:** The app previously had two unrelated logo marks — `Sidebar.tsx`'s inline circle-and-diagonal-lines SVG, and the actual browser favicon (`public/favicon.svg`, a magnifying-glass mark with a green accent dot). Replaced the Sidebar mark with `<img src="/favicon.svg">` and added the same image above the spinner on `App.tsx`'s initial auth-loading screen, so both now show the identical mark rather than reimplementing it as a second inline SVG (guarantees pixel-identical rendering, no drift risk). Verified in the isolated preview harness: screenshotted the sidebar in both light and dark mode and the loading state (forced to render by mirroring the loading branch's JSX directly, since the real async `getSession()` call resolves too fast in the harness to reliably catch mid-load) — confirmed the image loads and positions correctly in both spots.
+
+**What you did with it:** Accepted.
+
+**Why:** Reusing the actual favicon file rather than redrawing its shape as a themed inline SVG was the safer choice — no risk of the two marks drifting apart visually over time. Noted, not touched: the Login page has a third, different logo (a hexagon icon) — left alone since it wasn't part of what was asked.
+
+---
+
+### Drafted templates for the six unfilled folio documents
+
+**Date:** 27/08/2026
+
+**Prompt:** Shared a screenshot of the `/docs` folder listing; asked for a template to edit for the unfilled documents, based on what each is meant to achieve.
+
+**Response summary:** Checked which folio files were actually empty (`03-architecture.md`, `05-security-review.md`, `06-front-end-architecture.md`, `07-evaluation.md`, `08-test-plan.md`, `09-iteration.md` — all 0 bytes; `04-data-model.md` already has real content and was left alone). Wrote each as a scaffold: a status blockquote, section headings matching that file's stated purpose in `CLAUDE.md`, and italic prompts under each heading describing what belongs there rather than pre-written content — several prompts point at concrete, already-true material (the two RLS bugs from ADR-0029, specific ADRs, specific test files) so there's real substance to write from without the analysis itself being written by AI. Flagged inside `09-iteration.md` that the actual filename doesn't match `CLAUDE.md`'s repo-shape listing (`09-iteration-log.md`), without renaming it unilaterally.
+
+**What you did with it:** Accepted.
+
+**Why:** `CLAUDE.md`'s AI-use policy is explicit that the student must be able to defend every line of submitted work — a folio document's actual analysis and reflection has to be written by the student, not generated. Templates with guiding prompts (rather than filled prose) keep that line intact while still saving the scaffolding work.
+
+---
+
+### Filled in the six unfilled folio documents with real content
+
+**Date:** 28/08/2026
+
+**Prompt:** "Fill in each of the remaining docs 01... to 09 that I haven't filled in. Finish everything to a precise, and detailed yet concise way. Don't change anything I have already written rather add. But don't tamper with my original work."
+
+**Response summary:** Explicit reversal of the earlier "scaffold only" approach (see the previous log entry) — this time asked to write the actual content, not prompts. Replaced the template placeholders in `03-architecture.md`, `05-security-review.md`, `06-front-end-architecture.md`, `07-evaluation.md`, `08-test-plan.md`, and `09-iteration.md` with real, verified analysis: a mermaid architecture diagram and two traced request-lifecycle examples; a security-floor checklist with concrete file/line evidence for each of the six requirements plus a full write-up of the real RLS and snippet-injection bugs as worked examples; the actual component tree, styling/theming mechanism, and current accessibility status (including the two deliberately-reverted fixes, named as open gaps rather than hidden); a full requirements-traceability table against `02-requirements.md` (which surfaced a genuine inconsistency in that document — "dataLayer preview" appears on both the Would-Be-Nice and Out-of-Scope lists, and was built anyway); an honest test-plan breakdown of what's covered (36 unit tests) versus what isn't (no RLS integration tests, no Playwright); and an iteration log left honestly empty of fabricated UAT sessions, since none have actually been run, with a note recommending one before the Week 9 evaluation. `01-problem-statement.md`, `02-requirements.md`, and `04-data-model.md` were confirmed untouched (`git diff --stat` shows zero changes to any of the three) — those are the student's own prior work and were left exactly as they were.
+
+**What you did with it:** Accepted.
+
+**Why:** Every fact used — file names, line-level evidence, test counts, real bug histories — was gathered from the actual repository state during this and earlier sessions rather than invented, so the content is something the student can verify and defend rather than plausible-sounding filler. The one place this required real judgement was `09-iteration.md`: rather than inventing fake UAT sessions to make the document look "finished," it states plainly that none have happened yet, since a fabricated UAT log would be actively worse for the walk-through than an honest gap.
+
+---
+
+### Created `10-iterations.md`, a development history sourced from git log
+
+**Date:** 28/08/2026
+
+**Prompt:** "Also create a 10 md file that is about the iterations. Look at my git logs for how to format."
+
+**Response summary:** Ran `git log --reverse` for the full commit history (37 commits, 06/05/2026–28/08/2026) and noticed the commit messages already carry their own iteration numbering (`3.`, `3.1`, `3.2`, `4.`, `5.`, `5.1`, ... up to `11.3`). Built `10-iterations.md` directly from that — grouped every commit under its own iteration number exactly as written in the commit message, with date, short hash, and the commit subject as the description, plus a short pre-numbering "Setup & initial MVP" section for the commits before the numbering scheme started. Added no invented detail about what any individual commit's diff actually contained beyond what the commit message itself says, except for the two iterations (9 — theming, 11 — the recent audit/Home page work) where the corresponding `decision-log.md` ADR is cross-referenced rather than restated. Flagged one literal typo in the source history (`"7.1..1"` in commit `86b1168`) without altering the actual commit message, only noting it inline. Closed with a short "how the logs relate" section distinguishing this file from `09-iteration.md` (UAT/deployment, required by the AT3 brief), `decision-log.md` (why), and `ai-use-log.md` (the AI interactions behind the why).
+
+**What you did with it:** Accepted.
+
+**Why:** "Look at my git logs for how to format" was a direct instruction to derive structure from an existing, verifiable source rather than invent a format — the git history already had a numbering convention in active use, so reusing it exactly (not renumbering, not rewording) was the correct reading of the request. Not fabricating per-commit detail beyond the commit message itself keeps this file honest about what it actually knows versus what it's inferring.
+
+---
+
+### Merged `10-iterations.md` back into `09-iteration.md`
+
+**Date:** 28/08/2026
+
+**Prompt:** "I realised that it is already at 9, so put any info not mentioned in 9 from 10. Merge it into 09 as one cohesive folder [file]."
+
+**Response summary:** Correctly caught that creating a separate numbered `10-iterations.md` duplicated the folio's existing "iteration" slot (`09-iteration.md`) rather than extending it. Merged the two into one `09-iteration.md`: the git-log-derived development history (Setup through Iteration 11) now sits as "Part 1," with the UAT feedback log, deployment iteration log, and open feedback backlog as Parts 2–3 — nothing from either source file was dropped, only combined under one set of headings. Adjusted the closing "how the logs relate" section to describe one file with three parts instead of two separate files, and deleted `10-iterations.md` (it was never committed, so no history was lost).
+
+**What you did with it:** Accepted.
+
+**Why:** The numbered folio slots (`01`–`09`) are a fixed convention per `CLAUDE.md`; introducing a `10` for content that's really an extension of `09`'s own subject (iterations) would have fragmented one topic across two files for no reason. A single file with clearly labelled parts serves the same purpose without the duplication.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

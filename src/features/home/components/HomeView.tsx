@@ -125,10 +125,10 @@ export default function HomeView({ session, setActiveView }: Props) {
         ))}
       </div>
 
-      <section className="mt-10">
+      <section className="mt-10 overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
         <button
           type="button"
-          className="flex w-full items-center justify-between gap-3 rounded-lg border border-border-subtle bg-surface-sunken px-4 py-3.5 text-left transition-colors duration-150 ease-out hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors duration-150 ease-out hover:bg-overlay/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           onClick={() => setGuideOpen(open => !open)}
           aria-expanded={guideOpen}
           aria-controls={guideId}
@@ -147,10 +147,10 @@ export default function HomeView({ session, setActiveView }: Props) {
         </button>
 
         {guideOpen && (
-          <div id={guideId} className="flex flex-col gap-5 px-1 pt-5">
+          <div id={guideId} className="flex flex-col gap-5 border-t border-border-subtle px-4 py-5">
             {SECTIONS.map(section => (
               <article key={section.view} className="flex gap-3.5">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface-sunken text-text-tertiary" aria-hidden="true">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface text-text-tertiary" aria-hidden="true">
                   {section.icon}
                 </span>
                 <div className="min-w-0">

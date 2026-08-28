@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0030 — Home page "what each page shows" guide, made collapsible; unified the app logo
+
+- **Date:** 2026-08-28
+- **Status:** Accepted
+- **Context:** Asked for a plain-language explainer on the Home page for each of Tags/Triggers/Variables/Conversions/Preview, aimed at business owners unfamiliar with GTM/GA4 terms — directly answers a "would be nice" item already in `02-requirements.md` ("Home page that shows all what the different pages refer to"). First cut added five icon+heading+paragraph blocks directly under the existing nav card list; feedback was that it read as crowded and probably unnecessary for a returning user who already knows the app. Separately, asked for the app's browser favicon (a magnifying-glass mark, `public/favicon.svg`) to appear as the actual in-app logo rather than the sidebar's previous unrelated inline mark, on both the initial auth-loading screen and the sidebar's top-left brand slot.
+- **Decision:** Rebuilt the guide as a single disclosure — one bordered container (`overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken`, matching the pattern already used for `ConversionsView`'s collapsible category groups) holding a toggle button and, when expanded, the five explainer entries inside the *same* container with a `border-t` divider, collapsed by default. Uses `aria-expanded`/`aria-controls` (via `useId`) rather than just visual state. For the logo: replaced `Sidebar.tsx`'s old inline SVG mark with `<img src="/favicon.svg">`, and added the same image above the spinner on `App.tsx`'s initial loading screen — so the browser tab icon, the loading screen, and the sidebar now show one consistent mark instead of two different ones (a third, distinct mark still exists on the Login page, deliberately left alone — out of scope for this request).
+- **Consequences:** Verified via an isolated preview harness (real components, fake session/props, no live Supabase/GTM needed) rather than guessing — screenshotted the collapsed/expanded states and the logo in both themes, and confirmed via DOM inspection that the toggle button and revealed content are both children of the one bordered `<section>`. `npm run lint`/`typecheck`/`test` all pass throughout (still 36/36 — no new tests needed, no logic under test changed). The Login page's separate hexagon logo is a known follow-up if full brand consistency is wanted later.
+
+---
+
 ## ADR-0029 — Full-repo audit found and fixed two RLS privilege-escalation bugs and a snippet-injection gap
 
 - **Date:** 2026-08-27

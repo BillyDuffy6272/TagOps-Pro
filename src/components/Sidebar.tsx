@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js'
 import type { ActiveView } from './AppShell'
 import { supabase } from '../lib/supabase'
+import { useTheme } from '../lib/ThemeContext'
 import { NAV_ITEMS } from './navItems'
 
 interface Props {
@@ -13,11 +14,13 @@ export default function Sidebar({ activeView, setActiveView, session }: Props) {
   const user = session.user
   const userName = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? 'User'
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined
+  const { resolvedTheme } = useTheme()
+  const logoSrc = resolvedTheme === 'light' ? '/favicon-light.svg' : '/favicon.svg'
 
   return (
     <aside className="flex h-screen flex-col overflow-hidden border-r border-border bg-surface-nav shadow-[inset_-1px_0_0_color-mix(in_srgb,var(--color-overlay)_2%,transparent),4px_0_28px_-12px_rgba(0,0,0,0.65)]">
       <div className="flex shrink-0 items-center gap-3 px-4 pt-4 pb-4">
-        <img src="/favicon.svg" alt="" width="26" height="26" className="shrink-0 rounded-md ring-1 ring-overlay/10" />
+        <img src={logoSrc} alt="" width="26" height="26" className="shrink-0 rounded-md ring-1 ring-overlay/10" />
         <div className="min-w-0">
           <div className="truncate text-[15px] font-semibold text-text-primary">TagOps Pro</div>
           <div className="truncate text-[11.5px] font-medium text-text-faint">Tracking workspace</div>
