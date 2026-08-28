@@ -1,6 +1,6 @@
 # 09 - Iteration Log
 
-A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is current through commit `7ec8990` (28/08/2026) and should be extended the same way (grouped under the next iteration number) as work continues.
+A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is current through commit `63fcdea` (28/08/2026) and should be extended the same way (grouped under the next iteration number) as work continues.
 
 **Naming note (resolved 28/08/2026):** This file was originally `09-iteration.md`, mismatching `CLAUDE.md`'s required repo shape and `README.md`'s own folio index, both of which named it `09-iteration-log.md`. Renamed to match — see `decision-log.md`.
 
@@ -159,6 +159,22 @@ Investigating a real Google Ads API integration (ADR-0037) surfaced a developer-
 
 `tests/integration/rls.test.ts` (7 tests targeting the ADR-0029/0033 cross-tenant bug class directly) and `tests/smoke/landing-login.spec.ts` (3 Playwright tests, actually run and passing). The two are **not** equally verified — the smoke suite was executed against a real build; the RLS suite was written directly against the real schema/policies but has never run, since the environment that wrote it had no Docker for `supabase start`. See `decision-log.md` ADR-0040 and `08-test-plan.md`.
 
+### Iteration 18 — Iteration log catch-up
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `b50ea25` | 18. Catch up iteration log through commit 7ec8990 |
+
+This file's own Part 1 had stalled at Iteration 11 despite six more commits since — added Iterations 11.4 through 17 above, each cross-referenced to its `decision-log.md` ADR, including flagging that `17ea1a4` and `b58c338` share the same self-assigned "16." number rather than silently picking one.
+
+### Iteration 19 — UAT feedback logged
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `63fcdea` | 19. Log real UAT feedback from the class testing session |
+
+Filled in Part 2 below with the 24/08/2026 class testing session, each feedback item connected to the real work that followed it.
+
 ---
 
 ## Part 2 — UAT feedback log
@@ -184,7 +200,15 @@ Distinct from Part 1 above: this table is for incidents that only surfaced once 
 
 ## Open feedback backlog
 
-_(empty — nothing has been reported yet that isn't already captured as a known gap in `07-evaluation.md` or `08-test-plan.md`)_
+Every UAT feedback item from Part 2 above has a real action taken against it — none are left open. What follows instead is every other currently-open item across the folio, consolidated into one punch list rather than left scattered — each still has its full detail at the linked source, this is just the "what's actually left" view:
+
+- **Run `tests/integration/rls.test.ts` for the first time.** Written against the real schema/policies (ADR-0040) but never executed — needs `supabase start` (Docker) on a machine that has it. Highest-priority item; see `08-test-plan.md`.
+- **Extend Playwright past the signed-out flow.** `tests/smoke/` only covers Landing/Login today; the authenticated views (Tags, Settings, etc.) would need a captured `storageState` from a real sign-in. See `08-test-plan.md`.
+- **Two accessibility fixes exist but were deliberately reverted, not abandoned.** A `Modal.tsx` focus-trap/dialog-semantics fix and a color-contrast token fix were both built and verified during the 27/08/2026 audit, then explicitly reverted at the project owner's request. Re-apply if full compliance is wanted before the walk-through. See `06-front-end-architecture.md`.
+- **TanStack Query refactor.** The same fetch-orchestration shape (`setSyncing` → fetch → catch → `finally`) is duplicated across four views. Named in `CLAUDE.md` as the intended fix; not yet done. See `07-evaluation.md`.
+- **No Content-Security-Policy.** Beyond the required security floor, but cheap defense-in-depth still missing. See `05-security-review.md`.
+- **No rate limit on `redeem_invite_code()`.** Low real risk given the code's entropy, but no dedicated throttle exists. See `05-security-review.md`.
+- **`decision-log.md` vs. the AT3 brief's `decisions.md`.** Filename kept as-is, explicitly pending teacher confirmation — not something to resolve unilaterally.
 
 ---
 
@@ -192,5 +216,5 @@ _(empty — nothing has been reported yet that isn't already captured as a known
 
 - **This file, Part 1** — the literal sequence of what was built and when, sourced from `git log`.
 - **This file, Parts 2–3** — outside feedback and live-deployment events, as the AT3 brief requires.
-- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040).
+- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040). Iterations 18–19 are documentation-only catch-up work (this file and its UAT log) and don't have their own ADR — see their `ai-use-log.md` entries instead.
 - **`ai-use-log.md`** — the substantive Claude Code interactions behind that work, per the AT3 AI Use Policy.
