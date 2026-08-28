@@ -1,6 +1,6 @@
 # 09 - Iteration Log
 
-A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is fixed as of 28/08/2026 and should be extended the same way (grouped under the next iteration number) as work continues.
+A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is current through commit `7ec8990` (28/08/2026) and should be extended the same way (grouped under the next iteration number) as work continues.
 
 **Naming note (resolved 28/08/2026):** This file was originally `09-iteration.md`, mismatching `CLAUDE.md`'s required repo shape and `README.md`'s own folio index, both of which named it `09-iteration-log.md`. Renamed to match — see `decision-log.md`.
 
@@ -104,8 +104,60 @@ Documented in full in `decision-log.md` ADR-0027: token-level theming via CSS cu
 | 27/08/2026 | `a52de19` | 11.1 — Reattempt at publishing the changes made in 11 |
 | 28/08/2026 | `9c444dd` | 11.2 — Small tweaks |
 | 28/08/2026 | `0e5a90c` | 11.3 — Home page tweak |
+| 28/08/2026 | `a325f87` | 11.4 — Icon colour fix |
+| 28/08/2026 | `67661db` | 11.5 — User role access updates |
+| 28/08/2026 | `8b5b92b` | 11.5.1 — Reattempt at updating access for user roles |
 
-This is the iteration during which the full security/accessibility/code-quality audit was run (two RLS bugs and a snippet-injection bug found and fixed, several accessibility fixes applied), and the Home page's "what each page shows" guide was added and refined into its current collapsible form — see `decision-log.md` ADR-0029 and ADR-0030, and the corresponding entries in `ai-use-log.md`, for the full detail behind these commits.
+This is the iteration during which the full security/accessibility/code-quality audit was run (two RLS bugs and a snippet-injection bug found and fixed, several accessibility fixes applied), and the Home page's "what each page shows" guide was added and refined into its current collapsible form — see `decision-log.md` ADR-0029 and ADR-0030, and the corresponding entries in `ai-use-log.md`, for the full detail behind these commits. The role-access rows (`67661db`/`8b5b92b`) correspond to ADR-0031 — Editor/Viewer roles genuinely differ now, enforced at the database, with a request-access flow for viewers; the icon-colour row (`a325f87`) corresponds to ADR-0032.
+
+### Iteration 12 — Landing page
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `1a12402` | 12. Landing page |
+
+A marketing/landing page shown to signed-out visitors before the Google sign-in screen — see `decision-log.md` ADR-0034.
+
+### Iteration 13 — Real firing verification
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `6d77912` | 13. Real firing verification |
+
+A console-paste snippet that confirmed a conversion event actually fired on a business owner's real site, as opposed to Preview mode's local simulation — see `decision-log.md` ADR-0035. Removed entirely in Iteration 15 below, along with the rest of conversion-event tracking.
+
+### Iteration 14 — Finishing touches
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `e72c447` | 14. Finishing touches |
+
+Reworded the "Link Google Ads" UI (a button, a status dot, "Linked"/"Not linked" labels) to describe what it actually did — a manually-typed conversion ID field, not a real Google Ads OAuth connection — see `decision-log.md` ADR-0036.
+
+### Iteration 15 — Removing conversion-event tracking
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `d07b751` | 15. Removing conversions |
+
+Investigating a real Google Ads API integration (ADR-0037) surfaced a developer-token approval process outside anyone's control, with no guaranteed timeline — too complicated and too risky this close to the fixed deadline. Conversion-event tracking was removed entirely: `src/features/conversions/`, its database tables (pushed live), and every doc reference — see `decision-log.md` ADR-0038.
+
+### Iteration 16 — Post-removal cleanup
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `17ea1a4` | 16. More finishing touches |
+| 28/08/2026 | `b58c338` | 16. Post-removal cleanup: rebuild request-access UI, fix stale docs |
+
+> Both commits carry the same self-assigned iteration number ("16.") — not two colliding pieces of work, but one: `17ea1a4` is just the `09-iteration.md` → `09-iteration-log.md` rename, committed a moment before the rest of the same cleanup pass (rebuilding the request-access UI orphaned by Iteration 15's removal, fixing a stale `README.md` status section, adding `.env.example`) landed in `b58c338`. See `decision-log.md` ADR-0039.
+
+### Iteration 17 — RLS integration and Playwright smoke test suites
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `7ec8990` | 17. Add RLS integration and Playwright smoke test suites |
+
+`tests/integration/rls.test.ts` (7 tests targeting the ADR-0029/0033 cross-tenant bug class directly) and `tests/smoke/landing-login.spec.ts` (3 Playwright tests, actually run and passing). The two are **not** equally verified — the smoke suite was executed against a real build; the RLS suite was written directly against the real schema/policies but has never run, since the environment that wrote it had no Docker for `supabase start`. See `decision-log.md` ADR-0040 and `08-test-plan.md`.
 
 ---
 
@@ -135,5 +187,5 @@ _(empty — nothing has been reported yet that isn't already captured as a known
 
 - **This file, Part 1** — the literal sequence of what was built and when, sourced from `git log`.
 - **This file, Parts 2–3** — outside feedback and live-deployment events, as the AT3 brief requires.
-- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; several iterations above (9, 11) correspond directly to a numbered ADR.
+- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040).
 - **`ai-use-log.md`** — the substantive Claude Code interactions behind that work, per the AT3 AI Use Policy.
