@@ -204,7 +204,7 @@ export default function ConversionFormModal({ container, initial, onClose, onSav
             </div>
           ) : (
             <div className="rounded-md border border-dashed border-border-subtle px-2.5 py-2 text-[12px] text-text-faint">
-              Not set for this container — use the "Link Google Ads" button on the Conversions screen.
+              Not set for this container — use the "Set Google Ads ID" button on the Conversions screen.
             </div>
           )}
         </div>

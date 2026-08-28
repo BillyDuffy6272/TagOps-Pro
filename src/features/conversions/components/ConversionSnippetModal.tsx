@@ -51,7 +51,7 @@ export default function ConversionSnippetModal({ event, onClose }: Props) {
 
       {missingAdsSetup && (
         <div className="rounded-md border border-warning/25 bg-warning/10 px-3.5 py-2.5 text-[12.5px] leading-relaxed text-warning">
-          This event isn't fully linked to Google Ads yet — the snippet below uses placeholders.
+          This event's Google Ads conversion ID and label aren't fully set yet — the snippet below uses placeholders.
           Set the container's conversion ID and this event's conversion label to generate real values.
         </div>
       )}

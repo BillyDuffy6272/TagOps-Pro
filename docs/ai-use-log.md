@@ -777,6 +777,34 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Reworded misleading "Link Google Ads" UI copy
+
+**Date:** 28/08/2026
+
+**Prompt:** Carried over from a prior audit turn: flagged that the "Link Google Ads" button, its status dot, and "Linked"/"Not linked" labels imply a real Google Ads OAuth connection, when the field is actually just a plain text ID typed in and saved to the container row. Asked whether to reword for accuracy or build a real OAuth connection instead.
+
+**Response summary:** Recommended rewording rather than building OAuth — a real Google Ads connection needs a developer-token application, a token-refresh backend, and consent-screen verification, none of which fits the fixed 9-week AT3 timeline or the mandated stack. Changed "Link Google Ads" → "Set Google Ads ID" and "Linked to Google Ads" → "Google Ads ID set" in `ConversionsView.tsx`, "Not linked" → "No Google Ads ID" in `ConversionTableRow.tsx`, the snippet modal's "isn't fully linked" phrasing in `ConversionSnippetModal.tsx`, and the stale button-name reference in `ConversionFormModal.tsx`. Left `GoogleAdsSettingsModal.tsx`'s own copy as-is since it was already accurate.
+
+**What you did with it:** Accepted.
+
+**Why:** Wording-only fix for UI that was materially misleading about what the feature does — no scope or architecture change, so no separate approval needed beyond the ADR recorded for it (ADR-0036). `npm run lint`/`typecheck` pass.
+
+---
+
+### Clarified conversion events aren't Google Ads data, then scoped a real Ads API integration
+
+**Date:** 28/08/2026
+
+**Prompt:** After the "Link Google Ads" rewording, asked why conversion events weren't working without a Google Ads API connection — turned out to be an expectation that conversion events would show real data pulled from Google Ads, not the locally-defined record + generated-snippet flow the requirements doc actually specified. Then: "can you fix it so that conversion events show the conversion events and data from Google Ads?"
+
+**Response summary:** Explained the existing architecture first (snippet generation, no live Ads data, matches `02-requirements.md:11` as written) before treating it as a scope change. Checked how the app's existing GTM integration handles Google OAuth (`Login.tsx`, `session.provider_token` read directly client-side in `GtmContext.tsx`/`lib/gtm.ts`) to judge feasibility, and flagged that the Google Ads API — unlike GTM/GA4 — needs a separately-issued developer token reviewed by Google, plus a server-side proxy for the API calls (can't safely hold the developer token or refresh secrets client-side). Presented three options (build against a Google test account now, apply for real access and build once approved, or drop live-data scope) rather than picking one unilaterally, since it's a real product-scope decision with external-approval risk this close to the deadline.
+
+**What you did with it:** Accepted "apply for real access now, build once approved" — recorded as ADR-0037. No integration code written yet; the developer-token application is an external step only doable with a real Google Ads Manager account, not something AI can complete.
+
+**Why:** Building an Edge Function + Ads API client against an API contract with no live token to test against would break the project's established pattern of verifying every integration against a real endpoint before calling it done (ADR-0033, ADR-0035). Also flagged, ahead of time rather than after breaking something: adding the `adwords` restricted scope to the existing login flow risks locking out real users not allow-listed as Google Cloud test users, so that needs deliberate design once the token exists, not a one-line scope bolt-on.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

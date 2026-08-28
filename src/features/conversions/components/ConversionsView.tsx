@@ -239,7 +239,7 @@ export default function ConversionsView({ session }: Props) {
             }
           >
             <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${adsId ? 'bg-success' : 'bg-warning'}`} aria-hidden="true" />
-            {adsId ?? 'Link Google Ads'}
+            {adsId ?? 'Set Google Ads ID'}
           </button>
         </div>
       </ContainerPicker>
@@ -253,7 +253,7 @@ export default function ConversionsView({ session }: Props) {
               stats={[
                 { value: events.length, label: 'Total' },
                 { value: activeCount, label: 'Active', tone: 'success' },
-                { value: linkedCount, label: 'Linked to Google Ads', tone: linkedCount === events.length && events.length > 0 ? 'success' : 'warning' },
+                { value: linkedCount, label: 'Google Ads ID set', tone: linkedCount === events.length && events.length > 0 ? 'success' : 'warning' },
               ]}
             />
           </div>

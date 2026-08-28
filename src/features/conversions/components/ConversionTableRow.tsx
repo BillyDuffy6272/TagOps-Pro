@@ -45,7 +45,7 @@ export default function ConversionTableRow({ event, canWrite, onEdit, onDelete, 
         {event.containerGoogleAdsConversionId && event.conversion_label ? (
           <GoogleAdsIdBadge conversionId={event.containerGoogleAdsConversionId} label={event.conversion_label} />
         ) : (
-          <span className="text-[11.5px] text-text-faint">Not linked</span>
+          <span className="text-[11.5px] text-text-faint">No Google Ads ID</span>
         )}
       </td>
       <td className="px-4 py-3 align-top">
