@@ -861,6 +861,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Closed the self-referential gap in the iteration log, populated the backlog
+
+**Date:** 28/08/2026
+
+**Prompt:** "FIll in in 09 my developmemt interation log based on decisions and when i published and gt commited. In adddition to filling in the open fedeback backlog"
+
+**Response summary:** Checked `git log` first rather than assuming the previous catch-up (Iteration 18) was complete — it wasn't: the commit that added Iterations 12–17 to Part 1, and the one after it that logged UAT feedback, had never added rows for *themselves* (`b50ea25`, `63fcdea`). Added those as Iterations 18–19, each describing what it did to the file. Then populated the "Open feedback backlog" section, previously an explicit placeholder — read back through everything flagged as open across `05-security-review.md`, `06-front-end-architecture.md`, `07-evaluation.md`, and `08-test-plan.md` this session and consolidated it into one punch list (unrun RLS suite, signed-out-only smoke coverage, the two deliberately-reverted accessibility fixes, the TanStack Query refactor, CSP, invite-code rate limiting, the `decisions.md` filename question), each linked back to its full detail rather than duplicated prose. Explicitly noted UAT itself has nothing open — every Part 2 feedback item already has a real action taken against it.
+
+**What you did with it:** Accepted.
+
+**Why:** The "18/19 don't reference themselves" gap wouldn't have been visible without actually re-running `git log` rather than trusting the previous entry's own claim of being caught up — a reminder that a catch-up commit is itself a new commit, and needs to eventually get its own row rather than being exempt because it was the one doing the documenting.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
