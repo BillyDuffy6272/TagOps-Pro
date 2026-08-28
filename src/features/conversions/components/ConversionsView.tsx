@@ -2,9 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { useGtm } from '../../../lib/GtmContext'
 import {
+  getMyLatestAccessRequest,
+  getMyMembership,
+  requestAccess,
+  type AccessRequest,
+  type MyMembership,
+} from '../../../lib/organisation'
+import {
   deleteConversionEvent,
   ensureContainerForGtmContainer,
-  getCurrentOrganisationId,
   listConversionEventsForContainer,
 } from '../api/conversions'
 import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type ConversionEventWithContainer } from '../types'
@@ -31,12 +37,17 @@ interface Props {
 export default function ConversionsView({ session }: Props) {
   const { loadingAccounts, containers, selectedGtmContainer, gtmForbidden, error: contextError, clearError, refreshKey } = useGtm()
 
-  const [organisationId, setOrganisationId] = useState<string | null>(null)
+  const [membership, setMembership] = useState<MyMembership | null>(null)
+  const [myRequest, setMyRequest] = useState<AccessRequest | null>(null)
+  const [requesting, setRequesting] = useState(false)
   const [resolvedContainer, setResolvedContainer] = useState<Container | null>(null)
   const [events, setEvents] = useState<ConversionEventWithContainer[]>([])
 
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const organisationId = membership?.organisationId ?? null
+  const canWrite = membership !== null && membership.role !== 'viewer'
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [search, setSearch] = useState('')
@@ -49,10 +60,29 @@ export default function ConversionsView({ session }: Props) {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ConversionCategory>>(new Set())
 
   useEffect(() => {
-    getCurrentOrganisationId(session.user.id)
-      .then(setOrganisationId)
+    getMyMembership(session.user.id)
+      .then(my => {
+        setMembership(my)
+        if (my.role === 'viewer') {
+          getMyLatestAccessRequest(my.organisationId, session.user.id).then(setMyRequest).catch(() => {})
+        }
+      })
       .catch(e => setError(e instanceof Error ? e.message : 'Failed to resolve organisation'))
   }, [session.user.id])
+
+  async function handleRequestAccess() {
+    if (!organisationId) return
+    setRequesting(true)
+    setError(null)
+    try {
+      const created = await requestAccess(organisationId, session.user.id, null)
+      setMyRequest(created)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to send your access request.')
+    } finally {
+      setRequesting(false)
+    }
+  }
 
   const loadConversions = useCallback(async () => {
     if (!organisationId || !selectedGtmContainer) return
@@ -152,16 +182,39 @@ export default function ConversionsView({ session }: Props) {
         title="Conversions"
         subtitle="GA4 and Google Ads conversion events, by container"
         action={
-          <button
-            type="button"
-            className="rounded-md border border-overlay/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-overlay/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
-            onClick={openCreateModal}
-            disabled={!resolvedContainer}
-          >
-            + New conversion event
-          </button>
+          canWrite ? (
+            <button
+              type="button"
+              className="rounded-md border border-overlay/10 bg-surface-raised px-4 py-1.5 text-[13px] font-semibold whitespace-nowrap text-text-primary transition-colors duration-150 ease-out hover:bg-overlay/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
+              onClick={openCreateModal}
+              disabled={!resolvedContainer}
+            >
+              + New conversion event
+            </button>
+          ) : myRequest?.status === 'pending' ? (
+            <span className="rounded-md border border-border-subtle bg-surface-sunken px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap text-text-tertiary">
+              Access request pending
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="rounded-md border border-border bg-transparent px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap text-text-secondary transition-colors duration-150 ease-out hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={handleRequestAccess}
+              disabled={requesting}
+              title="You have read-only access. Send an owner or admin a request to become an editor."
+            >
+              {requesting ? 'Sending…' : 'Request edit access'}
+            </button>
+          )
         }
       />
+
+      {!canWrite && myRequest?.status !== 'pending' && (
+        <p className="m-0 mb-4 text-[12.5px] text-text-faint">
+          You have read-only access to this organisation.
+          {myRequest?.status === 'dismissed' && ' Your last request for edit access was declined — you can send another.'}
+        </p>
+      )}
 
       {shownError && <ErrorBanner message={shownError} onDismiss={() => { setError(null); clearError() }} />}
 
@@ -176,8 +229,12 @@ export default function ConversionsView({ session }: Props) {
                 : 'border-warning/25 bg-warning/10 text-warning hover:border-warning/40'
             }`}
             onClick={() => setAdsSettingsOpen(true)}
-            disabled={!resolvedContainer}
-            title={adsId ? 'Edit the Google Ads conversion ID for this container' : 'Set the Google Ads conversion ID for this container'}
+            disabled={!resolvedContainer || !canWrite}
+            title={
+              !canWrite
+                ? 'You have read-only access — ask an owner or admin to change this.'
+                : adsId ? 'Edit the Google Ads conversion ID for this container' : 'Set the Google Ads conversion ID for this container'
+            }
           >
             <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${adsId ? 'bg-success' : 'bg-warning'}`} aria-hidden="true" />
             {adsId ?? 'Link Google Ads'}
@@ -266,6 +323,7 @@ export default function ConversionsView({ session }: Props) {
                               <ConversionTableRow
                                 key={event.id}
                                 event={event}
+                                canWrite={canWrite}
                                 onEdit={() => openEditModal(event)}
                                 onDelete={() => handleDelete(event)}
                                 onSnippet={() => setSnippetEvent(event)}

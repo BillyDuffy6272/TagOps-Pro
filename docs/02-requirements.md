@@ -20,6 +20,7 @@
 - All initial data load into the website after linking 
 - Readable + easily viewable text 
 - Be able to see if the account is properly linked to the Google Account and accurately showing the information in their Google Account
+- Different user roles to limit + provide access to the Organisation accordingly for each user 
 
 ---
 ### WOULD BE NICE / Extras 

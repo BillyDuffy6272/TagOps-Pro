@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { ActiveView } from '../../../components/AppShell'
-import { getMyMembership, type MyMembership } from '../../../lib/organisation'
+import { getMyMembership, listPendingAccessRequests, resolveAccessRequest, type AccessRequestWithUser, type MyMembership } from '../../../lib/organisation'
 import { useTheme, type Theme } from '../../../lib/ThemeContext'
 import { getOrganisation, listOrganisationMembers, updateOrganisationName } from '../api/settings'
 import type { OrganisationMemberWithUser, OrganisationSummary } from '../types'
@@ -60,6 +60,8 @@ export default function SettingsView({ session, setActiveView }: Props) {
   const [membership, setMembership] = useState<MyMembership | null>(null)
   const [organisation, setOrganisation] = useState<OrganisationSummary | null>(null)
   const [members, setMembers] = useState<OrganisationMemberWithUser[]>([])
+  const [accessRequests, setAccessRequests] = useState<AccessRequestWithUser[]>([])
+  const [resolvingRequestId, setResolvingRequestId] = useState<string | null>(null)
 
   const [orgNameDraft, setOrgNameDraft] = useState('')
   const [savingName, setSavingName] = useState(false)
@@ -74,13 +76,16 @@ export default function SettingsView({ session, setActiveView }: Props) {
     try {
       const my = await getMyMembership(user.id)
       setMembership(my)
-      const [org, memberList] = await Promise.all([
+      const canManage = my.role === 'owner' || my.role === 'admin'
+      const [org, memberList, pending] = await Promise.all([
         getOrganisation(my.organisationId),
         listOrganisationMembers(my.organisationId),
+        canManage ? listPendingAccessRequests(my.organisationId) : Promise.resolve([]),
       ])
       setOrganisation(org)
       setOrgNameDraft(org.name)
       setMembers(memberList)
+      setAccessRequests(pending)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load your settings.')
     } finally {
@@ -92,6 +97,20 @@ export default function SettingsView({ session, setActiveView }: Props) {
 
   const canManageTeam = membership?.role === 'owner' || membership?.role === 'admin'
   const isOwner = membership?.role === 'owner'
+
+  async function handleResolveRequest(request: AccessRequestWithUser, decision: 'approved' | 'dismissed') {
+    setResolvingRequestId(request.id)
+    setError(null)
+    try {
+      const member = members.find(m => m.user_id === request.user_id)
+      await resolveAccessRequest(request.id, member?.id ?? null, decision, user.id)
+      await load()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to update that request.')
+    } finally {
+      setResolvingRequestId(null)
+    }
+  }
 
   async function handleSaveName(e: FormEvent) {
     e.preventDefault()
@@ -211,6 +230,47 @@ export default function SettingsView({ session, setActiveView }: Props) {
               )}
             </form>
           </section>
+
+          {canManageTeam && (
+            <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
+              <div className="border-b border-border-subtle px-4 py-3">
+                <h2 className={SECTION_TITLE}>Access requests {accessRequests.length > 0 && `(${accessRequests.length})`}</h2>
+              </div>
+
+              {accessRequests.length === 0 ? (
+                <EmptyState message="No pending requests. A viewer can ask to become an editor from the Conversions page." />
+              ) : (
+                accessRequests.map(request => (
+                  <div key={request.id} className="flex flex-wrap items-center gap-3 border-t border-border-subtle px-4 py-3 first:border-t-0">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[13px] font-semibold text-text-primary">
+                        {request.displayName ?? request.email}
+                      </div>
+                      <div className="truncate text-[11.5px] text-text-tertiary">
+                        Wants editor access{request.message ? ` — “${request.message}”` : ''}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-md bg-accent px-3 py-1.5 text-[12.5px] font-semibold text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={resolvingRequestId === request.id}
+                      onClick={() => handleResolveRequest(request, 'approved')}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-md border border-border bg-transparent px-3 py-1.5 text-[12.5px] font-semibold text-text-secondary transition-colors duration-150 ease-out hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={resolvingRequestId === request.id}
+                      onClick={() => handleResolveRequest(request, 'dismissed')}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                ))
+              )}
+            </section>
+          )}
 
           <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
             <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3">

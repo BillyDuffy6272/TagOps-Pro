@@ -693,6 +693,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Made editor and viewer roles actually different: role-gated UI + a request-access feature
+
+**Date:** 28/08/2026
+
+**Prompt:** "What is the difference between editor and viewer permissions? Can you make a sizeable difference between them, like viewer can request access to the preview for example. Just there is no difference to the roles currently." Follow-up, after being offered a choice of scope: "That, plus a real 'Request access' feature."
+
+**Response summary:** Investigated first rather than assuming the roles were unimplemented — the database already enforces the boundary correctly (every write RLS policy excludes `viewer`), but no frontend component ever checked role before showing write controls, so a viewer saw identical UI to an editor and only found out they couldn't act when a write silently failed against RLS. Asked which scope to build (UI-only fix vs. UI fix + a real request/approve feature) since the second option meant a new table and RLS policies, not just tightening existing screens — a genuinely bigger, more permanent addition. Given the go-ahead for both: (1) `ConversionsView`/`ConversionTableRow` now resolve and check the caller's actual role, hiding Create/Edit/Delete/Link-Google-Ads for viewers (Tags/Triggers/Variables needed no change — they're read-only for every role by design, since GTM data is never written from this app); (2) a new `access_requests` table + migration lets a viewer request to become an editor, with RLS restricting who can insert/see/resolve requests; (3) approving a request in the new "Access requests" section of `SettingsView` actually promotes the member's role, not just marks a status. Verified the one pure-presentational piece (`ConversionTableRow`'s `canWrite` prop) with a live screenshot and DOM check in the preview harness — Edit/Delete present only when `canWrite`, the read-only "Code" button always present; the rest was verified via code review, `lint`, `typecheck`, and the existing test suite, since the full flow needs a real two-user Supabase session to exercise live.
+
+**What you did with it:** Accepted.
+
+**Why:** The clarifying question before building was worth asking because the two options genuinely differed in kind, not just effort — one was tightening existing UI to match a boundary that already existed, the other was a new piece of product surface (a request/approval workflow) that's harder to undo once shipped. Building the smaller fix first and folding the bigger one in only after confirmation kept the response proportionate to what was actually asked, until it was clear more was wanted.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

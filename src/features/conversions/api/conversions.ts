@@ -1,5 +1,5 @@
 import { supabase, toError } from '../../../lib/supabase'
-import { generateDisplayId, getMyMembership } from '../../../lib/organisation'
+import { generateDisplayId } from '../../../lib/organisation'
 import type {
   Container,
   ConversionEvent,
@@ -23,10 +23,6 @@ function mapConversionEventRow(
 // that creates a containers row for a real (non-seeded) organisation, so this resolves
 // the Supabase row backing whichever GTM container the user has picked, creating it on
 // first use rather than requiring a separate "add container" step.
-export async function getCurrentOrganisationId(userId: string): Promise<string> {
-  return (await getMyMembership(userId)).organisationId
-}
-
 export async function ensureContainerForGtmContainer(
   organisationId: string,
   gtmContainer: { name: string; publicId: string }

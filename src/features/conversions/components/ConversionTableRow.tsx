@@ -3,6 +3,7 @@ import type { ConversionEventWithContainer } from '../types'
 
 interface Props {
   event: ConversionEventWithContainer
+  canWrite: boolean
   onEdit: () => void
   onDelete: () => void
   onSnippet: () => void
@@ -31,7 +32,7 @@ function GoogleAdsIdBadge({ conversionId, label }: { conversionId: string; label
   )
 }
 
-export default function ConversionTableRow({ event, onEdit, onDelete, onSnippet }: Props) {
+export default function ConversionTableRow({ event, canWrite, onEdit, onDelete, onSnippet }: Props) {
   return (
     <tr className={`border-t border-border-subtle transition-colors duration-150 ease-out hover:bg-overlay/5 ${event.is_active ? '' : 'opacity-55'}`}>
       <td className="px-4 py-3 align-top">
@@ -74,20 +75,24 @@ export default function ConversionTableRow({ event, onEdit, onDelete, onSnippet 
           >
             Code
           </button>
-          <button
-            type="button"
-            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            onClick={onEdit}
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-danger-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            onClick={onDelete}
-          >
-            Delete
-          </button>
+          {canWrite && (
+            <>
+              <button
+                type="button"
+                className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                onClick={onEdit}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className="rounded px-1.5 py-0.5 text-[11.5px] font-medium text-text-tertiary transition-colors duration-150 ease-out hover:bg-overlay/6 hover:text-danger-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                onClick={onDelete}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </td>
     </tr>

@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_requests: {
+        Row: {
+          id: string
+          display_id: string
+          organisation_id: string
+          user_id: string
+          requested_role: string
+          message: string | null
+          status: "pending" | "approved" | "dismissed"
+          created_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          organisation_id: string
+          user_id: string
+          requested_role?: string
+          message?: string | null
+          status?: "pending" | "approved" | "dismissed"
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          organisation_id?: string
+          user_id?: string
+          requested_role?: string
+          message?: string | null
+          status?: "pending" | "approved" | "dismissed"
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           id: string

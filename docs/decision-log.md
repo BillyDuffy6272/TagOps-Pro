@@ -16,6 +16,19 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0031 — Editor vs. viewer actually differ now: role-gated write UI + a request-access flow
+
+- **Date:** 2026-08-28
+- **Status:** Accepted
+- **Context:** Asked why editor and viewer had no practical difference. Investigation found the database already enforces the boundary correctly — every write policy on `tags`/`triggers`/`variables`/`conversion_events`/`containers` requires `role in ('owner', 'admin', 'editor')`, excluding `viewer` — but no component in `src/` ever checked a member's role before showing write UI. `ConversionsView.tsx` (the one Supabase-backed, genuinely writable feature; Tags/Triggers/Variables are read-only from GTM for every role by design, so there's nothing to gate there) showed "New conversion event," Edit, Delete, and "Link Google Ads" to every member regardless of role. A viewer would see the same buttons an editor does, click one, and only then hit a raw RLS rejection. Asked whether to just fix the UI to match the existing DB boundary, or also add a real way for a viewer to ask for more access — chose both.
+- **Decision:**
+  1. **Role-gated UI.** `ConversionsView` now resolves the caller's actual role (`getMyMembership`) instead of discarding it, and hides Create/Edit/Delete/"Link Google Ads" for viewers; `ConversionTableRow` takes a `canWrite` prop gating Edit/Delete specifically (the read-only "Code" — view the tracking snippet — stays available to everyone, since viewing isn't a write). This is UI-layer honesty about a boundary the database already enforced, not a new security control.
+  2. **A new `access_requests` table** (`20260828000000_access_requests.sql`) lets a viewer ask to become an editor: `requested_role` is hardcoded to `'editor'` (no general role-request system — the only meaningful bump for a viewer is to editor), a partial unique index allows only one *pending* request per person per org, and RLS restricts INSERT to active viewers requesting for themselves, SELECT to the requester (their own rows) or an owner/admin (all of their org's rows), and UPDATE (resolving a request) to owner/admin only, with a `WITH CHECK` forcing the new status to `approved`/`dismissed`.
+  3. **Approving actually grants the access** — `resolveAccessRequest()` updates the requester's `organisation_members.role` to `'editor'` in the same action as marking the request approved, rather than just recording a decision with no effect. `SettingsView` gained an "Access requests" section, visible to owner/admin only, listing pending requests with Approve/Dismiss.
+- **Consequences:** A viewer who's just been approved won't see their new permissions until their next full load of `ConversionsView` (membership is fetched once per mount; there's no realtime subscription to pick up an admin's approval mid-session) — an acceptable, disclosed limitation rather than a bug, given the app has no realtime infrastructure anywhere else either. `Tags`/`Triggers`/`Variables` remain equally read-only for every role, by design — that's not a gap this ADR leaves open, it's the existing GTM read-only boundary from the tracking-platform safety rules. Verified via an isolated preview harness: `ConversionTableRow` screenshotted and DOM-checked with `canWrite` both ways (Edit/Delete present only when true, Code always present); the full role-gating and access-request flow inside `ConversionsView`/`SettingsView` was verified by code review and `lint`/`typecheck`/`test` rather than a live screenshot, since exercising it end-to-end needs a real multi-user Supabase session this sandbox doesn't have.
+
+---
+
 ## ADR-0030 — Home page "what each page shows" guide, made collapsible; unified the app logo
 
 - **Date:** 2026-08-28
