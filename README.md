@@ -105,4 +105,6 @@ Plus a 15-minute walk-through in Week 10.
 
 ## Status
 
-In Week 2 (kick-off). Problem statement and requirements drafted; architecture, data model, and migrations not yet started.
+Core product built and deployed: Tags/Triggers/Variables (live from GTM), organisation/team management with genuinely role-gated access, invite codes, theming, and Preview mode are all working. All nine folio docs plus both running logs (`decision-log.md`, `ai-use-log.md`) are populated, not placeholders. The security floor is met — see `docs/05-security-review.md`.
+
+Known open gaps, tracked in the folio rather than hidden: no RLS integration test suite or Playwright smoke suite yet, despite both being named in the mandated repo layout (`docs/08-test-plan.md`); no UAT session has been run yet (`docs/09-iteration-log.md`). The Week 11 report (PDF) and the Git invitation to the marking teacher are outside this repository and not tracked here.

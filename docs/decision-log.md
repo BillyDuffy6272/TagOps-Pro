@@ -16,6 +16,20 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0039 — Post-removal cleanup: rebuilt the orphaned request-access UI, fixed a stale README, closed two flagged doc gaps
+
+- **Date:** 2026-08-28
+- **Status:** Accepted
+- **Context:** Asked whether the site was "officially done." Answer was no — walked through real, already-documented open items (`08-test-plan.md`'s known gaps, `09-iteration.md`'s no-UAT note) plus the request-access regression ADR-0038 flagged and left unresolved. Asked to fix the regression, fix the README's own status line, and resolve any other unresolved issues at discretion.
+- **Decision:**
+  1. **Rebuilt the request-access flow's UI.** It never lived anywhere but `ConversionsView` (deleted in ADR-0038) — the `access_requests` table, RLS, `requestAccess()`/`getMyLatestAccessRequest()`, and the owner/admin approval panel in `SettingsView` all still worked, but no viewer had a button to trigger one. Added a new "Your access" section to `SettingsView`, shown only to viewers, reusing the exact request/pending/dismissed copy and logic the deleted view used (recovered from git history rather than re-invented from scratch) so the UX doesn't regress from what was already reviewed and shipped.
+  2. **Fixed `README.md`'s status section**, which still read "In Week 2 (kick-off)... architecture, data model, and migrations not yet started" — description of the repo's very first day, long stale. Replaced with an accurate summary of what's built plus the genuinely open gaps (no RLS integration/Playwright suite, no UAT session), rather than just claiming "done."
+  3. **Renamed `09-iteration.md` → `09-iteration-log.md`**, closing a mismatch the file itself had flagged against `CLAUDE.md`'s required repo shape and `README.md`'s own folio index (both already named it `09-iteration-log.md`). Only its own non-historical "Naming note" was edited to mark this resolved — the git-log-sourced Part 1 table, which this file's own rule says never gets reworded, was untouched.
+  4. **Added the missing `.env.example`**, flagged as absent in `05-security-review.md`'s "Known limitations" despite `CLAUDE.md`'s required repo shape listing it — documents `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` with no real values. Removed the now-resolved bullet from the security review's limitations list rather than leaving a stale flag.
+- **Consequences:** `npm run lint`/`typecheck`/`test` pass (29/29, unchanged). Deliberately did **not** attempt the two larger gaps still open — an RLS integration test suite and a Playwright smoke suite — since building real test infrastructure is a substantially bigger undertaking than a cleanup pass and wasn't asked for; left as the highest-priority item in `07-evaluation.md`'s future-improvements list. Also left the `decision-log.md`/`decisions.md` filename question and a UAT session untouched — the former is explicitly pending teacher confirmation, the latter needs a real outside tester, not something to fabricate.
+
+---
+
 ## ADR-0038 — Removed conversion-event tracking entirely: code, database, and docs
 
 - **Date:** 2026-08-28

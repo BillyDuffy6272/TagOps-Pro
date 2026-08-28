@@ -819,6 +819,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### "Is the website officially done?" — a punch-list answer, then fixed what was fixable
+
+**Date:** 28/08/2026
+
+**Prompt:** "is that their website officlay done now/" → given an honest punch list (built vs. genuinely open gaps, including the request-access regression flagged and left unresolved in the previous entry) → "resolve the real un-fixed regression as you see fit, fix the README own status and fix any unresolved issues as you see fit."
+
+**Response summary:** Rather than claim "done," answered with what was actually verifiable: core product built and working, security floor met, but real open gaps already on record in the folio (no RLS integration/Playwright test suite, no UAT session run) plus one live regression from the last change. Given discretion to fix what was fixable: (1) rebuilt the request-access UI — recovered the deleted `ConversionsView`'s exact copy and logic from git history and gave it a real home in `SettingsView` (a new "Your access" section, viewer-only), rather than inventing new UX for something already reviewed once; (2) rewrote `README.md`'s status section, which had literally never been updated since Week 2 kick-off; (3) renamed `09-iteration.md` to `09-iteration-log.md`, closing a mismatch the file itself had been flagging against the mandated repo shape, editing only the non-historical naming note and leaving the git-log-sourced iteration table untouched; (4) added the `.env.example` that `05-security-review.md` had flagged as missing despite being required by `CLAUDE.md`. Deliberately did not attempt the two larger gaps (RLS integration tests, Playwright smoke suite) — those are real new test infrastructure, not a cleanup-scale fix, and weren't what "fix any unresolved issues" was reasonably asking for.
+
+**What you did with it:** Accepted.
+
+**Why:** "As you see fit" still has a scope boundary — recovering and correctly re-homing an already-shipped feature from git history is a fair reading of "fix the regression," but writing a from-scratch RLS integration test suite under the same instruction would have been overreach far beyond what a status check was actually asking for. Chose to surface that boundary explicitly (ADR-0039) rather than either silently skip the bigger gaps or silently attempt them without being asked.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

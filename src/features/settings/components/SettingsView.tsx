@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { ActiveView } from '../../../components/AppShell'
-import { getMyMembership, listPendingAccessRequests, resolveAccessRequest, type AccessRequestWithUser, type MyMembership } from '../../../lib/organisation'
+import {
+  getMyLatestAccessRequest,
+  getMyMembership,
+  listPendingAccessRequests,
+  requestAccess,
+  resolveAccessRequest,
+  type AccessRequest,
+  type AccessRequestWithUser,
+  type MyMembership,
+} from '../../../lib/organisation'
 import { useTheme, type Theme } from '../../../lib/ThemeContext'
 import { getOrganisation, listOrganisationMembers, updateOrganisationName } from '../api/settings'
 import type { OrganisationMemberWithUser, OrganisationSummary } from '../types'
@@ -62,6 +71,8 @@ export default function SettingsView({ session, setActiveView }: Props) {
   const [members, setMembers] = useState<OrganisationMemberWithUser[]>([])
   const [accessRequests, setAccessRequests] = useState<AccessRequestWithUser[]>([])
   const [resolvingRequestId, setResolvingRequestId] = useState<string | null>(null)
+  const [myRequest, setMyRequest] = useState<AccessRequest | null>(null)
+  const [requesting, setRequesting] = useState(false)
 
   const [orgNameDraft, setOrgNameDraft] = useState('')
   const [savingName, setSavingName] = useState(false)
@@ -77,15 +88,17 @@ export default function SettingsView({ session, setActiveView }: Props) {
       const my = await getMyMembership(user.id)
       setMembership(my)
       const canManage = my.role === 'owner' || my.role === 'admin'
-      const [org, memberList, pending] = await Promise.all([
+      const [org, memberList, pending, latestRequest] = await Promise.all([
         getOrganisation(my.organisationId),
         listOrganisationMembers(my.organisationId),
         canManage ? listPendingAccessRequests(my.organisationId) : Promise.resolve([]),
+        my.role === 'viewer' ? getMyLatestAccessRequest(my.organisationId, user.id) : Promise.resolve(null),
       ])
       setOrganisation(org)
       setOrgNameDraft(org.name)
       setMembers(memberList)
       setAccessRequests(pending)
+      setMyRequest(latestRequest)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load your settings.')
     } finally {
@@ -109,6 +122,20 @@ export default function SettingsView({ session, setActiveView }: Props) {
       setError(e instanceof Error ? e.message : 'Failed to update that request.')
     } finally {
       setResolvingRequestId(null)
+    }
+  }
+
+  async function handleRequestAccess() {
+    if (!membership) return
+    setRequesting(true)
+    setError(null)
+    try {
+      const created = await requestAccess(membership.organisationId, user.id, null)
+      setMyRequest(created)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to send your access request.')
+    } finally {
+      setRequesting(false)
     }
   }
 
@@ -230,6 +257,34 @@ export default function SettingsView({ session, setActiveView }: Props) {
               )}
             </form>
           </section>
+
+          {membership?.role === 'viewer' && (
+            <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">
+              <div className="border-b border-border-subtle px-4 py-3">
+                <h2 className={SECTION_TITLE}>Your access</h2>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
+                <p className="m-0 max-w-[440px] text-[12.5px] leading-relaxed text-text-tertiary">
+                  You have read-only access to this organisation.
+                  {myRequest?.status === 'dismissed' && ' Your last request for edit access was declined — you can send another.'}
+                </p>
+                {myRequest?.status === 'pending' ? (
+                  <span className="shrink-0 rounded-md border border-border-subtle bg-surface px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap text-text-tertiary">
+                    Access request pending
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    className="shrink-0 rounded-md bg-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={handleRequestAccess}
+                    disabled={requesting}
+                  >
+                    {requesting ? 'Sending…' : 'Request edit access'}
+                  </button>
+                )}
+              </div>
+            </section>
+          )}
 
           {canManageTeam && (
             <section className="overflow-hidden rounded-lg border border-border-subtle bg-surface-sunken">

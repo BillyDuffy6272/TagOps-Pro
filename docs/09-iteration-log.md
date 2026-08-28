@@ -2,7 +2,7 @@
 
 A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is fixed as of 28/08/2026 and should be extended the same way (grouped under the next iteration number) as work continues.
 
-**Naming note:** `CLAUDE.md`'s required repo shape (and `README.md`'s own folio index) name this file `09-iteration-log.md`; the file that actually exists is `09-iteration.md`. Worth a one-line `decision-log.md` entry either confirming the shorter name deliberately or renaming to match before submission — a marker checking the folio against the brief will notice the mismatch either way.
+**Naming note (resolved 28/08/2026):** This file was originally `09-iteration.md`, mismatching `CLAUDE.md`'s required repo shape and `README.md`'s own folio index, both of which named it `09-iteration-log.md`. Renamed to match — see `decision-log.md`.
 
 ---
 

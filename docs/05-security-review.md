@@ -39,7 +39,6 @@ Being explicit about what's *not* solved is more useful than implying everything
 - **`redeem_invite_code()` has no explicit rate limit.** The 8-character base36 code has enough entropy (~2.8×10¹²) that brute-forcing is impractical at any rate PostgREST's general limits would allow, but there's no dedicated throttle on repeated guesses.
 - **Password minimum is Supabase's default (6 characters, no complexity rule).** Currently moot — there is no password sign-in path — but this would need raising before an email/password option is ever added.
 - **The Google OAuth `provider_token` sits in `localStorage`** via supabase-js's default session persistence. No live XSS vector was found in this codebase (no `dangerouslySetInnerHTML`, `eval`, or unescaped interpolation into rendered HTML anywhere in `src/`), so this isn't exploitable today — but it means a future XSS bug would hand an attacker a live, scoped Google API token, not just app data.
-- **No `.env.example` file exists**, despite `CLAUDE.md`'s required repo shape listing one as a documented, non-secret template for the two environment variables the app needs.
 
 ## Worked example: a real injection bug, found and fixed
 
