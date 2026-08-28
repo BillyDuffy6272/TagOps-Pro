@@ -163,11 +163,16 @@ Investigating a real Google Ads API integration (ADR-0037) surfaced a developer-
 
 ## Part 2 — UAT feedback log
 
-No formal UAT session has been run yet. Stated plainly rather than backfilled with invented sessions — this table's job is to record what actually happened, and nothing has been logged here so far. The recommended next step is at least one UAT pass (a friend, a non-technical family member, or the teacher) before the Week 9 evaluation is finalised, since `07-evaluation.md`'s self-assessment currently relies on the developer's own judgement rather than an outside user's.
+One session so far, added 28/08/2026 from the project owner's own summary of the class's feedback (not independently observed — see the note below the table).
 
 | Date | Tester | What they tried | Feedback | Action taken |
 |---|---|---|---|---|
-| _(no sessions logged yet)_ | | | | |
+| 24/08/2026 | Classmates (school class testing session) | Clicked through the dashboard and sidebar navigation | Wanted more visual contrast between the menu/sidebar and the dashboard content | Addressed the very next day — Iteration 8, `8a74e8e` "Menu bar contrast" (25/08/2026) |
+| 24/08/2026 | Classmates (school class testing session) | Explored organisation/team management | Wanted proper roles for organisations, not just flat membership | Addressed in Iteration 11.5/11.5.1 (`67661db`/`8b5b92b`) — Owner/Admin/Editor/Viewer roles made genuinely different and enforced at the database, plus a viewer request-access flow. See `decision-log.md` ADR-0031 |
+| 24/08/2026 | Classmates (school class testing session) | Used the Conversions feature (conversion events, Google Ads linking) | Found it too technical / hard to follow | Investigated a real fix (pulling live data from the Google Ads API, ADR-0037) but that needed external developer-token approval outside project control — too complicated and too risky this close to the deadline, so the feature was removed entirely rather than partially simplified. See `decision-log.md` ADR-0038, Iteration 15 (`d07b751`) |
+| 24/08/2026 | Classmates (school class testing session) | Overall click-through | Overall positive — described as nice, easy to use, and accessible | No action needed; recorded as a positive signal alongside the specific asks above |
+
+> **Note on sourcing:** unlike Part 1 (from `git log`) or the ADRs this table cross-references (each independently verified during the session that made the change), this table's Date/Tester/Feedback columns are transcribed from the project owner's own account of the session, given after the fact rather than observed directly — no separate tester notes, recording, or written feedback form exists to check against. The "Action taken" columns are independently verifiable (real commits/ADRs), but the feedback itself rests on the owner's memory of the class's response, worth being upfront about at the walk-through.
 
 ## Part 3 — Deployment iteration log
 

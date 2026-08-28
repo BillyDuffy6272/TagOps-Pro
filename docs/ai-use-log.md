@@ -847,6 +847,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Caught up the iteration log, then logged real UAT feedback
+
+**Date:** 28/08/2026
+
+**Prompt:** "so is that everything done in terns of the code? I also want yoou to upate all the documwntaiion, icnluding the iteraton logs woth the new commits" → given the actual feedback to log: "UAT feedback is to creater a menu contrast between the dashboard and menu, create roles for organisations, and consider technicality of conversions. Overall was good... This occured on Monday." → "it was tested by the class"
+
+**Response summary:** `09-iteration-log.md`'s Part 1 had stalled at Iteration 11 despite six more commits since (`git log --reverse` showed thirteen unlogged commits). Added Iterations 11.4–17, each cross-referenced to its `decision-log.md` ADR; investigated two ambiguous "Finishing Touches" commits via `git show --stat` rather than guessing, and found both were this session's own earlier work (ADR-0036's rewording, and the `09-iteration.md` rename), just auto-committed under numbers that happened to collide with what got chosen later — noted as one piece of work, not two. For the UAT feedback: resolved "Monday" to an absolute date (24/08/2026, computed from today being Friday) rather than leaving a relative reference that stops making sense once time passes, and filled in Part 2's UAT table with what was actually said, tester identity confirmed as "the class" mid-turn. Connected each feedback item to real, already-dated work rather than leaving the table as bare feedback: menu contrast → Iteration 8 (fixed the very next day), organisation roles → ADR-0031, conversions being too technical → ADR-0038's full removal. Added an explicit sourcing note distinguishing this table's Date/Tester/Feedback columns (the owner's own after-the-fact account, no independent record) from its Action-taken columns (verifiable against real commits/ADRs) — the two have different evidentiary weight and shouldn't be presented as equally solid. Also fixed one more stale claim found in the sweep: `README.md` still said "No UAT session has been run yet."
+
+**What you did with it:** Accepted.
+
+**Why:** The feedback-to-action mapping wasn't invented — menu contrast really was fixed the day after the stated UAT date, and the role/conversions feedback really do match ADR-0031/ADR-0038's actual reasoning — but the connection is still an inference from timing and topic, not a claim that the UAT session literally caused those specific commits, which is why the sourcing note exists rather than presenting the table as a fully verified record.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
