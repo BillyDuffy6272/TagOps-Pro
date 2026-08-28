@@ -735,6 +735,34 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Found and fixed why the access-request feature "wasn't there": migrations had never reached production
+
+**Date:** 28/08/2026
+
+**Prompt:** "I cannot see that, please ensure they are created."
+
+**Response summary:** Rather than assuming the frontend code was broken, checked whether the Supabase CLI had a live, authenticated connection to the linked project first — it did. `supabase migration list --linked` showed every migration since 1 June had never been applied to the real database, only bookkeeping-tracked for the two oldest ones from May. Before touching a live production database, read through all 7 pending migration files to confirm every statement was safely re-runnable (`IF NOT EXISTS` / `DROP ... IF EXISTS` / `CREATE OR REPLACE` throughout — no bare `CREATE TABLE`, no un-guarded `ADD CONSTRAINT`, no plain `INSERT`), then ran `supabase db push --linked` for real. Checked the live database directly afterward rather than trusting the push output: confirmed `access_requests` and its 4 RLS policies now exist, and — the significant part — confirmed via direct policy-text queries that the RLS security fix from ADR-0029 had *also* never reached production, meaning the exact privilege-escalation bug from a few days ago had been live and exploitable this entire time despite being "fixed" in the repo. Re-verified the live policy text after the push to confirm the fix is now actually in effect. Also confirmed the frontend code itself was already committed and pushed to `origin/main` by the project owner (`11.5 User Role Access Updates`), so the gap was specifically database-vs-code drift, not a code bug.
+
+**What you did with it:** Accepted.
+
+**Why:** Checking the live database directly — both before acting (to understand what was actually pending and whether it was safe) and after (to prove the fix took effect) — was the difference between "the push command exited 0" and actually knowing the security gap was closed. This also surfaced a durable lesson worth keeping in mind for the rest of the project: a migration being committed to git says nothing about whether it's live.
+
+---
+
+### Built a marketing landing page in front of the sign-in screen
+
+**Date:** 28/08/2026
+
+**Prompt:** Shared a screenshot of an unrelated SaaS landing page ("Revio" — dark hero, badges, bold headline, floating UI mockup, feature-style layout) for inspiration. "Create a proper professional landing page for this that leads to (via a button)... obvi don't include pricing as there is none. Just for what the features are and stuff. Lead them to the now starting page for all users currently."
+
+**Response summary:** Built `src/pages/Landing.tsx` and wired it into `App.tsx` ahead of the existing `Login` component (a `showLogin` flag flips on click, rather than replacing Login — the instruction was explicit that the button should lead *to* the current starting page, not become a new one). Took the reference screenshot's layout shape (nav, badge row, bold two-line headline, CTA pair, floating card mockup, feature grid, closing CTA, footer) but not its content: no invented usage statistics, no pricing tier since none exists, no dead nav links to a Company/Blog/Contact that don't exist in this app, and the hero mockup was redrawn as an actual stylised Tag-list card and Conversion-status card using this app's own real visual language rather than the reference's generic fintech credit-card/coin imagery. The six feature cards describe only real, already-shipped functionality (cross-checked against actual code: GTM read access, conversion tracking + snippet generation, Preview mode, the role/access-request system from ADR-0031, Google OAuth, theming) — nothing aspirational. Added a matching `onBack` prop to `Login.tsx` so its logo returns to the Landing page, closing the navigation loop in both directions. Verified in the preview harness: full click-through in both themes, zero console errors, then caught and fixed one icon (Roles vs. Conversion tracking rendered as visually identical circle+checkmark glyphs at 20px) by actually looking at the screenshot rather than trusting the JSX.
+
+**What you did with it:** Accepted.
+
+**Why:** Using the screenshot for layout/structure only, not content, was the right read of "use the screenshot for inspo" — copying its actual claims (fake business counts, a pricing section, generic finance imagery) would have misrepresented a real, if early, product. Reusing the app's own component visual language for the hero mockup instead of generic stock-style graphics keeps the marketing page honest about what the product actually looks like.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

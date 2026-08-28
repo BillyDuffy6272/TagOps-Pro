@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../lib/ThemeContext'
 
-export default function Login() {
+interface Props {
+  onBack?: () => void
+}
+
+export default function Login({ onBack }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { resolvedTheme } = useTheme()
@@ -50,7 +54,12 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(150deg,#080c14_0%,#0d1a2e_60%,#0a1628_100%)]">
       <div className="w-full max-w-[420px] rounded-xl border border-border bg-surface px-12 py-13 text-center shadow-[0_0_0_1px_var(--color-border),0_24px_48px_rgba(0,0,0,0.5)]">
-        <div className="mb-2.5 flex items-center justify-center gap-3.5">
+        <button
+          type="button"
+          onClick={onBack}
+          disabled={!onBack}
+          className={`mb-2.5 flex w-full items-center justify-center gap-3.5 rounded-lg ${onBack ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent' : 'cursor-default'}`}
+        >
           <img
             src={resolvedTheme === 'light' ? '/favicon-light.svg' : '/favicon.svg'}
             alt=""
@@ -59,7 +68,7 @@ export default function Login() {
             className="rounded-lg"
           />
           <h1 className="m-0 font-sans text-[28px] font-bold tracking-[-0.03em] text-text-primary">TagOps Pro</h1>
-        </div>
+        </button>
         <p className="m-0 mb-9 text-[15px] leading-relaxed text-text-tertiary">Clarity for your Google Tag Manager setup</p>
 
         <button

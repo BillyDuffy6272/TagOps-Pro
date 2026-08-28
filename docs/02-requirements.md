@@ -59,6 +59,8 @@
 - Suggestions for business owners to include other info if missing or if they need to actually add this
 - Be able to contact support services w/ any issues that arise
     - Sponsered by my Business Need Tracking potentially
+- Add users to containers as part of the organisation
+    - Don't know how this would work as they would need to be added via Google
 
 ---
 > Note (added 28/08/2026): Preview mode for dataLayer inspection is listed here as out of scope, but also under Would Be Nice above — it ended up being built (see `07-evaluation.md`). Leaving both original lines as written rather than editing them; this note just flags the overlap.

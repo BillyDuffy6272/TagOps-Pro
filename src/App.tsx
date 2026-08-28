@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
 import { useTheme } from './lib/ThemeContext'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Spinner from './components/Spinner'
@@ -9,6 +10,7 @@ import Spinner from './components/Spinner'
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showLogin, setShowLogin] = useState(false)
   const { resolvedTheme } = useTheme()
 
   useEffect(() => {
@@ -39,5 +41,9 @@ export default function App() {
     )
   }
 
-  return session ? <Dashboard session={session} /> : <Login />
+  if (session) return <Dashboard session={session} />
+
+  return showLogin
+    ? <Login onBack={() => setShowLogin(false)} />
+    : <Landing onGetStarted={() => setShowLogin(true)} />
 }

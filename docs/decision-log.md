@@ -16,6 +16,26 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0034 — Added a marketing landing page in front of Login, sourced from a screenshot for layout inspiration
+
+- **Date:** 2026-08-28
+- **Status:** Accepted
+- **Context:** Every unauthenticated visitor previously landed straight on the Google sign-in card — no explanation of what the product does before asking for OAuth access. Asked for a proper landing page, given a screenshot of an unrelated SaaS product ("Revio") purely for layout inspiration (dark hero, badge row, bold headline, floating UI mockup, feature grid), with two explicit constraints: no pricing section (there is none), and the CTA must lead into the existing sign-in flow rather than replace it.
+- **Decision:** New `src/pages/Landing.tsx`, shown by default to signed-out visitors; `App.tsx` now holds a `showLogin` flag that the Landing page's "Get started" buttons flip to true, revealing the existing `Login` component. Added a matching `onBack` prop to `Login` so its logo/wordmark returns to Landing, closing the loop. Content is deliberately not a copy of the reference screenshot: no fabricated statistics ("12K+ businesses" etc. — this product has no real users to cite), no fake nav items to pages that don't exist (Company/Blog/Contact), and the hero's floating UI mockup shows an actual stylised Tag row and Conversion-status card using the app's real component language (`EntityRow`-style layout, `StatusDot`/`CategoryBadge` colors) instead of the reference's unrelated credit-card/coin imagery. Six feature cards describe real, shipped functionality only (Tags/Triggers/Variables, conversion tracking + snippets, Preview mode, role-based permissions, Google sign-in, theming) — nothing aspirational or roadmap-only. Fully theme-aware via the existing token system, unlike `Login.tsx`'s fixed-dark backdrop.
+- **Consequences:** Verified in the isolated preview harness in both themes: full click-through from Landing → "Get started" → the real `Login` component rendering, zero console errors. One icon (`Roles that actually mean something`) was swapped from a shield+checkmark (visually indistinguishable from the conversion-tracking icon at 20px) to a two-person icon after reviewing the screenshot — a small but real legibility fix caught by actually looking at the rendered result rather than trusting the JSX.
+
+---
+
+## ADR-0033 — Deployed the pending migrations to production; found and closed a live copy of the RLS bug in the process
+
+- **Date:** 2026-08-28
+- **Status:** Accepted
+- **Context:** It occurred to me and felt important to make clear differences for user-assigned roles — Owner, Admin, Editor, and Viewer meant nothing different in practice, which is what led to ADR-0031's role-gating and request-access work. After that shipped and got committed, I still couldn't see the "Request edit access" feature actually working on the real site. Investigation traced this to something bigger than a missing UI: the Supabase CLI's migration bookkeeping showed every migration since 1 June had never actually been applied to the live project — only the two oldest ones (from the initial scaffold) were recorded as run. The live database's schema had apparently been kept working via ad-hoc SQL run directly in the Supabase dashboard at various points (matching the "live-debugged against production via SQL Editor" note in ADR-0025), never through the CLI, so `supabase db push` had been silently falling further and further behind for months.
+- **Decision:** Verified every one of the 7 pending migrations was safe to re-run against a database that might already have parts of this schema — every `CREATE` guarded with `IF NOT EXISTS` / preceded by `DROP ... IF EXISTS` / using `CREATE OR REPLACE` — before running `supabase db push --linked` for real. Checked the live database directly before and after (via `supabase db query`, not just trusting the push output) to confirm two things: the `access_requests` table and its four RLS policies now genuinely exist, and — the more serious finding — the exact self-referential RLS tautology bug fixed on paper in ADR-0029 was still live and exploitable in production the entire time, because its fix migration had never actually reached the real database either. Re-checked the live policy text after the push and confirmed the fix is now actually in effect, not just committed to a file.
+- **Consequences:** The feature this whole thread started from is now genuinely live, not just merged. More importantly, a real, previously-unnoticed gap between "fixed in the repo" and "fixed in production" is now closed — and worth remembering going forward: a migration file existing in `supabase/migrations/` and being committed to git says nothing about whether it's actually been applied to the live project. `supabase migration list --linked` is now the way to check that, not an assumption.
+
+---
+
 ## ADR-0032 — Logo accent color matched to the app's actual accent; Login page's mismatched logo replaced
 
 - **Date:** 2026-08-28
