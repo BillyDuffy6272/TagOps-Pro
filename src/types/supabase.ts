@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      live_verification_events: {
+        Row: {
+          id: string
+          check_token: string
+          conversion_event_id: string
+          organisation_id: string
+          event_name: string | null
+          event_payload: Json
+          captured_at: string
+        }
+        Insert: {
+          id?: string
+          check_token: string
+          conversion_event_id: string
+          organisation_id: string
+          event_name?: string | null
+          event_payload: Json
+          captured_at?: string
+        }
+        Update: {
+          id?: string
+          check_token?: string
+          conversion_event_id?: string
+          organisation_id?: string
+          event_name?: string | null
+          event_payload?: Json
+          captured_at?: string
+        }
+        Relationships: []
+      }
       access_requests: {
         Row: {
           id: string

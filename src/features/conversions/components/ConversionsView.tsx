@@ -17,6 +17,7 @@ import { CONVERSION_CATEGORIES, type Container, type ConversionCategory, type Co
 import ConversionTableRow from './ConversionTableRow'
 import ConversionFormModal from './ConversionFormModal'
 import ConversionSnippetModal from './ConversionSnippetModal'
+import LiveVerifyModal from './LiveVerifyModal'
 import GoogleAdsSettingsModal from './GoogleAdsSettingsModal'
 import CategoryBadge from '../../../components/CategoryBadge'
 import ViewHeader from '../../../components/ViewHeader'
@@ -55,6 +56,7 @@ export default function ConversionsView({ session }: Props) {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<ConversionEventWithContainer | undefined>(undefined)
   const [snippetEvent, setSnippetEvent] = useState<ConversionEventWithContainer | null>(null)
+  const [verifyingEvent, setVerifyingEvent] = useState<ConversionEventWithContainer | null>(null)
   const [adsSettingsOpen, setAdsSettingsOpen] = useState(false)
 
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ConversionCategory>>(new Set())
@@ -327,6 +329,7 @@ export default function ConversionsView({ session }: Props) {
                                 onEdit={() => openEditModal(event)}
                                 onDelete={() => handleDelete(event)}
                                 onSnippet={() => setSnippetEvent(event)}
+                                onVerify={() => setVerifyingEvent(event)}
                               />
                             ))}
                           </tbody>
@@ -352,6 +355,10 @@ export default function ConversionsView({ session }: Props) {
 
       {snippetEvent && (
         <ConversionSnippetModal event={snippetEvent} onClose={() => setSnippetEvent(null)} />
+      )}
+
+      {verifyingEvent && organisationId && (
+        <LiveVerifyModal event={verifyingEvent} organisationId={organisationId} onClose={() => setVerifyingEvent(null)} />
       )}
 
       {adsSettingsOpen && resolvedContainer && (

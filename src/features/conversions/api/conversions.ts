@@ -6,6 +6,7 @@ import type {
   ConversionEventInsert,
   ConversionEventUpdate,
   ConversionEventWithContainer,
+  LiveVerificationEvent,
 } from '../types'
 
 function mapConversionEventRow(
@@ -131,4 +132,18 @@ export async function deleteConversionEvent(id: string): Promise<void> {
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
   if (error) throw toError(error)
+}
+
+// Polled by LiveVerifyModal while a check is running. The rows themselves
+// were written anonymously (no session) from the business owner's own site —
+// reading them back here goes through the normal authenticated, org-scoped
+// RLS policy instead.
+export async function listCapturedLiveEvents(checkToken: string): Promise<LiveVerificationEvent[]> {
+  const { data, error } = await supabase
+    .from('live_verification_events')
+    .select('*')
+    .eq('check_token', checkToken)
+    .order('captured_at')
+  if (error) throw toError(error)
+  return data ?? []
 }

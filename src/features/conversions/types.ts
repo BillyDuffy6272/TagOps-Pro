@@ -4,6 +4,7 @@ export type ConversionEvent = Tables<'conversion_events'>
 export type ConversionEventInsert = TablesInsert<'conversion_events'>
 export type ConversionEventUpdate = TablesUpdate<'conversion_events'>
 export type Container = Tables<'containers'>
+export type LiveVerificationEvent = Tables<'live_verification_events'>
 
 export interface ConversionEventWithContainer extends ConversionEvent {
   containerName: string

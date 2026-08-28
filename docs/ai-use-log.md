@@ -763,6 +763,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Built real firing verification, end-to-end tested against the live database
+
+**Date:** 28/08/2026
+
+**Prompt:** "Is there any feature you would add?" → recommended real firing verification, flagged it needed its own architecture decision → "Yeah sure sounds great do it" → asked to choose between a one-time console snippet and a permanently-installed script; chose the snippet.
+
+**Response summary:** Built a new `live_verification_events` table and a `LiveVerifyModal` that generates a per-conversion-event snippet — copy into your real site's browser console, it watches `dataLayer` for 10 minutes and reports back anonymously (no Supabase session exists on a third-party site, so this authenticates with only the public anon key plus a random per-check token). Before writing any UI, confirmed the underlying mechanism was even possible: ran a real cross-origin CORS preflight against the live Supabase project and got `access-control-allow-origin: *`, proving arbitrary third-party sites can actually POST to it. After building, tested the real thing rather than trusting the code: pushed the migration to the live project, then ran the literal anonymous insert a pasted snippet would perform via curl. It failed with a genuine `42501` — the INSERT policy checked `conversion_events` directly, but that table's own RLS blocks anonymous callers from seeing anything in it, so the exists() check was always false. Fixed with a `SECURITY DEFINER` function mirroring the existing `is_active_org_member` pattern, pushed the fix, and re-ran the identical test: `201 Created`. Went further and ran the *actual generated snippet* (extracted from the rendered modal, not a hand-typed copy) inside a real separate-origin browser page via Playwright, triggered a `dataLayer.push`, and confirmed the POST succeeded with correct data. Confirmed a mismatched org/event is still correctly rejected. Cleaned up every test row from the live table afterward.
+
+**What you did with it:** Accepted.
+
+**Why:** This feature's entire value proposition is "the reported result is actually true" — a bug in the read path is inconvenient, but a bug in the write path (like the one found) would have made the whole feature silently do nothing while looking finished. Testing against the real live project with curl and a real separate-origin browser page, rather than stopping at `npm run typecheck`, is what actually caught that before it shipped.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

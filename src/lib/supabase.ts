@@ -1,9 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../types/supabase'
 
+// Re-exported for the live dataLayer-verification snippet (see
+// features/conversions/lib/liveVerification.ts) — it needs the same URL and
+// anon key to write from a third-party site's browser console, where there's
+// no Supabase session at all. Both values are already public in the client
+// bundle; exporting them just avoids reading import.meta.env in a second place.
+export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
 export const supabase = createClient<Database>(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
   {
     auth: {
       // PKCE returns an auth ?code= instead of tokens in the URL fragment.
