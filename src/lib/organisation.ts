@@ -30,7 +30,7 @@ export async function checkMyMembership(userId: string): Promise<MyMembership | 
   return { organisationId: data.organisation_id, role: data.role }
 }
 
-// Every feature that touches Supabase-backed org data (Conversions, Settings)
+// Every feature that touches Supabase-backed org data (Settings, Organisation)
 // needs to resolve "which organisation am I in, and what can I do there" —
 // a single active-membership row per user in the current MVP (no
 // multi-org switching yet).

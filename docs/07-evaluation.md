@@ -6,8 +6,8 @@ Against `02-requirements.md`'s MUST HAVE / MVP list:
 
 | Requirement | Status | Notes |
 |---|---|---|
-| Organisation for Tags, Triggers, Conversion events, Variables (with dropdown pickers) | **Met** | One view per entity type; `ContainerPicker` provides the dropdown selection |
-| Link a container to a Google Ads conversion ID and generate ready-to-paste tracking code | **Met** | `GoogleAdsSettingsModal` links the ID; `snippets.ts` generates escaped gtag.js/dataLayer snippets per conversion event, copyable from `ConversionSnippetModal` |
+| Organisation for Tags, Triggers, Variables (with dropdown pickers) | **Met** | One view per entity type; `ContainerPicker` provides the dropdown selection |
+| Organisation for Conversion events; link a container to a Google Ads conversion ID and generate ready-to-paste tracking code | **Removed (28/08/2026)** | Built (Conversions view, `GoogleAdsSettingsModal`, `snippets.ts`, `ConversionSnippetModal`, live firing verification), then removed entirely — code, database tables, all docs. The requirement's real value depended on live data from the Google Ads API, which needs a developer token subject to Google's own approval process; not safe to depend on this close to the deadline. See `decision-log.md` ADR-0038 |
 | An intuitive UI, easy navigation | **Met** | Sidebar nav with active-state highlighting, plus the Home page's own "what each page shows" guide added specifically to address unfamiliarity |
 | Create an account under 2 minutes using Google | **Met** | Single-click Google OAuth sign-in, no separate account form |
 | Secure and confidential account | **Met** | Supabase Auth + RLS on every table; see `05-security-review.md` for the full case |
@@ -25,13 +25,13 @@ Against the WOULD BE NICE list — several shipped even though they weren't requ
 
 | Requirement | Status | Notes |
 |---|---|---|
-| View specific tag/trigger/variable/conversion in detail | **Met** | Per-entity detail modals |
+| View specific tag/trigger/variable in detail | **Met** | Per-entity detail modals |
 | Change the theme | **Met** | Light/Dark/System, ADR-0027 |
 | Small summary before expanding | **Met** | `EntityRow` cards show key metadata before the detail modal opens |
 | Contrast improvements for menu/dashboard | **Partial** | Sidebar contrast was explicitly revisited (see commit history); some color tokens still fall short of AA per the accessibility audit |
 | See which page you're on | **Met** | Active nav item is visually highlighted, plus `aria-current="page"` for assistive tech |
 | Home page explaining what each page shows, collapsible | **Met** | Built this session, then converted to a collapsed-by-default disclosure after feedback that it looked crowded |
-| Search/filter tags, triggers, variables, conversion events by name | **Met** | A search input on each of the four list views |
+| Search/filter tags, triggers, variables by name | **Met** | A search input on each of the three list views |
 | Preview mode for dataLayer inspection | **Met — worth flagging** | This item also appears, contradictorily, on the *Out of scope* list in the same requirements document — now annotated there directly rather than left as a silent inconsistency. It got built anyway (`PreviewView`/`simulator.ts`), which reads as positive over-delivery rather than scope creep |
 | Verify tag setup is actually operational/running | **Not met** | Also listed under both "Would be nice" and "Out of scope" in the source document. Consistent with the out-of-scope framing: this would require the app to load a real page, which it deliberately never does (see the "no real page" boundary documented in the Preview feature's own ADRs) |
 
@@ -42,7 +42,7 @@ Every *Out of scope* item was checked and confirmed correctly absent: no AI sugg
 - **RLS-first design held up under real audit pressure.** All ten domain tables have RLS enabled with no blanket-permissive policy; when two real bugs were found, they were found by policy-by-policy review, not by a live exploit — the database refused to let a corrupted UI state cause real damage in the meantime.
 - **TypeScript discipline.** Zero `any` and zero `@ts-ignore`/`@ts-expect-error` anywhere in `src/`, confirmed by a full-repo audit — genuinely better than the median for a project this size.
 - **A consistent error-handling convention, actually followed.** `CLAUDE.md`'s "never swallow errors silently" rule is honoured everywhere checked; the one systemic bug in this area (PostgREST's plain-object errors silently becoming a generic fallback message, ADR-0024) was root-caused and fixed with a single `toError()` helper rather than patched call-site by call-site.
-- **A working, if small, automated test suite.** 36 tests across two files, including two adversarial tests added specifically because a real injection bug slipped past happy-path-only coverage — the kind of test that exists *because* something already went wrong once.
+- **A working, if small, automated test suite.** 29 tests in `tests/unit/simulator.test.ts`, covering the Preview mode dataLayer/tag-firing simulator — the one remaining area `CLAUDE.md` requires unit tests for. `snippets.test.ts` carried two adversarial tests (added specifically because a real injection bug had slipped past happy-path-only coverage) until the conversion-event feature it tested was removed entirely (ADR-0038); the pattern those tests demonstrated — adding a regression test *because* something already went wrong once — is worth keeping in mind for whatever's tested next.
 
 ## What was challenging / what changed from the plan
 
@@ -63,7 +63,7 @@ See `06-front-end-architecture.md` for the full list. The honest summary: forms,
 
 ## Testing summary
 
-See `08-test-plan.md` for the full breakdown. In short: unit tests exist and pass (36/36) for the two areas `CLAUDE.md` specifically requires them for (dataLayer-touching logic), but there is no integration layer testing RLS policy behaviour directly and no Playwright smoke suite yet, despite both being named in the mandated repo layout. `npm run lint`/`typecheck`/`test` all passing is a real signal, but it isn't equivalent to that missing coverage.
+See `08-test-plan.md` for the full breakdown. In short: unit tests exist and pass (29/29) for dataLayer-touching logic, per `CLAUDE.md`'s requirement, but there is no integration layer testing RLS policy behaviour directly and no Playwright smoke suite yet, despite both being named in the mandated repo layout. `npm run lint`/`typecheck`/`test` all passing is a real signal, but it isn't equivalent to that missing coverage.
 
 ## Future improvements
 

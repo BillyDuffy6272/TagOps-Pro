@@ -50,19 +50,6 @@ const SECTIONS: SectionCard[] = [
     ),
   },
   {
-    view: 'conversions',
-    label: 'Conversions',
-    description: 'Document and verify your GA4 and Google Ads conversion events.',
-    guide:
-      'Conversions are the actions that actually matter to your business — a completed purchase, a submitted enquiry form, a phone number click. This page documents every conversion event you track in GA4 and Google Ads, including the exact code snippet used to record it, so you or whoever set it up can confirm it\'s still wired up correctly.',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="9 12 11 14 15 10" />
-      </svg>
-    ),
-  },
-  {
     view: 'preview',
     label: 'Preview',
     description: 'Simulate events against your container and see which tags fire.',

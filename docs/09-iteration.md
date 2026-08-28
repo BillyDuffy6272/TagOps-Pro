@@ -63,6 +63,8 @@ Every commit, in order, grouped under the iteration numbers already used in the 
 | 08/08/2026 | `7931e49` | 6.4.1 — Changes to the Preview tabs, more in-depth info |
 | 09/08/2026 | `1065d91` | 6.5 — Minor update to the Home page |
 
+> **Note (added 28/08/2026, not part of the original git-log transcription):** Conversion events, the feature built across this iteration, was removed entirely on 28/08/2026 — code, database tables, and every doc reference. See `decision-log.md` ADR-0038. Left the rows above exactly as reconstructed from `git log`, per this file's own rule against renumbering or rewording history.
+
 ### Iteration 7 — Profile, Settings, Organisation
 
 | Date | Commit | What happened |

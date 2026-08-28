@@ -25,16 +25,6 @@ const FEATURES: Feature[] = [
     ),
   },
   {
-    title: 'Conversion tracking, documented',
-    description: 'Record every GA4 and Google Ads conversion event, link it to your Ads account, and copy ready-to-paste tracking code when you need it.',
-    icon: (
-      <svg {...ICON_PROPS} aria-hidden="true">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="9 12 11 14 15 10" />
-      </svg>
-    ),
-  },
-  {
     title: 'Preview before it goes live',
     description: "Simulate a page view, a click, or a form submit, and see exactly which tags would fire — without touching your real site.",
     icon: (
@@ -122,7 +112,7 @@ export default function Landing({ onGetStarted }: Props) {
           </h1>
 
           <p className="m-0 mt-5 max-w-[540px] text-[16px] leading-relaxed text-text-tertiary">
-            Tags, triggers, variables and conversion events, pulled into one place you can actually understand —
+            Tags, triggers and variables, pulled into one place you can actually understand —
             so you always know what's tracked and what's not, without digging through Google's own tools.
           </p>
 

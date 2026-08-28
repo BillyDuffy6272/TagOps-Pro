@@ -7,12 +7,11 @@ import HomeView from '../features/home/components/HomeView'
 import TagsView from '../features/tags/components/TagsView'
 import TriggersView from '../features/triggers/components/TriggersView'
 import VariablesView from '../features/variables/components/VariablesView'
-import ConversionsView from '../features/conversions/components/ConversionsView'
 import PreviewView from '../features/preview/components/PreviewView'
 import SettingsView from '../features/settings/components/SettingsView'
 import OrganisationView from '../features/organisation/components/OrganisationView'
 
-export type ActiveView = 'home' | 'tags' | 'triggers' | 'variables' | 'conversions' | 'preview' | 'settings' | 'organisation'
+export type ActiveView = 'home' | 'tags' | 'triggers' | 'variables' | 'preview' | 'settings' | 'organisation'
 
 interface Props {
   session: Session
@@ -27,7 +26,6 @@ export default function AppShell({ session }: Props) {
       case 'tags':        return <TagsView />
       case 'triggers':    return <TriggersView />
       case 'variables':   return <VariablesView />
-      case 'conversions': return <ConversionsView session={session} />
       case 'preview':     return <PreviewView />
       case 'settings':    return <SettingsView session={session} setActiveView={setActiveView} />
       case 'organisation': return <OrganisationView session={session} />

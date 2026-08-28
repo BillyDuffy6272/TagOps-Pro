@@ -19,7 +19,7 @@ const PRIMARY_BUTTON =
   'mt-1 rounded-md bg-accent px-4 py-2.5 text-[13.5px] font-semibold text-canvas transition-colors duration-150 ease-out hover:bg-accent/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50'
 
 // Full-screen gate rendered by Dashboard when a signed-in user has no
-// organisation membership yet — every organisation-scoped page (Conversions,
+// organisation membership yet — every organisation-scoped page (Tags,
 // Settings) would otherwise just error, so this is where that dead end used
 // to be.
 export default function OrganisationOnboarding({ session, onJoined }: Props) {

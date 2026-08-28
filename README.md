@@ -1,6 +1,6 @@
 # TagOps-Pro
 
-A tracking organisation and operational tool for business owners — a single source of truth for the Tags, Triggers, Conversion events, and Variables that power their analytics and marketing setup (Google Tag Manager, GA4, and similar). The MVP focuses on organising the setup, inviting teammates with expiry dates, and surfacing suggestions when something is missing. The roadmap adds AI-assisted suggestions, automated firing verification, and two-way sync with Google's platforms.
+A tracking organisation and operational tool for business owners — a single source of truth for the Tags, Triggers, and Variables that power their analytics and marketing setup (Google Tag Manager, GA4, and similar). The MVP focuses on organising the setup, inviting teammates with expiry dates, and surfacing suggestions when something is missing. The roadmap adds AI-assisted suggestions, automated firing verification, and two-way sync with Google's platforms.
 
 This repository is also my **Year 12 Software Engineering AT3 project** for Noetica Academy, Term 2 2026. The product is genuine; it is also subject to the AT3 brief's mandated stack, security floor, AI-use policy, and nine-week timeline.
 

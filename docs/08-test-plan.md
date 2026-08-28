@@ -4,18 +4,19 @@
 
 | Layer | Purpose | Run with | Status |
 |---|---|---|---|
-| `tests/unit/` | Pure logic, no live Supabase/GTM needed | `npm run test` (Vitest) | **Implemented** — 2 files, 36 tests, all passing |
+| `tests/unit/` | Pure logic, no live Supabase/GTM needed | `npm run test` (Vitest) | **Implemented** — 1 file, 29 tests, all passing |
 | `tests/integration/` | Policy tests against a local Supabase instance (RLS behaviour) | `supabase start` + a test runner against it | **Not yet implemented** — directory doesn't exist yet |
 | `tests/smoke/` | End-to-end critical flows in a real browser | Playwright | **Not yet implemented** — Playwright isn't installed; named in `CLAUDE.md`'s mandated stack but not yet added |
 
 ## Current unit coverage
 
-Two files, chosen specifically because `CLAUDE.md` requires unit tests for anything that reads or pushes to `window.dataLayer` — both do:
+One file, chosen specifically because `CLAUDE.md` requires unit tests for anything that reads or pushes to `window.dataLayer`:
 
 - **`tests/unit/simulator.test.ts`** (29 test cases) — covers `src/features/preview/lib/simulator.ts`, the logic behind the Preview page's dataLayer/tag-firing simulation. Tests the resolution of built-in GTM variables, trigger matching logic, and the deliberate "unresolved, with a reason" behaviour for variables that would require a real loaded page (Page URL/Hostname/Path, Referrer) — the simulator is designed to never fabricate those from TagOps-Pro's own URL, and that boundary is directly tested.
-- **`tests/unit/snippets.test.ts`** (7 test cases) — covers `src/features/conversions/lib/snippets.ts`, the copy-paste tracking-code generator. Five happy-path cases (correct `send_to` construction, placeholder fallback, conditional value/currency inclusion) plus two adversarial cases added 27/08/2026: a quote-injection attempt in `value_param` and a newline-injection attempt in `display_name`, added *after* a real injection vulnerability was found in this exact function — the original test suite only exercised well-formed input, which is how the bug went unnoticed.
 
-Both files run with zero external dependencies (no network, no database), which is why they were the first layer built.
+Runs with zero external dependencies (no network, no database), which is why it was the first layer built.
+
+> **Note (28/08/2026):** `tests/unit/snippets.test.ts` (7 test cases, covering the conversion-event tracking-code generator, including two adversarial injection tests added 27/08/2026 after a real vulnerability was found — see `05-security-review.md`) was removed along with the feature it tested (ADR-0038, `decision-log.md`). It was a real, working example of a regression test added specifically because something had already gone wrong once — worth the same discipline on whatever's built next.
 
 ## RLS / security testing strategy
 
@@ -30,11 +31,10 @@ What actually gets clicked through before a change is considered done, in the ab
 - Sign in with Google from a signed-out state
 - A brand-new account: land on `OrganisationOnboarding`, create an organisation, confirm it appears correctly
 - Join an existing organisation via an invite code
-- Every primary view loads without error: Home, Tags, Triggers, Variables, Conversions, Preview, Settings, Organisation
+- Every primary view loads without error: Home, Tags, Triggers, Variables, Preview, Settings, Organisation
 - Add a team member, set an expiry date, confirm it's editable and removable; confirm the owner row is not editable
 - Toggle Light / Dark / System theme and confirm it persists across a reload
 - Disconnect/reconnect the Google account and confirm `GtmForbiddenState` renders correctly on a 403 rather than a generic error
-- Copy a conversion-event tracking snippet and confirm it's syntactically valid
 
 ## Known gaps
 

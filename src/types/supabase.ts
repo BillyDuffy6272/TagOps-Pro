@@ -14,36 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      live_verification_events: {
-        Row: {
-          id: string
-          check_token: string
-          conversion_event_id: string
-          organisation_id: string
-          event_name: string | null
-          event_payload: Json
-          captured_at: string
-        }
-        Insert: {
-          id?: string
-          check_token: string
-          conversion_event_id: string
-          organisation_id: string
-          event_name?: string | null
-          event_payload: Json
-          captured_at?: string
-        }
-        Update: {
-          id?: string
-          check_token?: string
-          conversion_event_id?: string
-          organisation_id?: string
-          event_name?: string | null
-          event_payload?: Json
-          captured_at?: string
-        }
-        Relationships: []
-      }
       access_requests: {
         Row: {
           id: string
@@ -200,7 +170,6 @@ export type Database = {
           environment: "production" | "staging" | "sandbox"
           gtm_container_id: string | null
           ga4_property_id: string | null
-          google_ads_conversion_id: string | null
           notes: string | null
           created_at: string
           created_by: string | null
@@ -217,7 +186,6 @@ export type Database = {
           environment?: "production" | "staging" | "sandbox"
           gtm_container_id?: string | null
           ga4_property_id?: string | null
-          google_ads_conversion_id?: string | null
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -234,7 +202,6 @@ export type Database = {
           environment?: "production" | "staging" | "sandbox"
           gtm_container_id?: string | null
           ga4_property_id?: string | null
-          google_ads_conversion_id?: string | null
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -412,66 +379,6 @@ export type Database = {
           variable_type?: "datalayer" | "constant" | "url" | "cookie" | "dom_element" | "custom_js"
           parameters?: Json
           default_value?: string | null
-          notes?: string | null
-          created_at?: string
-          created_by?: string | null
-          updated_at?: string
-          updated_by?: string | null
-          deleted_at?: string | null
-        }
-        Relationships: []
-      }
-      conversion_events: {
-        Row: {
-          id: string
-          display_id: string
-          container_id: string
-          organisation_id: string
-          event_name: string
-          display_name: string | null
-          value_param: string | null
-          currency: string | null
-          is_active: boolean
-          conversion_label: string | null
-          category: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
-          notes: string | null
-          created_at: string
-          created_by: string | null
-          updated_at: string
-          updated_by: string | null
-          deleted_at: string | null
-        }
-        Insert: {
-          id?: string
-          display_id: string
-          container_id: string
-          organisation_id: string
-          event_name: string
-          display_name?: string | null
-          value_param?: string | null
-          currency?: string | null
-          is_active?: boolean
-          conversion_label?: string | null
-          category?: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
-          notes?: string | null
-          created_at?: string
-          created_by?: string | null
-          updated_at?: string
-          updated_by?: string | null
-          deleted_at?: string | null
-        }
-        Update: {
-          id?: string
-          display_id?: string
-          container_id?: string
-          organisation_id?: string
-          event_name?: string
-          display_name?: string | null
-          value_param?: string | null
-          currency?: string | null
-          is_active?: boolean
-          conversion_label?: string | null
-          category?: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
           notes?: string | null
           created_at?: string
           created_by?: string | null

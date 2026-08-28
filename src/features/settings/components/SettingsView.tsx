@@ -238,7 +238,7 @@ export default function SettingsView({ session, setActiveView }: Props) {
               </div>
 
               {accessRequests.length === 0 ? (
-                <EmptyState message="No pending requests. A viewer can ask to become an editor from the Conversions page." />
+                <EmptyState message="No pending requests." />
               ) : (
                 accessRequests.map(request => (
                   <div key={request.id} className="flex flex-wrap items-center gap-3 border-t border-border-subtle px-4 py-3 first:border-t-0">

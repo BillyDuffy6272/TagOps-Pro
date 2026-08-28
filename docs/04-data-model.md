@@ -72,7 +72,7 @@ A user belongs to an organisation through a Membership row. This is where the "e
 
 ## Container
 
-A Container represents one tracking deployment (typically one website or app). All Tags, Triggers, Variables, and Conversion Events live inside a Container.
+A Container represents one tracking deployment (typically one website or app). All Tags, Triggers, and Variables live inside a Container.
 
 | Variable | Data Type | Format | Description | Example | Connected to | Validation |
 |---|---|---|---|---|---|---|
@@ -130,18 +130,7 @@ A Variable is a named reference to a value pulled from the page, the URL, the da
 
 ---
 
-## Conversion Event
-
-A Conversion Event marks a specific event name as a business outcome (purchase, lead, signup) and ties it to an optional monetary value.
-
-| Variable | Data Type | Format | Description | Example | Connected to | Validation |
-|---|---|---|---|---|---|---|
-| ConversionEventId | string | CONID_XX_YYYY | Unique identifier for a conversion event. | CONID_AG_0001 | (PK) | System-generated. |
-| ContainerId | string | CNTID_XX_YYYY | The container this conversion event lives in. | CNTID_AG_0001 | Container.ContainerId | Must reference a valid ContainerId. |
-| EventName | string | snake_case | The event name that should count as a conversion. | purchase | ConversionEventId | Letters, digits, underscores; cannot start with a digit; unique within the container. |
-| ValueParam | string | snake_case | Variable name carrying the monetary value of the conversion. | purchase_value | Variable.VariableName | Must reference an existing Variable in the same container; optional. |
-| Currency | string | ISO 4217 | Three-letter currency code. | AUD | ConversionEventId | Exactly 3 uppercase letters. |
-| IsActive | boolean | true / false | Whether this conversion is currently counted. | true | ConversionEventId | Required. |
+> **Removed (28/08/2026):** A "Conversion Event" entity was specified here, built, and later removed entirely — code, database table, and this section. See `decision-log.md` ADR-0038 and `02-requirements.md`'s Out of scope section for why.
 
 ---
 
@@ -171,14 +160,13 @@ The fields above implement as the following Supabase Postgres tables. Internal p
 | `tags` | Tag definitions | uuid | `container_id`, `organisation_id` |
 | `triggers` | Trigger definitions | uuid | `container_id`, `organisation_id` |
 | `variables` | Variable definitions | uuid | `container_id`, `organisation_id` |
-| `conversion_events` | Conversion-event registry | uuid | `container_id`, `organisation_id` |
 | `tag_triggers` | Many-to-many Tag↔Trigger link | composite (`tag_id`, `trigger_id`, `relationship`) | `tag_id` → `tags`, `trigger_id` → `triggers` |
 | `audit_log` | Append-only record of meaningful changes | uuid | `organisation_id`, `actor_id` |
 
 **Cross-cutting conventions** that apply to every domain table:
 
 - Every domain row carries `organisation_id`. RLS uses it as the membership check, so a single helper function `is_active_org_member(org_id)` covers all tables.
-- User-content tables (`tags`, `triggers`, `variables`, `conversion_events`, `containers`) use soft delete (`deleted_at`) so a misclick is recoverable.
+- User-content tables (`tags`, `triggers`, `variables`, `containers`) use soft delete (`deleted_at`) so a misclick is recoverable.
 - `created_at`, `updated_at`, `created_by`, `updated_by` audit columns on every user-editable table; `updated_at` is maintained by a Postgres trigger.
 
 **Row-Level Security pattern**, satisfying security-floor requirement #2:

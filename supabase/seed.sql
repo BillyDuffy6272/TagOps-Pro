@@ -13,7 +13,6 @@
 --   a = users             b = organisations     c = members
 --   d = containers        e = tags              f = triggers
 --   07 prefix = variables (two digits; hex only goes to 'f')
---   08 prefix = conversion_events
 -- Last group = zero-padded record number.
 -- ─────────────────────────────────────────────────────────────────────
 -- USRID_AG_0001  (Alex G)              → a0000000-0000-0000-0000-000000000001
@@ -341,35 +340,6 @@ on conflict (id) do nothing;
 
 
 -- ─────────────────────────────────────────────────────────────────────
--- public.conversion_events   (source: seed-data/08-conversion-events.json)
---
--- organisation_id derived from container CNTID_AG_0001 → ORGID_AG_0001.
--- ─────────────────────────────────────────────────────────────────────
-insert into public.conversion_events (
-  id,
-  display_id,
-  container_id,
-  organisation_id,
-  event_name,
-  value_param,
-  currency,
-  is_active
-)
-values
-  (
-    '08000000-0000-0000-0000-000000000001',
-    'CONID_AG_0001',
-    'd0000000-0000-0000-0000-000000000001',
-    'b0000000-0000-0000-0000-000000000001',
-    'purchase',
-    'purchase_value',
-    'AUD',
-    true
-  )
-on conflict (id) do nothing;
-
-
--- ─────────────────────────────────────────────────────────────────────
 -- public.tag_triggers   (source: seed-data/09-tag-trigger-links.json)
 --
 -- Composite PK (tag_id, trigger_id, relationship) — no surrogate key.
@@ -652,42 +622,6 @@ values (
   'cookie',
   '{"cookie_name": "_uid"}'::jsonb,
   'Set by the app on login. Used to stitch sessions in GA4 via user_id parameter.',
-  'a0000000-0000-0000-0000-000000000001'
-)
-on conflict (id) do nothing;
-
--- ── Conversion events on production container (CNTID_AG_0001) ────────
-
--- CONID_AG_0002: generate_lead
-insert into public.conversion_events (
-  id, display_id, container_id, organisation_id,
-  event_name, display_name, is_active, created_by
-)
-values (
-  '08000000-0000-0000-0000-000000000002',
-  'CONID_AG_0002',
-  'd0000000-0000-0000-0000-000000000001',
-  'b0000000-0000-0000-0000-000000000001',
-  'generate_lead',
-  'Lead Form Submission',
-  true,
-  'a0000000-0000-0000-0000-000000000001'
-)
-on conflict (id) do nothing;
-
--- CONID_AG_0003: view_pricing
-insert into public.conversion_events (
-  id, display_id, container_id, organisation_id,
-  event_name, display_name, is_active, created_by
-)
-values (
-  '08000000-0000-0000-0000-000000000003',
-  'CONID_AG_0003',
-  'd0000000-0000-0000-0000-000000000001',
-  'b0000000-0000-0000-0000-000000000001',
-  'view_pricing',
-  'Pricing Page View',
-  true,
   'a0000000-0000-0000-0000-000000000001'
 )
 on conflict (id) do nothing;

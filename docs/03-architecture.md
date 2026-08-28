@@ -4,7 +4,7 @@
 
 TagOps-Pro is a single-page React application with no backend server of its own. Two things stand in for one:
 
-- **Supabase** (Postgres + Auth + PostgREST + Row-Level Security) holds everything TagOps-Pro owns: organisations, team membership, containers, and conversion-event documentation. The React app talks to it through `@supabase/supabase-js`, and every write is checked against an RLS policy at the database layer — there is no application-level authorisation code to bypass.
+- **Supabase** (Postgres + Auth + PostgREST + Row-Level Security) holds everything TagOps-Pro owns: organisations, team membership, and containers. The React app talks to it through `@supabase/supabase-js`, and every write is checked against an RLS policy at the database layer — there is no application-level authorisation code to bypass.
 - **Google's own APIs** (Tag Manager API, scoped `tagmanager.readonly`) are called directly from the browser, authenticated with the OAuth `provider_token` issued when the user signs in with Google. Tag, trigger, and variable data is never copied into Supabase — the app always reads it live from GTM, so "what TagOps-Pro shows" and "what's actually in the container" can't drift apart.
 
 That split is the app's defining architectural feature: it has two backends, not one, and they're used for entirely different kinds of data (TagOps-Pro's own organisational data vs. a live, read-only mirror of a third party's data).
@@ -18,7 +18,7 @@ graph TD
     B[Browser — React SPA] -->|static build, CD| V[Vercel]
     B -->|supabase-js, anon key| S[(Supabase<br/>Postgres + Auth + RLS)]
     B -->|OAuth provider_token| G[Google Tag Manager API<br/>read-only]
-    S -->|RLS-checked reads/writes| DB[(organisations, members,<br/>containers, tags docs,<br/>conversion events)]
+    S -->|RLS-checked reads/writes| DB[(organisations, members,<br/>containers)]
     G -->|live, never cached in DB| GTM[(GTM container:<br/>tags, triggers, variables)]
 ```
 

@@ -805,6 +805,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Removed conversion-event tracking entirely — code, live database, and every doc reference
+
+**Date:** 28/08/2026
+
+**Prompt:** After ADR-0037's research made clear what a real Google Ads API integration would actually require (developer-token approval outside anyone's control, a new Edge Function, restricted-scope OAuth risk): "this is too complicated please remove conversion from the site and ALL my documentation. Add this as a complicated out of scope recommendation. Also help me remove this from Supabase, I think it is too complicated and I don't have time to wait for google."
+
+**Response summary:** Full removal across three layers. **Code:** deleted `src/features/conversions/` and its test file, and every dependent reference (`AppShell.tsx` route/type, `navItems.tsx`, Home page guide entry, Landing page card and copy, dead `SUPABASE_URL`/`SUPABASE_ANON_KEY` exports). **Database:** wrote and, after explicit confirmation, pushed a new migration to the live linked project (`supabase db push --linked`, verified after via `supabase migration list --linked`) dropping `conversion_events`, `live_verification_events`, the `conversion_event_belongs_to_org()` function, and `containers.google_ads_conversion_id` — `containers` itself untouched since tags/triggers/variables still depend on it. Cleaned `supabase/seed.sql`'s matching insert blocks. Hand-edited `src/types/supabase.ts` rather than blindly regenerating it, after a trial regenerate showed it would introduce unrelated drift from a newer CLI version (loss of a literal union type on an unrelated column, plus a stray `graphql_public` schema block). **Docs:** swept README and `01`–`09`, `decision-log.md`, and this file. Followed the project's own established convention rather than inventing a new one: historical/log content (original requirement lines, the git-log-sourced iteration history, old ADRs) left as originally written with a new dated note appended, exactly like the project's own precedent for the Preview-mode scope overlap in `02-requirements.md`; living technical docs (architecture, data model, security review, front-end architecture, evaluation, test plan) edited directly so they describe the system as it now actually is. Kept `05-security-review.md`'s injection-bug case study rather than deleting it — real evidence a security process worked, even though the code it describes is gone — with a note explaining why it's still there. Added the requested explicit "Out of scope" bullet to `02-requirements.md`, with the actual reasoning (external developer-token approval, no guaranteed timeline) rather than just "too complicated." Ran `npm run lint`/`typecheck`/`test` after every layer — all green, test count dropped from 36/36 to 29/29 as expected (the 7 removed tests were the injection-regression tests for the deleted snippet generator).
+
+**What you did with it:** Accepted, including the live database push, given explicitly after being shown the exact migration and told it was irreversible.
+
+**Why:** Treated "remove from the site and all documentation" as needing a real judgment call per doc, not a blanket delete — a git-log transcription and a requirements doc's original MVP line are historical fact even after the feature they describe is gone, so rewriting them in place would have made the historical record less trustworthy, not more accurate. Flagged rather than silently fixed: the "request edit access" flow (`requestAccess()`, the Settings approval panel) is now orphaned, since ConversionsView was its only UI entry point — a real gap this removal created that wasn't part of what was asked.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
