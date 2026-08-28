@@ -34,7 +34,7 @@ Nothing in this diagram is a real backend service TagOps-Pro operates — Vercel
 
 | Decision | Why | Reference |
 |---|---|---|
-| No separate backend — Supabase + RLS *is* the backend | Matches the mandated stack; pushes authorisation into the database where a compromised client can't bypass it | Security floor #2, `05-security-review.md` |
+| No separate backend — Supabase + RLS *is* the backend | Matches the mandated stack; pushes authorisation into the database where a compromised client can't bypass it. My own architectural call, made in Week 2 before any feature code existed — `decision-log.md` ADR-0003 — not something proposed mid-project | Security floor #2, `05-security-review.md`, `decision-log.md` ADR-0003 |
 | GTM/GA4 data is read-only and never persisted | Tracking-platform safety rule — a stale copy of someone's real ad account is worse than no copy | `CLAUDE.md`, `src/lib/gtm.ts` |
 | `SECURITY DEFINER` functions for anything RLS can't express directly (invite codes, cross-membership lookups) | RLS alone can't break certain circular checks (e.g. "can I see the members of an org I'm a member of" needs to read the same table its own policy protects) or hide a column like `invite_code` from ordinary `SELECT *` | ADR-0023, `is_active_org_member()` |
 | Light/Dark/System theme via CSS custom-property token-swap, not a second stylesheet | One set of Tailwind utility names resolves correctly in both themes automatically | ADR-0027 |

@@ -875,6 +875,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Made RLS-first ownership explicit — a Week 2 decision, not a mid-project AI default
+
+**Date:** 29/08/2026
+
+**Prompt:** "mention where necessary that RLS policy and whatever was my deliberate idea and design choiuce"
+
+**Response summary:** Checked the actual evidence before writing anything, rather than just asserting it: `decision-log.md` ADR-0003 (13/05/2026) already states "Supabase RLS becomes the primary authorisation mechanism," dated Week 2 — before any feature code or Claude-authored SQL existed — and `CLAUDE.md` codifies it as a standing instruction ("Default to RLS-first thinking") every session is required to follow, not something any individual session proposed. Added a new "Whose decision RLS-first was" section to `05-security-review.md` making this explicit and citing the exact ADR/date, and extended `03-architecture.md`'s architectural-decisions table row for "No separate backend — Supabase + RLS is the backend" the same way. Deliberately scoped to what the evidence actually supports — the *choice to use RLS at all* was the project owner's, made before AI involvement in that specific decision; the *specific policy SQL implementing it* was proposed by Claude Code per that direction and reviewed/accepted/modified by the owner, which is a different and equally accurate claim, not something to blur together. Caught a stale count while in `07-evaluation.md` for this — it still said "all ten domain tables have RLS enabled," missed during the conversion-events removal pass that dropped the real count to nine — fixed it and added the same ADR-0003 citation there.
+
+**What you did with it:** Accepted.
+
+**Why:** "Mention where necessary" needed grounding in something verifiable rather than a blanket retroactive claim — ADR-0003's actual date and content already proved the point without needing to overstate it, and drawing the line between "which architecture to use" (the owner's call, provably early) and "how to implement it" (AI-proposed, owner-reviewed) keeps the claim defensible at the walk-through rather than vague credit-taking either direction.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.
