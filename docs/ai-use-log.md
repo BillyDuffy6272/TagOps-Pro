@@ -833,6 +833,20 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Built the RLS integration suite and Playwright smoke suite — honest about which one is actually proven
+
+**Date:** 28/08/2026
+
+**Prompt:** After explaining what RLS integration tests, Playwright, and UAT actually are: "Ok implement the necessaru code (excludinf thr UAT which has already been completed) to do the RLS integratioun and polaywright. basically do everything that doesn;t require me."
+
+**Response summary:** Read the real table definitions and RLS policy text directly from `supabase/migrations/` before writing anything, rather than working from memory — this mattered: while designing test fixtures, found that `organisation_members`'s own `expires_at > joined_at` CHECK constraint would reject an "already-expired" test row at insert time unless `joined_at` was backdated too, and separately corrected a wrong assumption that a failed UPDATE `WITH CHECK` silently affects zero rows — Postgres actually throws, same as INSERT, when `USING` matches but `WITH CHECK` doesn't. Wrote 7 RLS tests, each tied to a real documented threat (the ADR-0029/0033 cross-tenant takeover, the owner-role UPDATE boundary, expired-membership handling, cross-org SELECT/INSERT with same-org positive controls) rather than generic coverage. Then wrote and *actually ran* a 3-test Playwright suite against a real production build, scoped honestly to the signed-out Landing/Login flow since faking an authenticated session would prove the wrong thing (that the login gate can be bypassed, not that the app works). Fixed a real build break along the way: adding a `test` key to `vite.config.ts` failed `tsc -b` until a `/// <reference types="vitest/config" />` was added, caught before it reached the user. Scoped `npm run test` to `tests/unit` explicitly so the new suites don't get silently swept into the default unit-test run. Updated `08-test-plan.md` and `07-evaluation.md` to state the real, asymmetric status plainly: the smoke suite is verified (3/3, actually executed); the RLS suite is written and type-checks but has never run against a real database, since this environment has no Docker for `supabase start`.
+
+**What you did with it:** Accepted.
+
+**Why:** "Do everything that doesn't require me" has a real edge here, and the honest move was to hit it explicitly rather than paper over it — I can write correct-looking SQL against the real policy text, but I cannot prove it's correct without actually running it, and claiming "RLS tests: done" without that caveat would have been a false signal for the walk-through defense specifically (being asked "did you run this" and having to admit "no" live would be worse than the doc already saying so). Reading the real schema before writing test SQL, instead of trusting my own earlier summaries of it, is also what caught the two fixture bugs before they could hide a false test failure/pass.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

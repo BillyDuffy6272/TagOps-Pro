@@ -4,9 +4,9 @@
 
 | Layer | Purpose | Run with | Status |
 |---|---|---|---|
-| `tests/unit/` | Pure logic, no live Supabase/GTM needed | `npm run test` (Vitest) | **Implemented** — 1 file, 29 tests, all passing |
-| `tests/integration/` | Policy tests against a local Supabase instance (RLS behaviour) | `supabase start` + a test runner against it | **Not yet implemented** — directory doesn't exist yet |
-| `tests/smoke/` | End-to-end critical flows in a real browser | Playwright | **Not yet implemented** — Playwright isn't installed; named in `CLAUDE.md`'s mandated stack but not yet added |
+| `tests/unit/` | Pure logic, no live Supabase/GTM needed | `npm run test` (Vitest) | **Implemented and verified** — 1 file, 29 tests, all passing |
+| `tests/integration/` | Policy tests against a local Supabase instance (RLS behaviour) | `supabase start`, then `npm run test:integration` | **Implemented, not yet verified** — written 28/08/2026 (ADR-0040), but never actually run — no Docker in the environment that wrote it, and `supabase start` needs Docker for the local Postgres/Auth stack. Type-checks cleanly; run it locally before trusting it |
+| `tests/smoke/` | End-to-end critical flows in a real browser | `npm run test:smoke` (Playwright) | **Implemented and verified for what it covers** — 3 tests, all passing, but scoped to the signed-out Landing/Login flow only (see below for why) |
 
 ## Current unit coverage
 
@@ -20,9 +20,23 @@ Runs with zero external dependencies (no network, no database), which is why it 
 
 ## RLS / security testing strategy
 
-This is the most significant gap, named directly rather than glossed over: the two real RLS bugs fixed on 27/08/2026 (`containers` and `organisation_members` INSERT policies both had a self-referential `WHERE organisation_id = organisation_id` clause that made the check a no-op) were found by manual code review during an audit — nothing automated in this repository would have caught either one, and nothing still does.
+The two real RLS bugs fixed on 27/08/2026 (`containers` and `organisation_members` INSERT policies both had a self-referential `WHERE organisation_id = organisation_id` clause that made the check a no-op) were found by manual code review during an audit — nothing automated in this repository caught either one at the time.
 
-A concrete test for this class of bug is straightforward to describe even though it isn't built yet: with `supabase start` running a local instance, impersonate two different authenticated users belonging to two different organisations (via `set_config('request.jwt.claims', ...)` inside a test transaction, matching the technique already used for manual debugging in ADR-0025), then assert that User A's attempt to `INSERT` a row with User B's `organisation_id` is rejected by the policy rather than silently succeeding. Written once per table with an `organisation_id`-scoped policy, this would have caught both real bugs directly instead of relying on a human to re-read every policy by eye. This is deliberately deferred rather than built in this pass — recorded here so it's a known, prioritised gap rather than a silent one.
+**`tests/integration/rls.test.ts`** (added 28/08/2026, ADR-0040) is a direct answer to that gap: it impersonates two different authenticated users belonging to two different organisations — via `set_config('request.jwt.claims', ...)` plus `SET LOCAL ROLE authenticated` inside a transaction that always rolls back, the same mechanism PostgREST itself uses per request, matching the technique already used for manual debugging in ADR-0025 — then asserts that a cross-organisation write is rejected. Seven tests, each tied to a real, documented threat rather than generic coverage:
+
+- Cross-org `tags` INSERT rejected, same-org INSERT succeeds (positive control)
+- Cross-org `tags` SELECT returns zero rows rather than erroring, same-org SELECT returns the row (positive control)
+- Cross-org `organisation_members` INSERT rejected — the exact ADR-0029/ADR-0033 cross-tenant takeover bug, attempting the worst case directly (inserting an `'owner'` row into someone else's org)
+- `organisation_members` UPDATE cannot set `role = 'owner'`, even for an admin who can otherwise update that row
+- An expired membership (`expires_at` in the past) is treated as inactive, blocking a write that an active membership in the same role would allow
+
+**Important limitation, stated plainly:** this suite was written but has never actually been run. `supabase start` needs Docker for the local Postgres/Auth stack, and the environment these tests were written in doesn't have Docker available. The SQL was written directly against the real schema and policy text in `supabase/migrations/`, and the file type-checks cleanly, but that is not the same as having executed it against a real database and watched it pass. **Run `supabase start` then `npm run test:integration` locally before trusting these tests** — if any fail, the bug could be in the test's SQL/fixtures rather than the policy under test, since neither has been proven against a real instance yet.
+
+## Smoke test coverage
+
+**`tests/smoke/landing-login.spec.ts`** (added 28/08/2026, ADR-0040) — 3 Playwright tests, run against a real production build (`npm run build` + `vite preview`, not the dev server) and actually executed and passing, not just written: Landing renders and its "Get started" button leads into the real Login screen; Login's logo returns to Landing; and no console errors occur across that flow.
+
+**Deliberately scoped to the signed-out flow only.** Every other view (Tags, Settings, Organisation, etc.) requires a real, Google-authenticated Supabase session, and there's no way to fake one safely here: a hand-crafted JWT would satisfy the client's own "am I logged in" check, but would fail signature validation on every real Supabase query, so it wouldn't actually prove those views work — it would just prove the login gate can be bypassed, which isn't the same thing and isn't a test worth having. Automating the authenticated flows would need a stored, real, valid session (Playwright's `storageState`, captured from an actual sign-in) — not attempted here. Manual click-through remains how the authenticated app is verified, per the checklist below.
 
 ## Manual testing / walkthrough checklist
 
@@ -38,4 +52,4 @@ What actually gets clicked through before a change is considered done, in the ab
 
 ## Known gaps
 
-Stated plainly rather than implied: there is no integration test suite exercising RLS policies directly, no Playwright smoke suite despite it being named in the mandated stack, and no component-level tests for individual React components (coverage today is limited to two pure-logic modules). This is an acceptable state for the current stage of the project given the timeline, but it is a real gap, not a deliberately-scoped exclusion — closing the RLS integration-test gap specifically is the highest-priority item in `07-evaluation.md`'s future-improvements list, precisely because it's the one category of bug that has already happened twice.
+Stated plainly rather than implied: the RLS integration suite has not been run against a real database yet (see above — needs `supabase start` locally), the smoke suite covers only the signed-out flow, and there are no component-level tests for individual React components (unit coverage today is one pure-logic module). This is an improvement on the previous state, not a closed gap — running the integration suite for the first time, and deciding whether authenticated smoke coverage is worth the `storageState` setup, are both still open.

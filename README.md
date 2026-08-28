@@ -71,6 +71,8 @@ TagOps-Pro/
 - `npm run typecheck` — TypeScript project build (`tsc -b`).
 - `npm run test` — Vitest unit suite (`tests/unit/`).
 - `npm run test:watch` — Vitest in watch mode.
+- `npm run test:integration` — Vitest RLS policy suite (`tests/integration/`) against a local Supabase instance. Run `supabase start` first (needs Docker).
+- `npm run test:smoke` — Playwright smoke suite (`tests/smoke/`) against a real production build.
 - `supabase start` — local Supabase for integration tests.
 
 Environment variables live in `.env.local` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`); never commit a real env file.
@@ -107,4 +109,4 @@ Plus a 15-minute walk-through in Week 10.
 
 Core product built and deployed: Tags/Triggers/Variables (live from GTM), organisation/team management with genuinely role-gated access, invite codes, theming, and Preview mode are all working. All nine folio docs plus both running logs (`decision-log.md`, `ai-use-log.md`) are populated, not placeholders. The security floor is met — see `docs/05-security-review.md`.
 
-Known open gaps, tracked in the folio rather than hidden: no RLS integration test suite or Playwright smoke suite yet, despite both being named in the mandated repo layout (`docs/08-test-plan.md`); no UAT session has been run yet (`docs/09-iteration-log.md`). The Week 11 report (PDF) and the Git invitation to the marking teacher are outside this repository and not tracked here.
+Known open gaps, tracked in the folio rather than hidden: both `tests/integration/` (RLS policy tests) and `tests/smoke/` (Playwright) now exist, but the RLS suite has never actually been run against a real database — it needs `supabase start` (Docker) locally to prove it passes, and the smoke suite only covers the signed-out flow (see `docs/08-test-plan.md`). No UAT session has been run yet (`docs/09-iteration-log.md`). The Week 11 report (PDF) and the Git invitation to the marking teacher are outside this repository and not tracked here.

@@ -63,11 +63,11 @@ See `06-front-end-architecture.md` for the full list. The honest summary: forms,
 
 ## Testing summary
 
-See `08-test-plan.md` for the full breakdown. In short: unit tests exist and pass (29/29) for dataLayer-touching logic, per `CLAUDE.md`'s requirement, but there is no integration layer testing RLS policy behaviour directly and no Playwright smoke suite yet, despite both being named in the mandated repo layout. `npm run lint`/`typecheck`/`test` all passing is a real signal, but it isn't equivalent to that missing coverage.
+See `08-test-plan.md` for the full breakdown. Unit tests exist and pass (29/29) for dataLayer-touching logic, per `CLAUDE.md`'s requirement. Both the RLS integration suite and the Playwright smoke suite named in the mandated repo layout now exist too (ADR-0040), but with an honest asymmetry worth stating plainly rather than glossing over: the smoke suite was actually run and passes (3/3, scoped to the signed-out flow); the RLS integration suite was written directly against the real schema and policy text but has never been executed against a real database, since the environment that wrote it had no Docker available for `supabase start`. `npm run lint`/`typecheck`/`test` all passing, and the smoke suite passing, are real signals — but "written and type-checks" is not the same claim as "run and passing," and the two shouldn't be conflated for the integration suite.
 
 ## Future improvements
 
-In priority order if development continued: an integration test suite that impersonates two different users in two different organisations against a local Supabase instance (the kind of test that would have caught the RLS bugs directly, rather than by manual review); TanStack Query to replace the currently-duplicated fetch-orchestration logic across five views; a Playwright smoke suite; the missing `@/` import alias; a Content-Security-Policy; rate limiting on invite-code redemption; and closing the two deliberately-deferred accessibility gaps.
+In priority order if development continued: **actually run `tests/integration/rls.test.ts` against a local Supabase instance** — it exists but has never been executed, which is the single highest-priority item now, since an unrun test proves nothing; extend the Playwright suite past the signed-out flow, most plausibly via a captured `storageState` from a real sign-in; TanStack Query to replace the currently-duplicated fetch-orchestration logic across four views; the missing `@/` import alias; a Content-Security-Policy; rate limiting on invite-code redemption; and closing the two deliberately-deferred accessibility gaps.
 
 ## Reflection on the AI-assisted process
 
