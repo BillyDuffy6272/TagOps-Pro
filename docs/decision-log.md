@@ -16,6 +16,16 @@ Add new entries to the top. Do not edit historical entries — supersede them wi
 
 ---
 
+## ADR-0032 — Logo accent color matched to the app's actual accent; Login page's mismatched logo replaced
+
+- **Date:** 2026-08-28
+- **Status:** Accepted (closes the follow-up noted in ADR-0030)
+- **Context:** The favicon mark (now used as the app's logo in the Sidebar and loading screen, per ADR-0030) had a bright mint-green accent dot (`#39ffb0`) that didn't match `--color-accent` (`#8b8ef7` dark / `#5b52e0` light) used everywhere else in the UI. Separately, `Login.tsx` — the actual first screen most users see — still had its own unrelated inline hexagon logo (indigo polygons), a mismatch flagged as a known follow-up when the favicon-as-logo change was made but not addressed at the time.
+- **Decision:** Changed the accent dot in both `public/favicon.svg` and `public/favicon-light.svg` to the exact `--color-accent` hex value for that tile's theme, rather than introducing a fourth bespoke color. Replaced `Login.tsx`'s hexagon `<svg>` with the same theme-aware `<img>` pattern already used in `Sidebar.tsx`/`App.tsx` (`resolvedTheme === 'light' ? favicon-light.svg : favicon.svg`), so all three logo placements are now the same asset.
+- **Consequences:** The app has one logo mark used consistently everywhere a logo appears, in the correct brand color, in both themes. Verified visually in an isolated preview harness across Sidebar/loading-screen/Login × light/dark (6 combinations, no console errors). The Login page's outer background gradient is unrelated to this change and was left untouched.
+
+---
+
 ## ADR-0031 — Editor vs. viewer actually differ now: role-gated write UI + a request-access flow
 
 - **Date:** 2026-08-28

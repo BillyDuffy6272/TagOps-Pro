@@ -707,6 +707,34 @@ One deliberate simplification flagged: trigger filter conditions render as one r
 
 ---
 
+### Matched the logo's accent color app-wide, replaced the Login page's mismatched logo
+
+**Date:** 28/08/2026
+
+**Prompt:** "Change the green part of the logo to the same blue purple that exists when on a page. Update this for every logo. Also put this logo on the initial loading page as there is a random logo there that doesn't match the others."
+
+**Response summary:** Changed the accent dot in both `favicon.svg` and `favicon-light.svg` from a bespoke mint-green (`#39ffb0`) to the exact `--color-accent` value already used everywhere else in the app (`#8b8ef7` dark / `#5b52e0` light, confirmed by reading the actual token values from `index.css` rather than eyeballing a match). Interpreted "the initial loading page" as `Login.tsx` — the actual first screen a signed-out user sees — since that's where the described "random logo that doesn't match" genuinely was: an unrelated inline hexagon SVG in indigo tones, left over from before the favicon became the app's logo (ADR-0030) and flagged at the time as an unresolved follow-up. Replaced it with the same theme-aware `<img>` pattern already used in `Sidebar.tsx`/`App.tsx`. Verified all three placements (Sidebar, loading screen, Login) in both themes via the isolated preview harness — 6 screenshots, zero console errors, all three now visibly the same mark and color.
+
+**What you did with it:** Accepted.
+
+**Why:** Reading the actual hex values out of `index.css` rather than approximating "blue purple" from memory meant the logo's accent is now pixel-identical to the app's real accent color, not just close to it — worth doing given this is exactly the kind of small inconsistency a walk-through could probe.
+
+---
+
+### Updated 02-requirements.md with features built beyond the original scope, then re-synced 07-evaluation.md
+
+**Date:** 28/08/2026
+
+**Prompt:** "Update my requirements for everything I have in my website, then take those and re-edit the evaluation page."
+
+**Response summary:** Added to `02-requirements.md` — never rewrote any existing line — three things that now genuinely exist in the app but weren't in the original list: Google Ads conversion ID linking + copy-paste tracking snippet generation (as a sub-bullet under the existing Tags/Triggers/Conversions/Variables line), joining via a shareable invite code (sub-bullet under "Create or join an Organisation"), and the access-request flow (sub-bullets under the existing "Different user roles..." line, which the project owner had already added independently — confirmed by comparing against the version last read in this session). Also added a small "Search/filter by name" bullet under Would Be Nice and a "Collapsible" sub-bullet under the Home page guide line, both real, already-shipped behaviour. Left the pre-existing internal contradiction (Preview mode listed as both Would Be Nice and Out of Scope) exactly as written, but added one clearly-marked note below the Out of Scope list flagging it rather than silently resolving it by editing either original line. Then updated `07-evaluation.md`'s requirements-traceability tables to add rows for every newly-documented requirement (all **Met**, each citing the actual file/ADR backing it), and tightened the Preview-mode row's wording now that the contradiction has a proper note to point to instead of being described as "worth resolving later."
+
+**What you did with it:** Accepted.
+
+**Why:** The instruction was explicit about not touching what's already written, so every requirements-doc change was additive — new sub-bullets under matching existing lines, one new top-level bullet each for the two genuinely new feature areas, and an annotation rather than an edit for the known contradiction. Re-syncing the evaluation afterward keeps the two documents from silently drifting apart, which would otherwise be exactly the kind of small inconsistency a walk-through would catch.
+
+---
+
 ## Standing notes / guardrails
 
 - AI is a fast junior collaborator, not an authority. Anything it produces about **product direction, target user, scope, or pricing** must be reviewed by me before it enters a public-facing doc.

@@ -7,16 +7,19 @@ Against `02-requirements.md`'s MUST HAVE / MVP list:
 | Requirement | Status | Notes |
 |---|---|---|
 | Organisation for Tags, Triggers, Conversion events, Variables (with dropdown pickers) | **Met** | One view per entity type; `ContainerPicker` provides the dropdown selection |
+| Link a container to a Google Ads conversion ID and generate ready-to-paste tracking code | **Met** | `GoogleAdsSettingsModal` links the ID; `snippets.ts` generates escaped gtag.js/dataLayer snippets per conversion event, copyable from `ConversionSnippetModal` |
 | An intuitive UI, easy navigation | **Met** | Sidebar nav with active-state highlighting, plus the Home page's own "what each page shows" guide added specifically to address unfamiliarity |
 | Create an account under 2 minutes using Google | **Met** | Single-click Google OAuth sign-in, no separate account form |
 | Secure and confidential account | **Met** | Supabase Auth + RLS on every table; see `05-security-review.md` for the full case |
 | Put all actual setup info into the site within 10 minutes | **Met, with a caveat** | Tag/trigger/variable data isn't manually entered at all — it's read live from GTM the moment the OAuth scope is granted, which is faster than the original 10-minute target implies but is a different mechanism than "entering" data |
-| Create or join an organisation | **Met** | `OrganisationOnboarding` (create) and invite-code redemption (join) |
+| Create or join an organisation, including via a shareable invite code | **Met** | `OrganisationOnboarding` (create) and invite-code redemption via `redeem_invite_code()` (join) — ADR-0023 |
 | Add people to an organisation | **Met** | `AddMemberModal`, gated to owner/admin |
 | Remove people, with an expiry date | **Met** | `removeOrganisationMember`; `expires_at` column, enforced by a `CHECK` constraint that owners can never expire |
 | All initial data loads after linking | **Met** | `GtmContext` loads accounts/containers as soon as a session with a `provider_token` exists |
 | Readable, easily viewable text | **Partial** | Generally true, but the accessibility audit found some text-color tokens (`text-tertiary`, `text-faint`) fall slightly short of WCAG AA contrast in places — see `06-front-end-architecture.md` |
 | Can see if the account is properly linked and accurately reflects the real Google account | **Met** | Home page's "GTM connected / disconnected" indicator; `GtmForbiddenState` surfaces a 403 distinctly from a generic error |
+| Different user roles, each genuinely limiting/granting access | **Met** | Owner/Admin/Editor/Viewer, enforced at the database via RLS (not just hidden UI) — see ADR-0031. Editor+ can write, Viewer is read-only |
+| A Viewer can request to be upgraded; an Owner/Admin approves or denies it | **Met** | `access_requests` table + RLS (ADR-0031); approving actually promotes the member's role, not just a status flag |
 
 Against the WOULD BE NICE list — several shipped even though they weren't required:
 
@@ -27,8 +30,9 @@ Against the WOULD BE NICE list — several shipped even though they weren't requ
 | Small summary before expanding | **Met** | `EntityRow` cards show key metadata before the detail modal opens |
 | Contrast improvements for menu/dashboard | **Partial** | Sidebar contrast was explicitly revisited (see commit history); some color tokens still fall short of AA per the accessibility audit |
 | See which page you're on | **Met** | Active nav item is visually highlighted, plus `aria-current="page"` for assistive tech |
-| Home page explaining what each page shows | **Met** | Built this session — directly answers this requirement |
-| Preview mode for dataLayer inspection | **Met — worth flagging** | This item also appears, contradictorily, on the *Out of scope* list in the same requirements document. It got built anyway (`PreviewView`/`simulator.ts`), which reads as positive over-delivery rather than scope creep, but the requirements doc itself has an internal inconsistency worth resolving in a later revision |
+| Home page explaining what each page shows, collapsible | **Met** | Built this session, then converted to a collapsed-by-default disclosure after feedback that it looked crowded |
+| Search/filter tags, triggers, variables, conversion events by name | **Met** | A search input on each of the four list views |
+| Preview mode for dataLayer inspection | **Met — worth flagging** | This item also appears, contradictorily, on the *Out of scope* list in the same requirements document — now annotated there directly rather than left as a silent inconsistency. It got built anyway (`PreviewView`/`simulator.ts`), which reads as positive over-delivery rather than scope creep |
 | Verify tag setup is actually operational/running | **Not met** | Also listed under both "Would be nice" and "Out of scope" in the source document. Consistent with the out-of-scope framing: this would require the app to load a real page, which it deliberately never does (see the "no real page" boundary documented in the Preview feature's own ADRs) |
 
 Every *Out of scope* item was checked and confirmed correctly absent: no AI suggestion feature, no ability to make real changes to GTM/GA4 from the app, no two-way sync, no support-contact feature. The one already-noted exception is dataLayer preview, which is out-of-scope on paper but shipped in practice.

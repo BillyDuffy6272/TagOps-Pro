@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useTheme } from '../lib/ThemeContext'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { resolvedTheme } = useTheme()
 
   async function signInWithGoogle() {
     setLoading(true)
@@ -49,11 +51,13 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(150deg,#080c14_0%,#0d1a2e_60%,#0a1628_100%)]">
       <div className="w-full max-w-[420px] rounded-xl border border-border bg-surface px-12 py-13 text-center shadow-[0_0_0_1px_var(--color-border),0_24px_48px_rgba(0,0,0,0.5)]">
         <div className="mb-2.5 flex items-center justify-center gap-3.5">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-            <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="#4F46E5" />
-            <polygon points="18,8 28,14 28,26 18,32 8,26 8,14" fill="#312E81" />
-            <circle cx="18" cy="18" r="4" fill="#818CF8" />
-          </svg>
+          <img
+            src={resolvedTheme === 'light' ? '/favicon-light.svg' : '/favicon.svg'}
+            alt=""
+            width="36"
+            height="36"
+            className="rounded-lg"
+          />
           <h1 className="m-0 font-sans text-[28px] font-bold tracking-[-0.03em] text-text-primary">TagOps Pro</h1>
         </div>
         <p className="m-0 mb-9 text-[15px] leading-relaxed text-text-tertiary">Clarity for your Google Tag Manager setup</p>

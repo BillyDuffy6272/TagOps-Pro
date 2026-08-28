@@ -8,12 +8,14 @@
 
 - Organisation for Tags, Triggers, Conversion events, Variables
     - Drop down menus to easily pick them
+    - Link a container to a Google Ads conversion ID and generate ready-to-paste tracking code (gtag.js / GTM dataLayer) for each conversion event
 - An intutive User Interface
     - Easy naviagation and easy to understand interface
 - Make an account under 2 mins using Google
 - Secure and confidential account
 - Put all actual setup info into the website in 10 mins
 - Create or join an Organisation 
+    - Join via a shareable invite code, not just being manually added
 - Add people to an Organisation
 - Remove people from the Organisation
     - Add an expiry date for people
@@ -21,6 +23,8 @@
 - Readable + easily viewable text 
 - Be able to see if the account is properly linked to the Google Account and accurately showing the information in their Google Account
 - Different user roles to limit + provide access to the Organisation accordingly for each user 
+    - Owner, Admin, Editor and Viewer, each with genuinely different access — Editor+ can create/edit, Viewer is read-only
+    - A Viewer can request to be upgraded to Editor; an Owner or Admin approves or denies it
 
 ---
 ### WOULD BE NICE / Extras 
@@ -36,6 +40,8 @@
 - Contrast with menu and dashboard for optimal user viewing 
 - See where a user is in terms of which page they are on
 - Home page that shows all what the different pages refer to
+    - Collapsible, so it doesn't clutter the page for returning users
+- Search / filter tags, triggers, variables and conversion events by name
 ---
 ### Out of scope
 
@@ -53,3 +59,6 @@
 - Suggestions for business owners to include other info if missing or if they need to actually add this
 - Be able to contact support services w/ any issues that arise
     - Sponsered by my Business Need Tracking potentially
+
+---
+> Note (added 28/08/2026): Preview mode for dataLayer inspection is listed here as out of scope, but also under Would Be Nice above — it ended up being built (see `07-evaluation.md`). Leaving both original lines as written rather than editing them; this note just flags the overlap.
