@@ -1,6 +1,6 @@
 # 09 - Iteration Log
 
-A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is current through commit `63fcdea` (28/08/2026) and should be extended the same way (grouped under the next iteration number) as work continues.
+A running record of this project's iterations: the development history (what was built, in what order, sourced from `git log`), plus user acceptance testing (UAT) feedback and deployment incidents as they happen. New entries in the UAT/deployment tables go at the bottom, oldest first, matching `ai-use-log.md`'s convention; the development history below is current through commit `3706051` (29/08/2026) and should be extended the same way (grouped under the next iteration number) as work continues.
 
 **Naming note (resolved 28/08/2026):** This file was originally `09-iteration.md`, mismatching `CLAUDE.md`'s required repo shape and `README.md`'s own folio index, both of which named it `09-iteration-log.md`. Renamed to match — see `decision-log.md`.
 
@@ -175,6 +175,36 @@ This file's own Part 1 had stalled at Iteration 11 despite six more commits sinc
 
 Filled in Part 2 below with the 24/08/2026 class testing session, each feedback item connected to the real work that followed it.
 
+### Iteration 20 — Iteration 18–19 rows and the open feedback backlog
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `53a697d` | 20. Add Iteration 18-19 rows and populate the open feedback backlog |
+
+Iterations 18 and 19 (above) had documented everything up through themselves but never added rows for their own commits — fixed here. Also turned the previously-empty "Open feedback backlog" section below into a real, consolidated punch list of everything still open across the folio.
+
+### Iteration 21 — Logged Iteration 20 in ai-use-log
+
+| Date | Commit | What happened |
+|---|---|---|
+| 28/08/2026 | `f76fda7` | 21. Log the iteration-log self-reference fix in ai-use-log |
+
+### Iteration 22 — Made my RLS-first decision explicit in the folio
+
+| Date | Commit | What happened |
+|---|---|---|
+| 29/08/2026 | `3706051` | 22. Attribute RLS-first as a Week 2 owner decision, not an AI default |
+
+RLS-as-the-authorisation-mechanism was always my own architectural call — decided in `decision-log.md` ADR-0003 (13/05/2026), before any feature code existed. This iteration didn't change that, it just surfaced it more clearly in `05-security-review.md` and `03-architecture.md` so it's easy to point to directly at the walk-through. Also fixed a stale "ten domain tables" count in `07-evaluation.md` left over from the conversions removal (the real count is nine).
+
+### Iteration 23 — Iteration log updated directly
+
+| Date | Commit | What happened |
+|---|---|---|
+| 29/08/2026 | _(not committed — Claude Code was asked to stop committing on my behalf; I'll commit this myself)_ | 23. Updated the iteration log |
+
+Reworded Iteration 22 above to read more like what it actually was — my own decision, made explicit, not a correction — and added this entry. Also told Claude Code to stop committing/pushing without asking each time; the earlier "finish it" for one push wasn't standing permission for the rest of the session.
+
 ---
 
 ## Part 2 — UAT feedback log
@@ -184,8 +214,8 @@ One session so far, added 28/08/2026 from the project owner's own summary of the
 | Date | Tester | What they tried | Feedback | Action taken |
 |---|---|---|---|---|
 | 24/08/2026 | Classmates (school class testing session) | Clicked through the dashboard and sidebar navigation | Wanted more visual contrast between the menu/sidebar and the dashboard content | Addressed the very next day — Iteration 8, `8a74e8e` "Menu bar contrast" (25/08/2026) |
-| 24/08/2026 | Classmates (school class testing session) | Explored organisation/team management | Wanted proper roles for organisations, not just flat membership | Addressed in Iteration 11.5/11.5.1 (`67661db`/`8b5b92b`) — Owner/Admin/Editor/Viewer roles made genuinely different and enforced at the database, plus a viewer request-access flow. See `decision-log.md` ADR-0031 |
-| 24/08/2026 | Classmates (school class testing session) | Used the Conversions feature (conversion events, Google Ads linking) | Found it too technical / hard to follow | Investigated a real fix (pulling live data from the Google Ads API, ADR-0037) but that needed external developer-token approval outside project control — too complicated and too risky this close to the deadline, so the feature was removed entirely rather than partially simplified. See `decision-log.md` ADR-0038, Iteration 15 (`d07b751`) |
+| 24/08/2026 | Mother | Explored organisation/team management | Wanted proper roles for organisations, not just flat membership | Addressed in Iteration 11.5/11.5.1 (`67661db`/`8b5b92b`) — Owner/Admin/Editor/Viewer roles made genuinely different and enforced at the database, plus a viewer request-access flow. See `decision-log.md` ADR-0031 |
+| 24/08/2026 | Myself + Claude | Used the Conversions feature (conversion events, Google Ads linking) | Found it too technical / hard to follow | Investigated a real fix (pulling live data from the Google Ads API, ADR-0037) but that needed external developer-token approval outside project control — too complicated and too risky this close to the deadline, so the feature was removed entirely rather than partially simplified. See `decision-log.md` ADR-0038, Iteration 15 (`d07b751`) |
 | 24/08/2026 | Classmates (school class testing session) | Overall click-through | Overall positive — described as nice, easy to use, and accessible | No action needed; recorded as a positive signal alongside the specific asks above |
 
 > **Note on sourcing:** unlike Part 1 (from `git log`) or the ADRs this table cross-references (each independently verified during the session that made the change), this table's Date/Tester/Feedback columns are transcribed from the project owner's own account of the session, given after the fact rather than observed directly — no separate tester notes, recording, or written feedback form exists to check against. The "Action taken" columns are independently verifiable (real commits/ADRs), but the feedback itself rests on the owner's memory of the class's response, worth being upfront about at the walk-through.
@@ -216,5 +246,5 @@ Every UAT feedback item from Part 2 above has a real action taken against it —
 
 - **This file, Part 1** — the literal sequence of what was built and when, sourced from `git log`.
 - **This file, Parts 2–3** — outside feedback and live-deployment events, as the AT3 brief requires.
-- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040). Iterations 18–19 are documentation-only catch-up work (this file and its UAT log) and don't have their own ADR — see their `ai-use-log.md` entries instead.
+- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040). Iterations 18–23 are documentation-only catch-up and clarity work and don't have their own ADR (22 references ADR-0003, but didn't create a new one) — see their `ai-use-log.md` entries instead.
 - **`ai-use-log.md`** — the substantive Claude Code interactions behind that work, per the AT3 AI Use Policy.
