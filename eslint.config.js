@@ -6,7 +6,10 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // Edge Functions run on Deno, not Node/the browser — global `Deno`,
+  // remote-URL imports, and Deno's own lint/fmt tooling apply there
+  // instead of this (Vite/Node-targeted) config.
+  globalIgnores(['dist', 'supabase/functions']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

@@ -14,6 +14,128 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversion_events: {
+        Row: {
+          id: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          event_name: string
+          display_name: string | null
+          value_param: string | null
+          currency: string | null
+          is_active: boolean
+          conversion_label: string | null
+          category: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
+          notes: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          display_id: string
+          container_id: string
+          organisation_id: string
+          event_name: string
+          display_name?: string | null
+          value_param?: string | null
+          currency?: string | null
+          is_active?: boolean
+          conversion_label?: string | null
+          category?: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          display_id?: string
+          container_id?: string
+          organisation_id?: string
+          event_name?: string
+          display_name?: string | null
+          value_param?: string | null
+          currency?: string | null
+          is_active?: boolean
+          conversion_label?: string | null
+          category?: "purchase" | "add_to_cart" | "begin_checkout" | "subscribe" | "qualified_lead" | "converted_lead" | "submit_lead_form" | "book_appointment" | "sign_up" | "request_quote" | "get_directions" | "outbound_click" | "contact" | "page_view" | "other"
+          notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
+      live_verification_events: {
+        Row: {
+          id: string
+          check_token: string
+          conversion_event_id: string
+          organisation_id: string
+          event_name: string | null
+          event_payload: Json
+          captured_at: string
+        }
+        Insert: {
+          id?: string
+          check_token: string
+          conversion_event_id: string
+          organisation_id: string
+          event_name?: string | null
+          event_payload: Json
+          captured_at?: string
+        }
+        Update: {
+          id?: string
+          check_token?: string
+          conversion_event_id?: string
+          organisation_id?: string
+          event_name?: string | null
+          event_payload?: Json
+          captured_at?: string
+        }
+        Relationships: []
+      }
+      // No RLS policies grant anon/authenticated any access at all — this
+      // table is only ever touched by the service_role client inside
+      // supabase/functions/google-ads-connect and google-ads-report.
+      // Listed here for those Edge Functions' typing, not because the
+      // browser client can query it (it can't, and never should).
+      google_ads_connections: {
+        Row: {
+          organisation_id: string
+          customer_id: string
+          vault_secret_id: string
+          connected_by: string | null
+          connected_at: string
+          updated_at: string
+        }
+        Insert: {
+          organisation_id: string
+          customer_id: string
+          vault_secret_id: string
+          connected_by?: string | null
+          connected_at?: string
+          updated_at?: string
+        }
+        Update: {
+          organisation_id?: string
+          customer_id?: string
+          vault_secret_id?: string
+          connected_by?: string | null
+          connected_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       access_requests: {
         Row: {
           id: string
@@ -170,6 +292,7 @@ export type Database = {
           environment: "production" | "staging" | "sandbox"
           gtm_container_id: string | null
           ga4_property_id: string | null
+          google_ads_conversion_id: string | null
           notes: string | null
           created_at: string
           created_by: string | null
@@ -186,6 +309,7 @@ export type Database = {
           environment?: "production" | "staging" | "sandbox"
           gtm_container_id?: string | null
           ga4_property_id?: string | null
+          google_ads_conversion_id?: string | null
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -202,6 +326,7 @@ export type Database = {
           environment?: "production" | "staging" | "sandbox"
           gtm_container_id?: string | null
           ga4_property_id?: string | null
+          google_ads_conversion_id?: string | null
           notes?: string | null
           created_at?: string
           created_by?: string | null
@@ -417,6 +542,31 @@ export type Database = {
           organisation_name: string
           already_member: boolean
         }[]
+      }
+      get_google_ads_connection_status: {
+        Args: { p_org_id: string }
+        Returns: {
+          connected: boolean
+          customer_id: string | null
+          connected_at: string | null
+        }[]
+      }
+      // service_role only (supabase/functions/google-ads-connect,
+      // supabase/functions/google-ads-report) — never called from the
+      // browser client, listed here only so those Edge Functions can share
+      // this file's Database type.
+      store_google_ads_refresh_token: {
+        Args: {
+          p_org_id: string
+          p_refresh_token: string
+          p_customer_id: string
+          p_connected_by: string
+        }
+        Returns: undefined
+      }
+      get_google_ads_refresh_token: {
+        Args: { p_org_id: string }
+        Returns: string
       }
     }
     Enums: {

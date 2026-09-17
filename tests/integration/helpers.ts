@@ -83,6 +83,13 @@ export async function impersonate(client: PoolClient, userId: string): Promise<v
   await client.query('set local role authenticated')
 }
 
+// A genuinely anonymous PostgREST request — no Authorization header at all,
+// just the public anon API key. No request.jwt.claims is set (auth.uid()
+// reads as null), matching production exactly rather than simulating it.
+export async function impersonateAnon(client: PoolClient): Promise<void> {
+  await client.query('set local role anon')
+}
+
 // Every test should wrap its fixtures + impersonation + assertions in one
 // transaction and always roll back, so nothing persists and tests never
 // interfere with each other regardless of run order.

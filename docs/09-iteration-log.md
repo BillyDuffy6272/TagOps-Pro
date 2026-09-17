@@ -205,6 +205,22 @@ RLS-as-the-authorisation-mechanism was always my own architectural call — deci
 
 Reworded Iteration 22 above to read more like what it actually was — my own decision, made explicit, not a correction — and added this entry. Also told Claude Code to stop committing/pushing without asking each time; the earlier "finish it" for one push wasn't standing permission for the rest of the session.
 
+### Iteration 24 — Re-added conversion-event tracking, built a real (deliberately unverified) Google Ads OAuth connection
+
+| Date | Commit | What happened |
+|---|---|---|
+| 17/09/2026 | _(not committed yet)_ | 24. Re-add conversions + build a real Google Ads API integration |
+
+Asked to re-add the conversions feature removed in Iteration 15 (ADR-0038). Rather than assume which version, was asked (and answered, across two clarifying questions) that this meant the full live Google Ads API integration ADR-0037 had researched and declined to build — accepted knowingly without a real developer token ("build it blind"). Restored `src/features/conversions/` and its tests from git history at the pre-removal commit, unchanged. Built a genuinely new, separate "Connect Google Ads" OAuth flow on top — deliberately never touching `Login.tsx`'s own sign-in call, so the restricted `adwords` scope is only ever requested when an owner/admin explicitly opts in from the Conversions view. The refresh token is stored via Supabase Vault, not a plain column, behind two `service_role`-only functions. First two Edge Functions this project has ever had. The live Google Ads report call is explicitly flagged as unverified — no developer token exists — and returns a clean blocked-state response rather than pretending to work. See `decision-log.md` ADR-0041.
+
+### Iteration 25 — Actually tested Iteration 24; found and fixed a live PII-disclosure bug plus a gap in that same new code
+
+| Date | Commit | What happened |
+|---|---|---|
+| 18/09/2026 | _(not committed yet)_ | 25. Test everything added and confirm it's safe for deployment |
+
+Asked to test Iteration 24 and confirm it's safe to deploy. Docker was available this time (it wasn't for Iteration 17's RLS suite), so ran the previously-never-executed `tests/integration/rls.test.ts` against a real local Postgres for the first time — its first test failed, and turned out to be real: `conversion_events`' write policies never checked that `container_id` actually belonged to the `organisation_id` being written (confirmed this doesn't leak data, fixed it anyway since it's part of what Iteration 24 restored). While verifying the new Google Ads Vault functions actually worked, found a real bug in Iteration 24's own code — `get_google_ads_refresh_token` was callable by any signed-in user due to a Supabase default-privilege quirk (`revoke ... from public` doesn't touch `anon`/`authenticated`, which are granted directly) — and then found the identical, pre-existing mistake already live in `find_user_by_email` (three weeks old, unrelated to this work), which had no internal check to fail safely behind: any fully anonymous caller could look up any real user's id/name/avatar/email. Fixed both. Added regression tests for everything found. Verified both new Edge Functions end-to-end over real HTTP against a real local session, not just their pure helper functions. See `decision-log.md` ADR-0042.
+
 ---
 
 ## Part 2 — UAT feedback log
@@ -220,6 +236,8 @@ One session so far, added 28/08/2026 from the project owner's own summary of the
 
 > **Note on sourcing:** unlike Part 1 (from `git log`) or the ADRs this table cross-references (each independently verified during the session that made the change), this table's Date/Tester/Feedback columns are transcribed from the project owner's own account of the session, given after the fact rather than observed directly — no separate tester notes, recording, or written feedback form exists to check against. The "Action taken" columns are independently verifiable (real commits/ADRs), but the feedback itself rests on the owner's memory of the class's response, worth being upfront about at the walk-through.
 
+> **Note (added 17/09/2026):** The "Action taken" cell above for the Conversions feedback row describes what was done in response to that feedback *at the time* (removed entirely, Iteration 15) — left as originally written rather than edited, per this file's own convention. Conversion-event tracking was re-added since (Iteration 24, `decision-log.md` ADR-0041), this time alongside a real Google Ads OAuth connection built specifically so the "too technical" complaint doesn't resurface the same way: the manual entry/snippet flow the class found confusing is unchanged, but pulling live numbers is now a one-click "Connect Google Ads" action rather than something the feedback was originally about.
+
 ## Part 3 — Deployment iteration log
 
 Distinct from Part 1 above: this table is for incidents that only surfaced once code was live on Vercel/Supabase (a failed build, a misconfigured environment variable, a migration that needed reapplying) — not the routine "built a feature" entries already captured as development iterations. None have been logged yet.
@@ -232,7 +250,9 @@ Distinct from Part 1 above: this table is for incidents that only surfaced once 
 
 Every UAT feedback item from Part 2 above has a real action taken against it — none are left open. What follows instead is every other currently-open item across the folio, consolidated into one punch list rather than left scattered — each still has its full detail at the linked source, this is just the "what's actually left" view:
 
-- **Run `tests/integration/rls.test.ts` for the first time.** Written against the real schema/policies (ADR-0040) but never executed — needs `supabase start` (Docker) on a machine that has it. Highest-priority item; see `08-test-plan.md`.
+- ~~Run `tests/integration/rls.test.ts` for the first time.~~ **Done, 18/09/2026 (Iteration 25, ADR-0042).** 11/12 pass; the fix for what it found is the next bullet.
+- **Fix the `tags`/`triggers`/`variables` container/organisation-consistency gap the RLS suite surfaced.** Fixed for `conversion_events`; left open for these three since the app never actually queries them. See `05-security-review.md`.
+- **Verify `supabase/functions/google-ads-report` against a real Google Ads endpoint.** Blocked on an external developer-token approval process outside this project's control (ADR-0037/ADR-0041) — everything upstream of the actual Google call has been verified.
 - **Extend Playwright past the signed-out flow.** `tests/smoke/` only covers Landing/Login today; the authenticated views (Tags, Settings, etc.) would need a captured `storageState` from a real sign-in. See `08-test-plan.md`.
 - **Two accessibility fixes exist but were deliberately reverted, not abandoned.** A `Modal.tsx` focus-trap/dialog-semantics fix and a color-contrast token fix were both built and verified during the 27/08/2026 audit, then explicitly reverted at the project owner's request. Re-apply if full compliance is wanted before the walk-through. See `06-front-end-architecture.md`.
 - **TanStack Query refactor.** The same fetch-orchestration shape (`setSyncing` → fetch → catch → `finally`) is duplicated across four views. Named in `CLAUDE.md` as the intended fix; not yet done. See `07-evaluation.md`.
@@ -246,5 +266,5 @@ Every UAT feedback item from Part 2 above has a real action taken against it —
 
 - **This file, Part 1** — the literal sequence of what was built and when, sourced from `git log`.
 - **This file, Parts 2–3** — outside feedback and live-deployment events, as the AT3 brief requires.
-- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040). Iterations 18–23 are documentation-only catch-up and clarity work and don't have their own ADR (22 references ADR-0003, but didn't create a new one) — see their `ai-use-log.md` entries instead.
+- **`decision-log.md`** — *why* a given technical or product choice was made, with trade-offs; most iterations from 9 onward correspond directly to one or more numbered ADRs (9→0027, 11→0029/0030/0031/0032, 12→0034, 13→0035, 14→0036, 15→0038, 16→0039, 17→0040, 24→0041, 25→0042). Iterations 18–23 are documentation-only catch-up and clarity work and don't have their own ADR (22 references ADR-0003, but didn't create a new one) — see their `ai-use-log.md` entries instead.
 - **`ai-use-log.md`** — the substantive Claude Code interactions behind that work, per the AT3 AI Use Policy.

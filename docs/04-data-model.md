@@ -132,6 +132,39 @@ A Variable is a named reference to a value pulled from the page, the URL, the da
 
 > **Removed (28/08/2026):** A "Conversion Event" entity was specified here, built, and later removed entirely — code, database table, and this section. See `decision-log.md` ADR-0038 and `02-requirements.md`'s Out of scope section for why.
 
+> **Re-added (17/09/2026):** Conversion-event tracking is back (`decision-log.md` ADR-0041) — the entity below describes the current, real schema again, not history. A new Google Ads Connection entity follows it, for the real OAuth connection built on top.
+
+## Conversion Event
+
+A Conversion Event marks a specific event name as a business outcome (purchase, lead, signup) and ties it to an optional monetary value.
+
+| Variable | Data Type | Format | Description | Example | Connected to | Validation |
+|---|---|---|---|---|---|---|
+| ConversionEventId | string | CONID_XX_YYYY | Unique identifier for a conversion event. | CONID_AG_0001 | (PK) | System-generated. |
+| ContainerId | string | CNTID_XX_YYYY | The container this conversion event lives in. | CNTID_AG_0001 | Container.ContainerId | Must reference a valid ContainerId. |
+| EventName | string | snake_case | The event name that should count as a conversion. | purchase | ConversionEventId | Letters, digits, underscores; cannot start with a digit; unique within the container. |
+| ValueParam | string | snake_case | Variable name carrying the monetary value of the conversion. | purchase_value | Variable.VariableName | Must reference an existing Variable in the same container; optional. |
+| Currency | string | ISO 4217 | Three-letter currency code. | AUD | ConversionEventId | Exactly 3 uppercase letters. |
+| ConversionLabel | string | Free text | The Google Ads-issued label for this specific conversion action. | AbC-D_efG | ConversionEventId | Optional. |
+| Category | string | Dropdown | Matches Google Ads' own conversion-action categories. | purchase | ConversionEventId | One of: `purchase`, `add_to_cart`, `begin_checkout`, `subscribe`, `qualified_lead`, `converted_lead`, `submit_lead_form`, `book_appointment`, `sign_up`, `request_quote`, `get_directions`, `outbound_click`, `contact`, `page_view`, `other`. |
+| IsActive | boolean | true / false | Whether this conversion is currently counted. | true | ConversionEventId | Required. |
+
+`Container.GoogleAdsConversionId` (format `AW-XXXXXXXXX`) is the account-level ID this event's label is paired with when generating a paste-in gtag.js/GTM snippet — separate from the real OAuth connection below, which pulls live reported numbers rather than just generating a snippet.
+
+---
+
+## Google Ads Connection
+
+New for ADR-0041. A real, per-organisation OAuth connection to a Google Ads account, used by `supabase/functions/google-ads-report` to pull live conversion metrics — distinct from `Container.GoogleAdsConversionId` above, which only supports generating a manual tracking snippet. The refresh token itself is never stored in this table directly: it lives in Supabase Vault (pgsodium-encrypted at rest), referenced here only by its vault secret id, following through on the `integrations` roadmap note this doc already had (see below). No client (not even an organisation owner, via the app's own UI) can read this table directly — RLS is enabled with zero policies granted to `anon`/`authenticated`; the only access path is two `SECURITY DEFINER` Postgres functions grantable only to `service_role`, called exclusively from the Edge Functions.
+
+| Variable | Data Type | Format | Description | Example | Connected to | Validation |
+|---|---|---|---|---|---|---|
+| OrganisationId | string | ORGID_XX_YYYY | The organisation this connection belongs to — one per organisation. | ORGID_AG_0001 | Organisation.OrganisationId (PK) | Must reference a valid OrganisationId. |
+| CustomerId | string | 10 digits | The connected Google Ads account's customer ID. | 1234567890 | OrganisationId | Exactly 10 digits. |
+| VaultSecretId | uuid | Supabase Vault secret reference | Points at the encrypted refresh token — never the token itself. | (opaque uuid) | OrganisationId | Not client-readable. |
+| ConnectedBy | string | USRID_XX_YYYY | The user who completed the OAuth grant. | USRID_AG_0001 | User.UserId | Optional (null if the connecting user was later removed). |
+| ConnectedAt | timestamp | ISO 8601 | When the connection was last established or replaced. | 2026-09-17T04:00:00Z | OrganisationId | System-generated. |
+
 ---
 
 ## Tag–Trigger link
@@ -161,6 +194,9 @@ The fields above implement as the following Supabase Postgres tables. Internal p
 | `triggers` | Trigger definitions | uuid | `container_id`, `organisation_id` |
 | `variables` | Variable definitions | uuid | `container_id`, `organisation_id` |
 | `tag_triggers` | Many-to-many Tag↔Trigger link | composite (`tag_id`, `trigger_id`, `relationship`) | `tag_id` → `tags`, `trigger_id` → `triggers` |
+| `conversion_events` | Conversion Event rows (re-added ADR-0041) | uuid | `container_id`, `organisation_id` |
+| `live_verification_events` | Anonymous-insert capture rows for the console-paste live firing check | uuid | `conversion_event_id`, `organisation_id` |
+| `google_ads_connections` | One OAuth connection per organisation — Vault secret reference only, no client access | uuid (`organisation_id`, PK) | `organisation_id` |
 | `audit_log` | Append-only record of meaningful changes | uuid | `organisation_id`, `actor_id` |
 
 **Cross-cutting conventions** that apply to every domain table:
@@ -192,7 +228,7 @@ Write policies layer a role check on top (`editor` and above can insert/update; 
 
 **Roadmap entities** (not in MVP, included so the schema does not paint us into a corner):
 
-- `integrations` — OAuth tokens for GTM and GA4 APIs, stored encrypted via Supabase Vault (security floor #6).
+- ~~`integrations` — OAuth tokens for GTM and GA4 APIs, stored encrypted via Supabase Vault (security floor #6).~~ Built for Google Ads as `google_ads_connections` (ADR-0041), using exactly this Vault approach. GTM's own OAuth token is still session-only (`session.provider_token`, read directly by the client — see `05-security-review.md`'s known limitations), not yet moved to this pattern.
 - `ai_suggestions` + `credit_ledger` — for the metered AI tag-suggestion feature.
 - `firing_events` — observed tag fires, for automated verification.
 

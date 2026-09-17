@@ -14,6 +14,7 @@ App                                  session bootstrap (Supabase getSession + on
             ├── TagsView             GTM tags (read-only, live)
             ├── TriggersView         GTM triggers (read-only, live)
             ├── VariablesView        GTM variables (read-only, live)
+            ├── ConversionsView      conversion events + GoogleAdsConnectionPanel (re-added ADR-0041)
             ├── PreviewView          local dataLayer/tag-firing simulator
             ├── SettingsView         profile, team management, appearance
             └── OrganisationView     org details, invite code (owner/admin)

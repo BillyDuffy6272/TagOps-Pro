@@ -1,6 +1,6 @@
 # TagOps-Pro
 
-A tracking organisation and operational tool for business owners — a single source of truth for the Tags, Triggers, and Variables that power their analytics and marketing setup (Google Tag Manager, GA4, and similar). The MVP focuses on organising the setup, inviting teammates with expiry dates, and surfacing suggestions when something is missing. The roadmap adds AI-assisted suggestions, automated firing verification, and two-way sync with Google's platforms.
+A tracking organisation and operational tool for business owners — a single source of truth for the Tags, Triggers, Variables, and Conversion events that power their analytics and marketing setup (Google Tag Manager, GA4, Google Ads, and similar). The MVP focuses on organising the setup, inviting teammates with expiry dates, and surfacing suggestions when something is missing. The roadmap adds AI-assisted suggestions, automated firing verification, and two-way sync with Google's platforms.
 
 This repository is also my **Year 12 Software Engineering AT3 project** for Noetica Academy, Term 2 2026. The product is genuine; it is also subject to the AT3 brief's mandated stack, security floor, AI-use policy, and nine-week timeline.
 
@@ -53,7 +53,7 @@ TagOps-Pro/
 ├── src/                       application source
 ├── supabase/
 │   ├── migrations/            numbered SQL migrations
-│   └── functions/             edge functions if any
+│   └── functions/             Edge Functions — google-ads-connect, google-ads-report (ADR-0041)
 └── tests/
     ├── unit/                  unit tests on pure logic
     ├── integration/           policy tests against local Supabase
@@ -74,6 +74,7 @@ TagOps-Pro/
 - `npm run test:integration` — Vitest RLS policy suite (`tests/integration/`) against a local Supabase instance. Run `supabase start` first (needs Docker).
 - `npm run test:smoke` — Playwright smoke suite (`tests/smoke/`) against a real production build.
 - `supabase start` — local Supabase for integration tests.
+- `supabase functions deploy` — deploy the Edge Functions in `supabase/functions/` (`google-ads-connect`, `google-ads-report`). Their secrets (`GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_ADS_DEVELOPER_TOKEN`) are set separately with `supabase secrets set` — never committed, never in `.env.local`.
 
 Environment variables live in `.env.local` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`); never commit a real env file.
 
@@ -107,6 +108,8 @@ Plus a 15-minute walk-through in Week 10.
 
 ## Status
 
-Core product built and deployed: Tags/Triggers/Variables (live from GTM), organisation/team management with genuinely role-gated access, invite codes, theming, and Preview mode are all working. All nine folio docs plus both running logs (`decision-log.md`, `ai-use-log.md`) are populated, not placeholders. The security floor is met — see `docs/05-security-review.md`.
+Core product built and deployed: Tags/Triggers/Variables (live from GTM), Conversion events (manual entry, tracking-code snippets, console-paste live firing verification), organisation/team management with genuinely role-gated access, invite codes, theming, and Preview mode are all working. All nine folio docs plus both running logs (`decision-log.md`, `ai-use-log.md`) are populated, not placeholders. The security floor is met — see `docs/05-security-review.md`.
 
-Known open gaps, tracked in the folio rather than hidden: both `tests/integration/` (RLS policy tests) and `tests/smoke/` (Playwright) now exist, but the RLS suite has never actually been run against a real database — it needs `supabase start` (Docker) locally to prove it passes, and the smoke suite only covers the signed-out flow (see `docs/08-test-plan.md`). One UAT session has been run (a class testing session, 24/08/2026 — see `docs/09-iteration-log.md`'s Part 2 for the feedback and what was done about it). The Week 11 report (PDF) and the Git invitation to the marking teacher are outside this repository and not tracked here.
+A real Google Ads OAuth connection (`decision-log.md` ADR-0041) was also built on top of Conversion events, kept deliberately separate from the app's Google sign-in so the restricted `adwords` scope is only ever requested when an owner/admin explicitly opts in. The connection itself is genuinely verifiable today; pulling *live* Google Ads conversion data through it is not — no developer token exists yet (an external Google approval process outside this project's control), so that one call is explicitly flagged as unverified rather than claimed as working.
+
+Known open gaps, tracked in the folio rather than hidden: both `tests/integration/` (RLS policy tests) and `tests/smoke/` (Playwright) now exist, but the RLS suite has never actually been run against a real database — it needs `supabase start` (Docker) locally to prove it passes, and the smoke suite only covers the signed-out flow (see `docs/08-test-plan.md`). The Google Ads live-report Edge Function has the same "written but unrun" status, for the developer-token reason above. One UAT session has been run (a class testing session, 24/08/2026 — see `docs/09-iteration-log.md`'s Part 2 for the feedback and what was done about it). The Week 11 report (PDF) and the Git invitation to the marking teacher are outside this repository and not tracked here.
